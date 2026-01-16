@@ -10,7 +10,7 @@ import Math;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class Shooter {
+public class ShooterMath {
 
 double calcVelocity(double distance, double theta){
     // Calculate the required velocity to shoot a projectile to a target at a given distance and angle
@@ -34,12 +34,12 @@ double calcRPM(double velocity){
 
 Optional<Transform3d> getShooterTransform(){
     // Placeholder for getting the best target transform from vision system
-    Transform3d RobotToShooterTransform = new Transform3d(0,0,0,new Rotation3d(0,0,0)); // Replace with actual transform retrieval logic once measured, this is to the center of the shooter
+    Transform3d RobotToShooterTransform = new Transform3d(0,0,0,new (0,0,0)); // Replace with actual transform retrieval logic once measured, this is to the center of the shooter
 
     //return Optional.empty(); gotta fix this optional return, honestly method may not be needed
 }
 
-public void aimAndShoot() {
+public void aimAndShoot() { // need to update vision to match this format, pose from odometry fused with vision rather than just vision pose
     Pose2d robotPose = swerve.getPose();
     Pose2d shooterPose = robotPose.transformBy(getShooterTransform()));
 
@@ -65,4 +65,8 @@ public void aimAndShoot() {
     if (aimed && shooter.atSetpoint()) {
         feeder.feed();
     }
+}
+
+public void setRPM(double RPM){
+    
 }
