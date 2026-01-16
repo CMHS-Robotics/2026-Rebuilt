@@ -30,13 +30,13 @@ public class Vision extends SubsystemBase {
     private PhotonCamera camRight = new PhotonCamera("FrontRightCamera");
 
     // need to be updated for new bot
-    private static final Transform3d kRobotToLeftCamera =
+    private static final Transform3d kRobotToFrontLeftCamera =
         new Transform3d(
             0.3625,  0.22, 0.12,
             new Rotation3d(0, 0, Math.toRadians(15))
         );
 
-    private static final Transform3d kRobotToRightCamera =
+    private static final Transform3d kRobotToFrontRightCamera =
         new Transform3d(
             0.3625, -0.22, 0.12,
             new Rotation3d(0, 0, Math.toRadians(-15))
@@ -173,9 +173,9 @@ public class Vision extends SubsystemBase {
         Transform3d robotToTag;
 
         if (seenLeft) {
-            robotToTag = kLeftCameraToRobot.plus(cameraToTag);
+            robotToTag = kFrontLeftCameraToRobot.plus(cameraToTag);
         } else {
-            robotToTag = kRightCameraToRobot.plus(cameraToTag);
+            robotToTag = kFrontRightCameraToRobot.plus(cameraToTag);
         }
 
         return Optional.of(robotToTag);
