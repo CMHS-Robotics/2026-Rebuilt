@@ -8,6 +8,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+// ^^ moter stuff
+
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
@@ -17,6 +24,9 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+
+  private TalonFX shooterMotor = new TalonFX(1); // CAN ID
+  private VelocityVoltage velocityControl = new VelocityVoltage(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -43,6 +53,14 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
+
+  @Override
+  public void robotInit() {
+  TalonFXConfiguration config = new TalonFXConfiguration();
+  shooterMotor.getConfigurator().apply(config);
+
+  SmartDashboard.putNumber("Target Distance (m)", 3.0);
+}
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -79,7 +97,22 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+public void teleopPeriodic() {
+  double distance = SmartDashboard.getNumber("Target Distance (m)", 0.0);
+
+  double velocity = ShooterMath.calcVelocity(distance,Math.toRadians(45)); // assuming 45 degree launch angle
+  double rpm = ShooterMath.calcRPM(velocity);
+
+  // Kraken expects rotations/sec
+  double rotationsPerSecond = rpm / 60.0;
+  rotationsPerSecond *=2; 
+
+  shooterMotor.setControl(
+      velocityControl.withVelocity(rotationsPerSecond)
+  );
+
+  SmartDashboard.putNumber("Shooter RPM", rpm);
+}
 
   @Override
   public void testInit() {

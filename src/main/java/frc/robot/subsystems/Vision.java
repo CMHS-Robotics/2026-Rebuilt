@@ -201,15 +201,19 @@ public class Vision extends SubsystemBase {
         fieldVisualizer.setRobotPose(latestFieldPose);
 
         if (leftPose.isPresent()) {
-            latestFieldPose = leftPose.get().estimatedPose.toPose2d();
+            Pose2d pose2d = leftPose.get().estimatedPose.toPose2d();
+            swerve.addVisionMeasurement(pose2d, leftPose.get().timestampSeconds);
+            latestFieldPose = pose2d;
         }
         else if (rightPose.isPresent()) {
-            latestFieldPose = rightPose.get().estimatedPose.toPose2d();
+            Pose2d pose2d = rightPose.get().estimatedPose.toPose2d();
+            swerve.addVisionMeasurement(pose2d, rightPose.get().timestampSeconds);
+            latestFieldPose = pose2d;
         }
 
         
 
-        SmartDashboard.putData("Field View", fieldVisualizer);
+        fieldVisualizer.setRobotPose(latestFieldPose);
 
         SmartDashboard.putNumber("FieldPoseX", latestFieldPose.getX());
         SmartDashboard.putNumber("FieldPoseY", latestFieldPose.getY());
