@@ -1,6 +1,6 @@
 package frc.robot.tools;
 
-import com.revrobotics.spark.config.SmartMotionConfig;
+//import com.revrobotics.spark.config.SmartMotionConfig;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.BooleanSubscriber;
@@ -15,30 +15,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.CoralWristSetTargetPositionCommand;
-import frc.robot.commands.ElevatorSetStageCommand;
-import frc.robot.commands.ZeroTalonCommand;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.CoralSpinV2;
-import frc.robot.subsystems.CoralWristV2;
-import frc.robot.subsystems.DriveAugments;
-import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.Vision.CAMERA;
-import frc.robot.subsystems.VisionV2.*;
-import frc.robot.subsystems.VisionV2;
+
 
 public class DashboardSuite extends SubsystemBase{
     
     //subsystems
-    Elevator Elevator;
-    CoralSpinV2 CoralSpin;
-    CoralWristV2 CoralWrist;
-    DriveAugments DriveAugments;
-    CommandSwerveDrivetrain Swerve;
-    Vision Vision;
-    VisionV2 VisionV2;
-
+  
     //subscribers
         //subscribers will monitor data in a topic and can be used to update code based on inputs in elastic
 
@@ -79,14 +61,14 @@ public class DashboardSuite extends SubsystemBase{
     IntegerPublisher pSameTargetID;
     BooleanPublisher pHasSameTarget;
     
-    public DashboardSuite(Elevator e, CoralSpinV2 s, CoralWristV2 w,Vision v,VisionV2 v2){
-        Elevator = e;
-        CoralSpin = s;
-        CoralWrist = w;
-        Vision = v;
-        VisionV2 = v2;
-        initialize();
-    }
+   // public DashboardSuite(Elevator e, CoralSpinV2 s, CoralWristV2 w,Vision v,VisionV2 v2){
+   //     Elevator = e;
+   //     CoralSpin = s;
+   //     CoralWrist = w;
+   //     Vision = v;
+   //     VisionV2 = v2;
+   //     initialize();
+   // }
 
     public final void initialize(){
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -154,15 +136,7 @@ public class DashboardSuite extends SubsystemBase{
 
         //commands
             //these commands can be activated from elastic
-        SmartDashboard.putData("Elevator Bottom Command",new ElevatorSetStageCommand(Elevator,0).alongWith(new CoralWristSetTargetPositionCommand(CoralWrist, 0)));
-        SmartDashboard.putData("Elevator Intake Stage Command",new ElevatorSetStageCommand(Elevator,1).andThen(new CoralWristSetTargetPositionCommand(CoralWrist, 1)));
-        SmartDashboard.putData("Elevator L2 Command",new ElevatorSetStageCommand(Elevator,2).andThen(new CoralWristSetTargetPositionCommand(CoralWrist, 2)));
-        SmartDashboard.putData("Elevator L3 Command",new ElevatorSetStageCommand(Elevator,3).andThen(new CoralWristSetTargetPositionCommand(CoralWrist, 2)));
-        SmartDashboard.putData("Elevator L4 Command",new ElevatorSetStageCommand(Elevator,4).andThen(new CoralWristSetTargetPositionCommand(CoralWrist, 3)));
-
-        //SmartDashboard.putData("Lock On April Tag",new LockOnAprilTagCommand(Swerve, Vision, RobotContainer.Driver, (int)sVisionTarget.get()));
-
-        SmartDashboard.putData("Zero All Motors",new ZeroTalonCommand(Elevator.ElevatorLeft).alongWith(new ZeroTalonCommand(Elevator.ElevatorRight)).alongWith(new ZeroTalonCommand(CoralWrist.CoralWrist)));
+        
     }
 
 
@@ -171,41 +145,7 @@ public class DashboardSuite extends SubsystemBase{
 
         //elevator
 
-        if(sElevatorPIDManual.get(false)){
-
-            //set the elevator target and pid based on the values in the subscribers
-            Elevator.setTargetPosition(sElevatorPIDBar.get());
-            Elevator.elevatorPID.setPID(sElevatorPIDP.get(0.2),0,sElevatorPIDD.get(0.4));
-            Elevator.elevatorPID.setMaxOutput(sElevatorPIDClampUpper.get(0.4));
-            Elevator.elevatorPID.setMinOutput(sElevatorPIDClampLower.get(-0.15));
-
-        }
-
-        //update the publishers this values from the elevator
-        pElevatorHasReached.set(Elevator.hasReachedTarget());
-        pElevatorLeftMotor.set(Elevator.ElevatorLeft.getPosition().getValueAsDouble());
-        pElevatorRightMotor.set(Elevator.ElevatorRight.getPosition().getValueAsDouble());
-        pElevatorPID.set(Elevator.elevatorPID.toString());
-        pElevatorPIDSettings.set(Elevator.elevatorPID.getSettings());
-        pElevatorPIDResult.set(Elevator.elevatorPID.getResult());
-        pElevatorPIDPreClampResult.set(Elevator.elevatorPID.getResultPreClamp());
-
-
-        //coral
-        pCoralWristHasReached.set(CoralWrist.hasReachedTarget());
-        pCoralWristMotor.set(CoralWrist.CoralWrist.getPosition().getValueAsDouble());
-        pCoralWristPID.set(CoralWrist.coralWristPID.toString());
-        pCoralWristOutput.set(CoralWrist.CoralWrist.get());
-
-
-        //vision
-        pVisionHasDetected.set(Vision.hasTarget(CAMERA.FRONT,(int)sVisionTargetId.get()));
-        pVisionHasTarget.set(Vision.hasTarget(CAMERA.FRONT));
-        pAprilTagDetected.set((Vision.hasTarget(CAMERA.FRONT))?Vision.getTarget(CAMERA.FRONT).getFiducialId():0);
-        pVisionTargetMode.set(Vision.getCurrentMode().toString());
-        Vision.setCurrentMode((int)sVisionTargetMode.get(0));
-
-        //vision v2
+    
     
     }
 }
