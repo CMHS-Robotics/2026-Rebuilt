@@ -31,44 +31,4 @@ public static double calcRPM(double velocity){
     double rpm = (velocity / wheelCircumference) * 60; // Convert m/s to RPM
     return rpm;
 }
-
-//Optional<Transform3d> getShooterTransform(){
-    // Placeholder for getting the best target transform from vision system
-    //Transform3d RobotToShooterTransform = new Transform3d(0,0,0,new (0,0,0)); // Replace with actual transform retrieval logic once measured, this is to the center of the shooter
-
-    //return Optional.empty(); gotta fix this optional return, honestly method may not be needed
-//}
-
-public void aimAndShoot() { // need to update vision to match this format, pose from odometry fused with vision rather than just vision pose
-    //Pose2d robotPose = swerve.getPose();
-    //Pose2d shooterPose = robotPose.transformBy(getShooterTransform()));
-
-   // Translation2d toHub =
-     //   FieldConstants.HUB_POSE.getTranslation()
-       //     .minus(shooterPose.getTranslation());
-
-   // Rotation2d targetHeading = toHub.getAngle();
-    //double distance = toHub.getNorm();
-
-    // Rotate robot
-   // swerve.turnToHeading(targetHeading);
-
-    // Shooter math
-   // double rpm = ShooterMath.calculateRPM(distance);
-    //shooter.setRPM(rpm);
-
-   // boolean aimed =
-        //Math.abs(
-           // targetHeading.minus(robotPose.getRotation()).getDegrees()
-        //) < 1.0;
-
-    //if (aimed && shooter.atSetpoint()) {
-    //    feeder.feed();
-    //}
-}
-
-public void setRPM(double RPM){
-    
-    }
-
 }

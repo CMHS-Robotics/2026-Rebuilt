@@ -12,20 +12,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import frc.robot.subsystems.Shooter;
 
 public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
 
-  // Shooter motor (Kraken / TalonFX)
-  private final TalonFX shooterMotor = new TalonFX(1);
-
-  // Velocity control request
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-
-  // Ramp: 3000 RPM in 3 seconds → 1000 RPM/sec
-  private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1000.0);
+  Shooter shooter = new Shooter();
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -71,24 +65,17 @@ public class Robot extends TimedRobot {
     }
 
     // Reset ramp so it always starts from 0 RPM
-    rpmRamp.reset(0.0);
+    shooter.resetRamp();
   }
 
   @Override
   public void teleopPeriodic() {
 
-    // === SET YOUR TARGET RPM HERE ===
-    double targetRPM = 6000.0;
+    distance = SmartDashboard.getNumber("Distance", 0.0);
+    Shootball ballShooter  = new ShootBall(shooter, ShooterMath.calcVelocity(distance, 60).calcRPM()); 
 
-    // Smooth ramp
-    double rampedRPM = rpmRamp.calculate(targetRPM);
-
-    // Phoenix expects rotations per second
-    double targetRPS = rampedRPM / 60.0;
-
-    shooterMotor.setControl(
-        velocityRequest.withVelocity(targetRPS)
-    );
+    ballShooter.execute();
+    
   }
 
   @Override
