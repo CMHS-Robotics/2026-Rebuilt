@@ -155,4 +155,17 @@ public class Vision extends SubsystemBase {
     
         return Optional.empty();
     }
+
+    public Optional<Double> distanceToTagFromPose(int tagId) {
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) return Optional.empty();
+    
+        Pose2d robotPose = latestFieldPose;
+        Pose2d tagPose2d = tagPoseOpt.get().toPose2d();
+    
+        return Optional.of(
+            robotPose.getTranslation()
+                .getDistance(tagPose2d.getTranslation())
+        );
+    }
 }
