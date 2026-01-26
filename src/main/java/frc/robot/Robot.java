@@ -13,6 +13,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.ShootBall;
+import frc.robot.subsystems.*;
 
 public class Robot extends TimedRobot {
 
@@ -27,19 +30,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-
-    TalonFXConfiguration config = new TalonFXConfiguration();
-
-    // --- PID + Feedforward (STARTING VALUES, MUST TUNE) ---
-    config.Slot0.kP = 0.12;
-    config.Slot0.kI = 0.0;
-    config.Slot0.kD = 0.0;
-    config.Slot0.kV = 0.12;
-
-    // Optional: ensure correct direction
-    // config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-
-    shooterMotor.getConfigurator().apply(config);
   }
 
   @Override
@@ -71,8 +61,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    distance = SmartDashboard.getNumber("Distance", 0.0);
-    Shootball ballShooter  = new ShootBall(shooter, ShooterMath.calcVelocity(distance, 60).calcRPM()); 
+    ShootBall ballShooter  = new ShootBall(shooter); 
 
     ballShooter.execute();
     

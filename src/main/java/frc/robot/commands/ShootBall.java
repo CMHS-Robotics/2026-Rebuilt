@@ -1,12 +1,14 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ShooterSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterMath;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.ShooterMath;
 
-public class ShootBall extends CommandBase {
+public class ShootBall extends Command {
 
-    private final ShooterSubsystem shooter;
-    private final double targetRPM;
+    private final Shooter shooter;
 
     public ShootBall(Shooter shooter) {
         this.shooter = shooter;
@@ -24,8 +26,7 @@ public class ShootBall extends CommandBase {
       SmartDashboard.getNumber("Target Distance (m)", 0.0);
       double angle =
       SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
-
-  double rpm = ShooterMath.calcVelocity(distance, angle).calcRPM();
+     double rpm = ShooterMath.calcRPM(ShooterMath.calcVelocity(distance, angle));
   shooter.setRPM(rpm);
     }
 
