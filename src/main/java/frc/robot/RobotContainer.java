@@ -23,7 +23,8 @@ public class RobotContainer {
 
     // --- SmartDashboard tuning values ---
     SmartDashboard.putNumber("Target Distance (m)", 3.0);
-    SmartDashboard.putNumber("Angle of Ejection (deg)", 60.0);
+    SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
+   // SmartDashboard.putNumber("rpm", 0);
 
 
     //SmartDashboard.putData("Field View", vision.getFieldVisualizer()); 

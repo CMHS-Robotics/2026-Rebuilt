@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -12,7 +13,7 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX shooterMotor = new TalonFX(1);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1000.0);
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1500.0);
 
     public Shooter() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -41,4 +42,14 @@ public class Shooter extends SubsystemBase {
     public Command stopCommand() {
         return runOnce(this::stop);
       }
+
+    @Override
+public void periodic() {
+    // Correct way to get velocity in Phoenix 6
+    // .getValueAsDouble() returns Rotations per Second (RPS)
+    double currentRPS = shooterMotor.getVelocity().getValueAsDouble();
+    double currentRPM = currentRPS * 60.0;
+
+    SmartDashboard.putNumber("Current Shooter RPM", currentRPM);
+}
 }

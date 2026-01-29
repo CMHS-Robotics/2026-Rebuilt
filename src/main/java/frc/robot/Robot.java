@@ -61,9 +61,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    ShootBall ballShooter  = new ShootBall(shooter); 
+    //ShootBall ballShooter  = new ShootBall(shooter); 
 
-    ballShooter.execute();
+    //ballShooter.execute();
     
   }
 
