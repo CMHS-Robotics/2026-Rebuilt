@@ -53,6 +53,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    if (m_autonomousCommand != null) {
+            CommandScheduler.getInstance().cancel(m_autonomousCommand);
+    }
 
     // Reset ramp so it always starts from 0 RPM
     shooter.resetRamp();
