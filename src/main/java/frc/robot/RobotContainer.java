@@ -9,16 +9,25 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
+import frc.robot.commands.FreeMoveClimber;
+import frc.robot.commands.MoveClimber;
 import frc.robot.commands.ShootBall;
+<<<<<<< HEAD
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.MoveClimber;
+import frc.robot.subsystems.Climber.*;
 
 import frc.robot.generated.TunerConstants;
 
 //import frc.robot.apriltag.AprilTagFieldLayout;
+=======
+import frc.robot.apriltag.AprilTagFieldLayout;
+>>>>>>> 851a7d5 (added hopper kicker pointandshoot and new vision)
 
 public class RobotContainer {
 
@@ -36,7 +45,12 @@ public class RobotContainer {
 
     private final CommandXboxController Driver = new CommandXboxController(0);
 
+    private final CommandXboxController Manipulator = new CommandXboxController(1);
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    Climber climber = new Climber();
+
 
 
   /* ================= SUBSYSTEMS ================= */
@@ -72,7 +86,7 @@ public class RobotContainer {
   //       .onTrue(shooter.stopCommand());
   // }
 
-      private void configureBindings() {
+    private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -106,8 +120,43 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         Driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+        //implement commands
+
+        //Climber Commands:
+        Manipulator.povUp().onTrue(
+            new MoveClimber(climber,climber.stages[1])//Ground To Bar
+        );
+        Manipulator.povRight().onTrue(
+            new MoveClimber(climber,climber.stages[0])//Bar To Bar
+        );
+        Manipulator.povDown().onTrue(
+            new MoveClimber(climber,climber.stages[0])//Move To Bottom
+        );
+        //Free Move Commands For Climber
+        Manipulator.povLeft().onTrue(
+            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
+        );
+        Manipulator.povDownLeft().onFalse(
+            new FreeMoveClimber(climber,FreeMoveStates.Disabled)
+        );
+        Manipulator.rightTrigger().onTrue(
+            new FreeMoveClimber(climber, FreeMoveStates.PositiveDirection)
+        );
+        Manipulator.rightTrigger().onFalse(
+            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
+        );
+        Manipulator.leftTrigger().onTrue(
+            new FreeMoveClimber(climber, FreeMoveStates.NegativeDirection)
+        );
+        Manipulator.leftTrigger().onFalse(
+            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
+        );
+
+        
+        
         drivetrain.registerTelemetry(logger::telemeterize);
     }
+
 
   // /* ================= AUTONOMOUS ================= */
   // public Command getAutonomousCommand() {

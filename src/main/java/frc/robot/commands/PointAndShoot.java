@@ -1,55 +1,76 @@
-// package frc.robot.commands;
+package frc.robot.commands;
 
-// import edu.wpi.first.wpilibj2.command.CommandBase;
-// import frc.robot.subsystems.ShooterSubsystem;
-// import frc.robot.subsystems.IntakeSubsystem; // if you have one for feeding balls
-// import frc.robot.subsystems.VisionSubsystem; // for getting distance
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem; // if you have one for feeding balls
+import frc.robot.subsystems.VisionSubsystem; // for getting distance and rot 
+import frc.robot.util.ShooterMath;
+import edu.wpi.first.math.geometry.Rotation2d;  // for rotation calculations
 
-// public class PointAndShoot extends CommandBase {
+public class PointAndShoot extends CommandBase {
 
-//     private final Shooter shooter;
-//     private final Intake intake;
-//     private final Vision vision;
+    private final Shooter shooter;
+    private final Hopper hopper;
+    private final Vision vision;
 
-//     private final double toleranceRPM = 50.0; // flywheel RPM tolerance for ready
+    private final double toleranceRPM = 50.0;// flywheel RPM tolerance for ready
+    private final double rotTollerace = Math.toRadians(5); // radians from degrees tolerance for aiming
 
-//     public PointAndShoot(ShooterSubsystem shooter, IntakeSubsystem intake, VisionSubsystem vision) {
-//         this.shooter = shooter;
-//         this.intake = intake;
-//         this.vision = vision;
-//         addRequirements(shooter, intake); // ensures no conflicts
-//     }
+    public PointAndShoot(ShooterSubsystem shooter, Hopper hopper, VisionSubsystem vision) {
+        this.shooter = shooter;
+        this.hopper = hopper;
+        this.vision = vision;
+        addRequirements(shooter, hopper); // ensures no conflicts
+    }
 
-//     @Override
-//     public void initialize() {
-//         shooter.resetRamp();
-//     }
+    @Override
+    public void initialize() {
+        shooter.resetRamp();
+    }
 
-//     @Override
-//     public void execute() {
-//         double distance = vision.distanceToTag(); //wrote an idea for this function 
-//         double theta = 60;      // this needs logic to calculate gotta figure that out later
-//         double targetRPM = ShooterMath.calcVelocity(distance, theta).calcRPM();
-//         shooter.setRPM(targetRPM);
+    @Override
+    public void execute() {
+    
+        Optional<Double> distanceOpt = vision.distanceToTagFromPose(); // idk what hub tag is
+        Optional<Rotation2d> rotErrorOpt =
+            vision.getRotationErrorToTag(); // idk what hub tag is but plug in here and above
+    
+        if (distanceOpt.isEmpty() || rotErrorOpt.isEmpty()) {
+            hopper.stopFeeder();
+            return;
+        }
+    
+        double distance = distanceOpt.get();
+        double theta = 60; // still fine for now
+    
+        double targetRPM =
+            ShooterMath.calcRPM(shooterMath.calcVelocity(distance, theta));
+    
+        shooter.setRPM(targetRPM);
+    
+        boolean rpmReady =
+            Math.abs(targetRPM - shooter.getCurrentRPM()) < toleranceRPM;
+    
+        boolean aimed =
+            Math.abs(rotErrorOpt.get().getRadians()) < rotTollerace;
+    
+        if (rpmReady && aimed) {
+            hopper.runFeeder();
+        } else {
+            hopper.stopFeeder();
+        }
+    }
 
-//         //feed ball when RPM is within tolerance
-//         if (Math.abs(targetRPM - shooter.getCurrentRPM()) < toleranceRPM) {
-//             intake.runFeeder(); // spin feeder motor
-//         } else {
-//             intake.stopFeeder();
-//         }
-//     }
+    @Override
+    public void end(boolean interrupted) {
+        shooter.setRPM(0.0);
+        hopper.stopFeeder();
+    }
 
-//     @Override
-//     public void end(boolean interrupted) {
-//         shooter.setRPM(0.0);
-//         intake.stopFeeder();
-//     }
-
-//     @Override
-//     public boolean isFinished() {
-//         return false; // could be a timed shoot, or end via button release
-//     }
+    @Override
+    public boolean isFinished() {
+        return false; // could be a timed shoot, or end via button release
+    }
 
     
-// }
+}
