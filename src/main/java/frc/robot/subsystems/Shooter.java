@@ -11,7 +11,13 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX shooterMotor = new TalonFX(1);
+    private final TalonFX shooterMotor = new TalonFX(14);/////IMPORTANT
+    //IMPORTANT
+    /*
+     * 
+     * DEVICE ID CHANGED TO DEBUG SWERVE CODE
+     * 
+     */
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1500.0);
 
