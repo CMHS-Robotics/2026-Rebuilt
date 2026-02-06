@@ -41,7 +41,7 @@ public class PointAndShoot extends CommandBase {
         }
     
         double distance = distanceOpt.get();
-        double theta = 60; // still fine for now
+        double theta = 60; // remember to change when we have angle function
     
         double targetRPM =
             ShooterMath.calcRPM(shooterMath.calcVelocity(distance, theta));
