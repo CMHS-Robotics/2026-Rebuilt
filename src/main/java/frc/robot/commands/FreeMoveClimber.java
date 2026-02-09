@@ -24,7 +24,7 @@ public class FreeMoveClimber extends Command {
         switch(StateRequest) {
             case Enabled:
             CurrentState = FreeMoveStates.Enabled;
-                climber.stopClimber();
+            climber.stopClimber();
             break;
             case Disabled:
                 CurrentState = FreeMoveStates.Disabled;

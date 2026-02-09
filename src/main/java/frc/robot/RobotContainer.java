@@ -61,6 +61,14 @@ public class RobotContainer {
     // --- SmartDashboard tuning values ---
     SmartDashboard.putNumber("Target Distance (m)", 3.0);
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
+    SmartDashboard.putString("Free Move Climber State", climber.FreeMoveStateInterpreter(FreeMoveStates.Disabled));
+    SmartDashboard.putNumber("Climber Position", climber.getPosition());
+    SmartDashboard.putNumber("Stage", climber.stages[0]);
+
+
+    ///////IMPLEMENT THE ABOVE SET FUNCTIONS IN CLASSES
+
+
    // SmartDashboard.putNumber("rpm", 0);
 
 
@@ -148,7 +156,11 @@ public class RobotContainer {
             new FreeMoveClimber(climber, FreeMoveStates.Enabled)
         );
 
-        
+        //Change Above to Accept Trigger Pressed As A Value Between 0 and 1(or a set threshold), Invert For Left Side
+        //Replace Current Toggle System With A Better One(Maybe?)
+        //We Might Not Keep Free Mode Command, Maybe Only For Debug Purposes
+
+
         
         drivetrain.registerTelemetry(logger::telemeterize);
     }
