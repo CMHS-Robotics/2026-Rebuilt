@@ -12,7 +12,7 @@ import frc.robot.tools.PID;
 
 
 public class Climber extends SubsystemBase {
-    TalonFX climberMotor = new TalonFX(14);
+    TalonFX climberMotor = new TalonFX(15);
     TalonFXConfiguration config = new TalonFXConfiguration();
     public double []stages = new double[3];
     public double []speeds = new double[2];
@@ -23,7 +23,7 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         //Config
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = 1;
