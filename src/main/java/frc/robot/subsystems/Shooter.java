@@ -11,7 +11,8 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX shooterMotor = new TalonFX(14);/////IMPORTANT
+    private final TalonFX shooterMotor1 = new TalonFX(13);/////IMPORTANT
+    private final TalonFX shooterMotor2 = new TalonFX(14);
     //IMPORTANT
     /*
      * 
@@ -28,17 +29,20 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.12;
 
-        shooterMotor.getConfigurator().apply(config);
+        shooterMotor1.getConfigurator().apply(config);
+        shooterMotor2.getConfigurator().apply(config);
     }
 
     public void setRPM(double rpm) {
         double rampedRPM = rpmRamp.calculate(rpm);
         double targetRPS = rampedRPM / 60.0;
-        shooterMotor.setControl(velocityRequest.withVelocity(targetRPS));
+        shooterMotor1.setControl(velocityRequest.withVelocity(targetRPS));
+        shooterMotor2.setControl(velocityRequest.withVelocity(targetRPS));
     }
 
     public void stop() {
-        shooterMotor.set(0);
+        shooterMotor1.set(0);
+        shooterMotor2.set(0);
     }
 
     public void resetRamp() {
@@ -53,9 +57,14 @@ public class Shooter extends SubsystemBase {
 public void periodic() {
     // Correct way to get velocity in Phoenix 6
     // .getValueAsDouble() returns Rotations per Second (RPS)
-    double currentRPS = shooterMotor.getVelocity().getValueAsDouble();
-    double currentRPM = currentRPS * 60.0;
+    double currentRPS1 = shooterMotor1.getVelocity().getValueAsDouble();
+    double currentRPM1 = currentRPS1 * 60.0;
 
-    SmartDashboard.putNumber("Current Shooter RPM", currentRPM);
+    
+    double currentRPS2 = shooterMotor1.getVelocity().getValueAsDouble();
+    double currentRPM2 = currentRPS2 * 60.0;
+
+    SmartDashboard.putNumber("ShooterMoter1 RPM", currentRPM1);
+    SmartDashboard.putNumber("ShooterMoter2 RPM", currentRPM2);
 }
 }

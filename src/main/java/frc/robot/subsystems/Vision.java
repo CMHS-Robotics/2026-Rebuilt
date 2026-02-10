@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -17,7 +19,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
-//import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,6 +202,22 @@ public class Vision extends SubsystemBase {
         );
     }
 
+    public Optional<Translation2d> translationToTagFromPose(int tagId) {
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) return Optional.empty();
+    
+        Pose2d robotPose = latestFieldPose;
+        Pose2d tagPose2d = tagPoseOpt.get().toPose2d();
+    
+        Translation2d robotTranslation = robotPose.getTranslation();
+        Translation2d tagTranslation = tagPose2d.getTranslation();
+    
+        // Vector from robot → tag
+        Translation2d delta = tagTranslation.minus(robotTranslation);
+    
+        return Optional.of(delta);
+    }
+  
     public Optional<Rotation2d> getRotationErrorToTag(int tagId) {
         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
         if (tagPoseOpt.isEmpty()) return Optional.empty();
@@ -207,11 +225,9 @@ public class Vision extends SubsystemBase {
         Pose2d robotPose = swerve.getState().Pose;
     
         Translation2d robotPos = robotPose.getTranslation();
-        Translation2d tagPos =
-            tagPoseOpt.get().toPose2d().getTranslation();
+        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
     
-        Rotation2d angleToTag =
-            tagPos.minus(robotPos).getAngle();
+        Rotation2d angleToTag = tagPos.minus(robotPos).getAngle();
     
         Rotation2d robotHeading = robotPose.getRotation();
     
