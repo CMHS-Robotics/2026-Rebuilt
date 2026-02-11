@@ -22,7 +22,7 @@ public class Shooter extends SubsystemBase {
 
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1500.0);
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
 
     public Shooter() {
         TalonFXConfiguration config = new TalonFXConfiguration();

@@ -20,6 +20,11 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.MoveClimber;
 import frc.robot.subsystems.Climber.*;
+import frc.robot.subsystems.Kicker;
+import frc.robot.subsystems.Intake;
+import frc.robot.commands.Kick;
+
+
 
 import frc.robot.generated.TunerConstants;
 
@@ -51,6 +56,8 @@ public class RobotContainer {
 
   /* ================= SUBSYSTEMS ================= */
   private final Shooter shooter = new Shooter();
+  private final Kicker kicker = new kicker();
+  private final Intake intake = new Intake();
   
   /* ================= CONTROLLERS ================= */
   //private final CommandXboxController Driver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -78,20 +85,18 @@ public class RobotContainer {
   }
 
   /* ================= BUTTON BINDINGS ================= */
-  // private void configureBindings() {
 
-  //   // Hold RIGHT TRIGGER to spin shooter using dashboard distance
-  //   Driver.rightTrigger()
-  //       .whileTrue(new ShootBall(shooter));
 
-  //   // Optional: stop shooter immediately on B
-  //   Driver.b()
-  //       .onTrue(shooter.stopCommand());
-  // }
+          
+
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+       Manipulator.rightTrigger().whileTrue(Commands.parallel(new ShootBall(shooter), new Kick(kicker)));
+        Manipulator.leftTrigger().whileTrue(intake.startIntake());
+
+
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->

@@ -11,7 +11,7 @@ import  edu.wpi.first.wpilibj2.command.Command;
 public class Kicker extends SubsystemBase {
     private final TalonFX kickerMoter = new TalonFX(17); // Assuming CAN ID 4 for kicker motor
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(1500); // Limit to 500 RPM per second
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 500 RPM per second
 
     public Kicker() {
         TalonFXConfiguration config = new TalonFXConfiguration();

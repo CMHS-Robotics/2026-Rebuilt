@@ -47,10 +47,9 @@ public class PointAndShoot extends Command {
         else if(!(rotTo26.isEmpty())){
                 rotError = rotTo26.get();
             }
-        }
 
         
-
+        }
 
     @Override
     public void end(boolean interrupted) {

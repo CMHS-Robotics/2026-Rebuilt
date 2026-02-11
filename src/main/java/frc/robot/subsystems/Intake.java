@@ -7,10 +7,10 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Hopper extends SubsystemBase {
-    private final TalonFX hopperMoter = new TalonFX(16); // Assuming CAN ID 5 for hopper motor
+public class Intake extends SubsystemBase{
+    private final TalonFX intakeMoter = new TalonFX(19); 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(500.0); // Limit to 500 RPM per second
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(500); // Limit to 500 RPM per second
 
     public Hopper() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -19,17 +19,17 @@ public class Hopper extends SubsystemBase {
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
 
-        hopperMoter.getConfigurator().apply(config);
+        intakeMoter.getConfigurator().apply(config);
     }
 
-    public void startFeeder() {
+    public void startIntake() {
         double rampedRPM = rpmRamp.calculate(1000);
         double targetRPS = rampedRPM / 60.0;
-        hopperMoter.setControl(velocityRequest.withVelocity(targetRPS));
+        intakeMoter.setControl(velocityRequest.withVelocity(targetRPS));
     }
 
     public void stop() {
-        hopperMoter.set(0);
+        intakeMoter.set(0);
     }
 
     public Command stopCommand() {

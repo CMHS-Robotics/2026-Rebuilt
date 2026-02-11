@@ -3,10 +3,10 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class kick extends Command{
+public class Kick extends Command{
     private final Kicker kicker;
 
-    public kick(Kicker kicker) {
+    public Kick(Kicker kicker) {
         this.kicker = kicker;
         addRequirements(kicker); // This prevents other commands from using the kicker at the same time
     }
