@@ -1,34 +1,42 @@
 package frc.robot.subsystems;
-import java.util.Optional;
-import org.photonvision.PhotonPoseEstimator;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import java.lang.Math;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+
 
 public class ShooterMath {
 
-public static double calcVelocity(double distance, double theta){
-    // Calculate the required velocity to shoot a projectile to a target at a given distance and angle
-    // Using the formula: v = sqrt((d * g) / sin(2 * theta))
-    double g = 9.81; // Acceleration due to gravity in m/s^2
-    double h = 0.3175; //height of bot aprox needs to be adjusted
-    distance = distance + .5969; // account for the length of the hub 
-    double numerator = (g * Math.pow(distance,2));
-    double denomonator = 2 * Math.pow((Math.cos(theta)),2) * (distance * Math.tan(theta) - (1.8288 - h)); //theta must be in radians
-    double velocity = Math.sqrt(- numerator / denomonator);
-    return velocity;
-}
+    private static final double g = 9.81;
 
-public static double calcRPM(double velocity){
-    // Convert linear velocity (m/s) to rotational speed (RPM)
-    double wheelDiameter = 0.102; // Diameter of the shooter wheel in meters (example value)
-    double wheelCircumference = Math.PI * wheelDiameter; // Circumference of the wheel
-    double rpm = (velocity / wheelCircumference) * 60; // Convert m/s to RPM
-    return rpm;
-}
+    private static final double SHOOTER_HEIGHT = 0.3175; // meters
+    private static final double HUB_HEIGHT = 1.8288;     // meters
+    private static final double HUB_RADIUS = 0.5969;     // meters
+
+    private static final double WHEEL_DIAMETER = 0.102;  // meters
+    private static final double MOTOR_TO_WHEEL_RATIO = 36.0 / 15.0;
+
+    public static double calcVelocity(double distance, double theta) {
+        double adjustedDistance = distance + HUB_RADIUS;
+        double deltaH = HUB_HEIGHT - SHOOTER_HEIGHT;
+
+        double numerator = g * Math.pow(adjustedDistance, 2);
+        double denominator =
+            2 * Math.pow(Math.cos(theta), 2) *
+            (adjustedDistance * Math.tan(theta) - deltaH);
+
+        double term = numerator / denominator;
+
+        if (term <= 0) {
+            return Double.NaN;
+        }
+
+        return Math.sqrt(term);
+    }
+
+    public static double calcMotorRPM(double velocity) {
+        double wheelCircumference = Math.PI * WHEEL_DIAMETER;
+
+        double flywheelRPM = (velocity / wheelCircumference) * 60.0;
+        return flywheelRPM * MOTOR_TO_WHEEL_RATIO;
+    }
+
+    
 }

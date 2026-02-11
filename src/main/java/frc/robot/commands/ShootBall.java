@@ -26,9 +26,9 @@ public class ShootBall extends Command {
       SmartDashboard.getNumber("Target Distance (m)", 0.0);
       double angle =
       SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
-     double rpm = ShooterMath.calcRPM(ShooterMath.calcVelocity(distance, angle)) *2;
-     SmartDashboard.putNumber("rpm", rpm);
-  shooter.setRPM(rpm);
+      double rpm = ShooterMath.calcMotorRPM(ShooterMath.calcVelocity(distance, angle));
+      SmartDashboard.putNumber("rpm", rpm);
+      shooter.setRPM(rpm);
     }
 
     @Override
