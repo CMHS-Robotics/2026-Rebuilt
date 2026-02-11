@@ -19,7 +19,6 @@ public class Climber extends SubsystemBase {
     PID ElevatorPID;
     double position;
     double positionTolerence;
-    public FreeMoveStates currentFreeMoveState;
 
     public Climber() {
         //Config
@@ -38,11 +37,6 @@ public class Climber extends SubsystemBase {
 
         climberMotor.getConfigurator().apply(config);
 
-        //PID
-        ElevatorPID = new PID(0.1,0.05,0.01);
-        ElevatorPID.setGravity(1.2);//Counteracts Weight Of Robot Against Gravity
-        ElevatorPID.setMaxInput(0.4);
-
         //Climber Stages
         stages[0] = 0; //Base Level
         stages[1] = 0.80*16;//Ground To First Bar 
@@ -55,25 +49,9 @@ public class Climber extends SubsystemBase {
         //Climb Position Tolerence
         positionTolerence = 0.1;
 
-        currentFreeMoveState = FreeMoveStates.Disabled;
-
         ZeroClimber();
     }
     //States For FreeMove
-    public enum FreeMoveStates {
-        Enabled,//Specifies That We Have Control, Can Only Move From Enabled To Positive/Disabled
-        Disabled,
-        PositiveDirection,
-        NegativeDirection
-    }
-
-    public String FreeMoveStateInterpreter(FreeMoveStates s) {
-        return s.name();
-    }
-    public FreeMoveStates FreeMoveStateInterpreter(String s){
-        return FreeMoveStates.valueOf(s);
-    }
-
     public void moveUp(){
         climberMotor.set(speeds[0]);
     }
@@ -113,7 +91,6 @@ public class Climber extends SubsystemBase {
 @Override
     public void periodic() {
         SmartDashboard.putNumber("Climber Position", getPosition());
-        SmartDashboard.setDefaultString("Free Move Climber State", FreeMoveStateInterpreter(currentFreeMoveState));
     }
 }
 

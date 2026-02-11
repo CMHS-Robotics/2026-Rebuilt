@@ -44,8 +44,7 @@ public class PointAndShoot extends Command {
                 rotError = rotTo10.get();
             }
         } 
-        else{ 
-            if(!(rotTo26.isEmpty())){
+        else if(!(rotTo26.isEmpty())){
                 rotError = rotTo26.get();
             }
         }

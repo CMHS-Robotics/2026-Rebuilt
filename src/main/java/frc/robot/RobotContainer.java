@@ -61,7 +61,6 @@ public class RobotContainer {
     // --- SmartDashboard tuning values ---
     SmartDashboard.putNumber("Target Distance (m)", 3.0);
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
-    SmartDashboard.putString("Free Move Climber State", climber.FreeMoveStateInterpreter(FreeMoveStates.Disabled));
     SmartDashboard.putNumber("Climber Position", climber.getPosition());
     SmartDashboard.putNumber("Stage", climber.stages[0]);
 
@@ -131,35 +130,14 @@ public class RobotContainer {
             new MoveClimber(climber,climber.stages[1])//Ground To Bar
         );
         Manipulator.povRight().onTrue(
-            new MoveClimber(climber,climber.stages[0])//Bar To Bar
+            new MoveClimber(climber,climber.stages[2])//Bar To Bar
         );
         Manipulator.povDown().onTrue(
             new MoveClimber(climber,climber.stages[0])//Move To Bottom
         );
-        //Free Move Commands For Climber
-        Manipulator.povLeft().onTrue(
-            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
+        Manipulator.povLeft().whileTrue(
+            new FreeMoveClimber(climber,Manipulator.rightBumper().getAsBoolean(),Manipulator.leftBumper().getAsBoolean())
         );
-        Manipulator.povDownLeft().onFalse(
-            new FreeMoveClimber(climber,FreeMoveStates.Disabled)
-        );
-        Manipulator.rightTrigger().onTrue(
-            new FreeMoveClimber(climber, FreeMoveStates.PositiveDirection)
-        );
-        Manipulator.rightTrigger().onFalse(
-            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
-        );
-        Manipulator.leftTrigger().onTrue(
-            new FreeMoveClimber(climber, FreeMoveStates.NegativeDirection)
-        );
-        Manipulator.leftTrigger().onFalse(
-            new FreeMoveClimber(climber, FreeMoveStates.Enabled)
-        );
-
-        //Change Above to Accept Trigger Pressed As A Value Between 0 and 1(or a set threshold), Invert For Left Side
-        //Replace Current Toggle System With A Better One(Maybe?)
-        //We Might Not Keep Free Mode Command, Maybe Only For Debug Purposes
-
 
         
         drivetrain.registerTelemetry(logger::telemeterize);

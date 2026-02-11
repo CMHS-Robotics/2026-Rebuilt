@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Climber.FreeMoveStates;
 
 
 public class MoveClimber extends Command {
@@ -17,7 +16,6 @@ public class MoveClimber extends Command {
 
     @Override
     public void execute(){
-        climber.currentFreeMoveState = FreeMoveStates.Disabled;
         climber.moveToward(target);
     }
     @Override

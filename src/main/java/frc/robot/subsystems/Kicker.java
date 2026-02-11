@@ -17,7 +17,7 @@ public class Kicker extends SubsystemBase {
         config.Slot0.kP = 0.1;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kF = 0.05;
+        //config.Slot0.kF = 0.05;
 
         kickerMoter.getConfigurator().apply(config);
     }
