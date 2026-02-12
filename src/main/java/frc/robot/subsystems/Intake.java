@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class Intake extends SubsystemBase{
     private final TalonFX intakeMoter = new TalonFX(19); 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(500); // Limit to 500 RPM per second
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2500); // Limit to 500 RPM per second
 
-    public Hopper() {
+    public Intake() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = 0.1;
         config.Slot0.kI = 0.0;
@@ -22,10 +22,14 @@ public class Intake extends SubsystemBase{
         intakeMoter.getConfigurator().apply(config);
     }
 
+    public void resetRamp() {
+        rpmRamp.reset(0.0);
+    }
+
     public void startIntake() {
-        double rampedRPM = rpmRamp.calculate(1000);
+        double rampedRPM = rpmRamp.calculate(5000);
         double targetRPS = rampedRPM / 60.0;
-        intakeMoter.setControl(velocityRequest.withVelocity(targetRPS));
+        intakeMoter.setControl(velocityRequest.withVelocity(-targetRPS));
     }
 
     public void stop() {

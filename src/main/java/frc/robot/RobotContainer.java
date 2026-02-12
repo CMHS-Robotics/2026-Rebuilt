@@ -15,6 +15,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.commands.FreeMoveClimber;
 import frc.robot.commands.MoveClimber;
 import frc.robot.commands.ShootBall;
+import frc.robot.commands.runIntake;
+
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -56,7 +58,7 @@ public class RobotContainer {
 
   /* ================= SUBSYSTEMS ================= */
   private final Shooter shooter = new Shooter();
-  private final Kicker kicker = new kicker();
+  private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
   
   /* ================= CONTROLLERS ================= */
@@ -93,9 +95,10 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-       Manipulator.rightTrigger().whileTrue(Commands.parallel(new ShootBall(shooter), new Kick(kicker)));
-        Manipulator.leftTrigger().whileTrue(intake.startIntake());
-
+       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter));
+        Manipulator.leftTrigger().whileTrue(new runIntake(intake));
+            
+      
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically

@@ -54,7 +54,7 @@ public class PointAndShoot extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.setRPM(0.0);
-        hopper.stop();
+ //       hopper.stop();
     }
 
     @Override

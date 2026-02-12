@@ -24,10 +24,6 @@ public class ShooterMath {
 
         double term = numerator / denominator;
 
-        if (term <= 0) {
-            return Double.NaN;
-        }
-
         return Math.sqrt(term);
     }
 
