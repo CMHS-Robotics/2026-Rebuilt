@@ -83,7 +83,7 @@ public class Shooter extends SubsystemBase {
     double currentRPM1 = currentRPS1 * 60.0;
 
     
-    double currentRPS2 = shooterMotor1.getVelocity().getValueAsDouble();
+    double currentRPS2 = shooterMotor2.getVelocity().getValueAsDouble();
     double currentRPM2 = currentRPS2 * 60.0;
 
     SmartDashboard.putNumber("ShooterMoter1 RPM", currentRPM1);
