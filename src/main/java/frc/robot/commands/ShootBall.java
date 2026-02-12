@@ -29,6 +29,7 @@ public class ShootBall extends Command {
       double angleRad = Math.toRadians(angleDeg);
       double velocity = ShooterMath.calcVelocity(distance, angleRad);
       double rpm = ShooterMath.calcMotorRPM(velocity);
+      shooter.setRPM(rpm);
     }
 
     @Override

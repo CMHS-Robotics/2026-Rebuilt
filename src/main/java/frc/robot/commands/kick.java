@@ -19,10 +19,12 @@ public class Kick extends Command{
     @Override
     public void execute() {
       double distance = SmartDashboard.getNumber("Target Distance (m)", 0.0);
-      double angle = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
-      double rpm = ShooterMath.calcMotorRPM(ShooterMath.calcVelocity(distance, angle));
-      rpm = rpm *(5/20); // account for gear ratio 
-      kicker.setRPM(rpm);
+      double angleDeg =
+      SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
+      double angleRad = Math.toRadians(angleDeg);
+      double velocity = ShooterMath.calcVelocity(distance, angleRad);
+      double rpm = ShooterMath.calcMotorRPM(velocity);
+      kicker.setRPM(-rpm);
     }
 
     @Override
