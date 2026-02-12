@@ -12,7 +12,7 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private static final double HOOD_GEAR_RATIO = 9.0;
+    private static final double HOOD_GEAR_RATIO = ;
     private final TalonFX shooterMotor1 = new TalonFX(13);
     private final TalonFX shooterMotor2 = new TalonFX(14);
     private final TalonFX hoodMotor = new TalonFX(18);
@@ -30,6 +30,8 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kV = 0.12;
+        config.CurrentLimits.StatorCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         shooterMotor1.getConfigurator().apply(config);
         shooterMotor2.getConfigurator().apply(config);
@@ -88,6 +90,7 @@ public class Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("ShooterMoter1 RPM", currentRPM1);
     SmartDashboard.putNumber("ShooterMoter2 RPM", currentRPM2);
-    SmartDashboard.putNumber("Flywheel speed", currentRPM1 * (15.0/36.0)); // account for gear ratio
+    SmartDashboard.putNumber("Flywheel speed", currentRPM1 / (15.0/36.0)); // account for gear ratio
+    SmartDashboard.putNumber("Shooter Hood position", hoodMotor.getPosition().getValueAsDouble());
 }
 }
