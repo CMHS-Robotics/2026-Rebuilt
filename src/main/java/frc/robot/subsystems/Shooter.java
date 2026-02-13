@@ -68,10 +68,6 @@ public class Shooter extends SubsystemBase {
         shooterMotor2.set(0);
     }
 
-    public void setHoodPosition(double angle) {
-        double rotations = (angle / 360.0) * HOOD_GEAR_RATIO;
-        hoodMotor.setControl(hoodPositionRequest.withPosition(rotations));
-    }
 
     public void resetRamp() {
         rpmRamp.reset(0.0);
@@ -85,10 +81,10 @@ public class Shooter extends SubsystemBase {
             return hoodMotor.getPosition().getValueAsDouble() * DEGREES_PER_MOTOR_ROTATION;
 }
 
-//public void setHoodAngleDegrees(double degrees) {
-//    double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
-//    hoodMotor.setControl(positionRequest.withPosition(motorRotations));
-//}
+public void setDegrees(double degrees) {
+    double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
+    hoodMotor.setControl(positionRequest.withPosition(motorRotations));
+}
 
     @Override
     public void periodic() {
