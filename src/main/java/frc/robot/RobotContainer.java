@@ -72,6 +72,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
     SmartDashboard.putNumber("Climber Position", climber.getPosition());
     SmartDashboard.putNumber("Stage", climber.stages[0]);
+    SmartDashboard.putNumber("SetRPM",0);
+    SmartDashBoard.putNumber("SetDegrees", 0);
 
 
     ///////IMPLEMENT THE ABOVE SET FUNCTIONS IN CLASSES

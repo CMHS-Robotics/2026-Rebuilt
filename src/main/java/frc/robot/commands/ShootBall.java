@@ -23,11 +23,12 @@ public class ShootBall extends Command {
     @Override
     public void execute() {
       double distance =
-      SmartDashboard.getNumber("Target Distance (m)", 0.0);
-      double angleDeg =
-      SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
-      double angleRad = Math.toRadians(angleDeg);
-      double velocity = ShooterMath.calcVelocity(distance, angleRad);
+      //SmartDashboard.getNumber("Target Distance (m)", 0.0);
+      //double angleDeg =
+      //SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
+      rpm = SmartDashboard.getNumber("SetRPM", 0);
+      //double angleRad = Math.toRadians(angleDeg);
+      //double velocity = ShooterMath.calcVelocity(distance, angleRad);
       double rpm = ShooterMath.calcMotorRPM(velocity);
       shooter.setRPM(rpm);
     }
