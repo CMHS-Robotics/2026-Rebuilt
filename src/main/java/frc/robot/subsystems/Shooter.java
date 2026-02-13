@@ -12,8 +12,7 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private static final double HOOD_GEAR_RATIO = 9;
-    private static final double DEGREES_PER_MOTOR_ROTATION = 2.7766; // example
+    private static final double DEGREES_PER_MOTOR_ROTATION = 2.81; 
     private final TalonFX shooterMotor1 = new TalonFX(13);
     private final TalonFX shooterMotor2 = new TalonFX(14);
     private final TalonFX hoodMotor = new TalonFX(18);
@@ -47,10 +46,10 @@ public class Shooter extends SubsystemBase {
         hoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-        hoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.0839;
+        hoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.999512;
         hoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-        hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -6.119140625;
+        hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -.117676;
         hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         hoodMotor.getConfigurator().apply(hoodConfig);
@@ -83,7 +82,7 @@ public class Shooter extends SubsystemBase {
 
 public void setDegrees(double degrees) {
     double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
-    hoodMotor.setControl(positionRequest.withPosition(motorRotations));
+    hoodMotor.setControl(hoodPositionRequest.withPosition(motorRotations));
 }
 
     @Override
