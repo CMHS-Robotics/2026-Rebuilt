@@ -85,10 +85,10 @@ public class Shooter extends SubsystemBase {
             return hoodMotor.getPosition().getValueAsDouble() * DEGREES_PER_MOTOR_ROTATION;
 }
 
-public void setHoodAngleDegrees(double degrees) {
-    double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
-    hoodMotor.setControl(positionRequest.withPosition(motorRotations));
-}
+//public void setHoodAngleDegrees(double degrees) {
+//    double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
+//    hoodMotor.setControl(positionRequest.withPosition(motorRotations));
+//}
 
     @Override
     public void periodic() {
