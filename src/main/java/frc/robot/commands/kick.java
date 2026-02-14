@@ -29,6 +29,7 @@ public class Kick extends Command{
       //double angleRad = Math.toRadians(angleDeg);
       //double velocity = ShooterMath.calcVelocity(distance, angleRad);
       //double rpm = ShooterMath.calcMotorRPM(velocity);
+      //targetRPS /= (16/20);
       kicker.setRPM(-rpm);
     }
 

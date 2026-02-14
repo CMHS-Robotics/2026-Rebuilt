@@ -30,7 +30,7 @@ public class Kicker extends SubsystemBase {
     public void setRPM(double rpm) {
         double rampedRPM = rpmRamp.calculate(rpm);
         double targetRPS = rampedRPM / 60.0;
-        kickerMoter.setControl(velocityRequest.withVelocity(targetRPS));
+        kickerMoter.setControl(velocityRequest.withVelocity(targetRPS)) ;
     }
 
     public void stop() {
@@ -50,6 +50,6 @@ public class Kicker extends SubsystemBase {
     double currentRPS1 = kickerMoter.getVelocity().getValueAsDouble();
     double currentRPM1 = currentRPS1 * 60.0;
     SmartDashboard.putNumber("KickerMoter RPM", currentRPM1);
-    SmartDashboard.putNumber("kicker compliant speed", currentRPM1 * (20.0/5.0)); // account for gear ratio
+    SmartDashboard.putNumber("kicker compliant speed", currentRPM1 * (20.0/16)); // account for gear ratio
 }
 }
