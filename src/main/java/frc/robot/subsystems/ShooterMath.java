@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 import java.lang.Math;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.*;
 
 
 public class ShooterMath {
@@ -47,10 +48,18 @@ public class ShooterMath {
     static {
         // ----- TUNE THESE VALUES -----
         // distance , RPM
-        rpmMap.put(1.5, 2500.0);
-        rpmMap.put(2.0, 2700.0);
-        rpmMap.put(2.5, 3000.0);
-        rpmMap.put(3.0, 3300.0);
+        rpmMap.put(2.159, 906.75);
+        rpmMap.put(2.413, 930.);
+        rpmMap.put(2.54, 975.);
+        rpmMap.put(2.667, 980.);
+        rpmMap.put(2.794, 985.);
+        rpmMap.put(3.048, 1025.);
+        rpmMap.put(3.302, 1050.);
+        rpmMap.put(3.556, 1090.);
+        rpmMap.put(3.81, 1100.);
+        rpmMap.put(3.937, 1125.);
+        rpmMap.put(4.191, 1175.);
+
 
         // distance , hood angle (degrees)
         hoodMap.put(1.5, 15.0);

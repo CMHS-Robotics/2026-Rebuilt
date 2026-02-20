@@ -5,6 +5,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -29,10 +30,9 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kP = 0.12;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kV = 0.12;
+        config.Slot0.kV = 0.135;
         config.CurrentLimits.StatorCurrentLimit = 80;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
-
         shooterMotor1.getConfigurator().apply(config);
         shooterMotor2.getConfigurator().apply(config);
 
@@ -91,13 +91,20 @@ public void setDegrees(double degrees) {
     // .getValueAsDouble() returns Rotations per Second (RPS)
     double currentRPS1 = shooterMotor1.getVelocity().getValueAsDouble();
     double currentRPM1 = currentRPS1 * 60.0;
-
+    double targetRPM = SmartDashboard.getNumber("SetRPM", 0);
     
     double currentRPS2 = shooterMotor2.getVelocity().getValueAsDouble();
     double currentRPM2 = currentRPS2 * 60.0;
 
+    double shooter1Error = targetRPM - currentRPM1;
+    double shooter2Error = targetRPM - currentRPM2;
+
+    SmartDashboard.putNumber("ShooterMoter1 Error", shooter1Error);
+    SmartDashboard.putNumber("ShooterMoter2 Error", shooter2Error);
+
     SmartDashboard.putNumber("ShooterMoter1 RPM", currentRPM1);
     SmartDashboard.putNumber("ShooterMoter2 RPM", currentRPM2);
+
     SmartDashboard.putNumber("Flywheel speed", currentRPM1 / (15.0/36.0)); // account for gear ratio
     SmartDashboard.putNumber("Shooter Hood position", hoodMotor.getPosition().getValueAsDouble());
 }

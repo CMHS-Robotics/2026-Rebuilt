@@ -96,9 +96,10 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
+        // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter));
        Manipulator.rightTrigger().whileTrue(new Kick(kicker));
+       Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
             
