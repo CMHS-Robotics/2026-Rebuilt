@@ -75,6 +75,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("Stage", climber.stages[0]);
     SmartDashboard.putNumber("SetRPM",0);
     SmartDashboard.putNumber("SetDegrees", 0);
+   // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
 
     ///////IMPLEMENT THE ABOVE SET FUNCTIONS IN CLASSES
@@ -155,9 +156,9 @@ public class RobotContainer {
         Manipulator.povDown().onTrue(
             new MoveClimber(climber,climber.stages[0])//Move To Bottom
         );
-    //    Manipulator.povLeft().whileTrue(
-      //      new FreeMoveClimber(climber,Manipulator.rightBumper().getAsBoolean(),Manipulator.leftBumper().getAsBoolean())
-      //  );
+        Manipulator.povLeft().whileTrue(
+            new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
+        );
 
         
         drivetrain.registerTelemetry(logger::telemeterize);

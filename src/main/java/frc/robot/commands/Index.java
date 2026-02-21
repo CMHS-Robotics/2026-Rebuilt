@@ -33,12 +33,15 @@ public class Index extends Command{
          //double angleRad = Math.toRadians(angleDeg);
     
          // double rpm = ShooterMath.getRPM(distance);
-         double rpm = SmartDashboard.getNumber("SetRPM", 0);
-    //    calc.calcHubRPM().ifPresent(rpm -> {
-    //    SmartDashboard.putNumber("Calculated RPM", rpm);
-    //    indexer.setRPM(rpm);
-    //    });
-          indexer.setRPM(rpm);
+       //  double rpm = SmartDashboard.getNumber("SetRPM", 0);
+      //  calc.calcHubRPM().ifPresent(rpm -> {
+      //  SmartDashboard.putNumber("Calculated RPM", rpm);
+      //  indexer.setRPM(rpm);
+      //  });
+
+      //double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
+       double rpm = 2500;
+        indexer.setRPM(rpm);
     }
 
     @Override

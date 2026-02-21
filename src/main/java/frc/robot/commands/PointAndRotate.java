@@ -17,7 +17,7 @@ public class PointAndRotate extends Command {
     private final CommandSwerveDrivetrain drivetrain;
     private final Vision vision;
 
-    private final double kP = 0.7;
+    private final double kP = 3;
     private final double rotTolerance = Math.toRadians(5);
 
     private int primaryTag;
@@ -75,17 +75,17 @@ public class PointAndRotate extends Command {
 
         double turnPower = kP * errorRad;
 
-        SwerveRequest request = new SwerveRequest.FieldCentric() //try robot centric if this is cooked
-        .withVelocityX(0)
-        .withVelocityY(0)
-        .withRotationalRate(turnPower);
+         SwerveRequest request = new SwerveRequest.RobotCentric() //try robot centric if this is cooked
+         .withVelocityX(0)
+         .withVelocityY(0)
+         .withRotationalRate(turnPower);
 
-        drivetrain.applyRequest(() -> request);
+         drivetrain.setControl(request);
 
-        SmartDashboard.putBoolean("Primary Seen", primaryError.isPresent());
-        SmartDashboard.putBoolean("Secondary Seen", secondaryError.isPresent());
-        SmartDashboard.putNumber("Rotation Error Deg", Math.toDegrees(errorRad));
-        SmartDashboard.putNumber("Turn Power", turnPower);
+         SmartDashboard.putBoolean("Primary Seen", primaryError.isPresent());
+         SmartDashboard.putBoolean("Secondary Seen", secondaryError.isPresent());
+         SmartDashboard.putNumber("Rotation Error Deg", Math.toDegrees(errorRad));
+         SmartDashboard.putNumber("Turn Power", turnPower);
     }
 
     @Override

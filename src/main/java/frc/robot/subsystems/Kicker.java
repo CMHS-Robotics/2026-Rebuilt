@@ -12,7 +12,7 @@ public class Kicker extends SubsystemBase {
     private final TalonFX kickerMoter = new TalonFX(17); // Assuming CAN ID 4 for kicker motor
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 500 RPM per second
-    private final double  KICKER_GEAR_RATIO = 16/20;
+    private final double  KICKER_GEAR_RATIO = 16.0/20.0;
 
     public Kicker() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -53,6 +53,6 @@ public class Kicker extends SubsystemBase {
     double currentRPS1 = kickerMoter.getVelocity().getValueAsDouble();
     double currentRPM1 = currentRPS1 * 60.0;
     SmartDashboard.putNumber("KickerMoter RPM", currentRPM1);
-    SmartDashboard.putNumber("kicker compliant speed", currentRPM1 * (16/20)); // account for gear ratio
+    SmartDashboard.putNumber("kicker compliant speed", currentRPM1 * (16.0/20.0)); // account for gear ratio
 }
 }

@@ -33,9 +33,9 @@ public class Vision extends SubsystemBase {
 
     // Four cameras
     private final PhotonCamera frontCam     = new PhotonCamera("frontCam");
-    private final PhotonCamera leftBackCam  = new PhotonCamera("frontRightCam");
-    private final PhotonCamera leftFrontCam = new PhotonCamera("backLeftCam");
-    private final PhotonCamera rightCam     = new PhotonCamera("backRightCam");
+    private final PhotonCamera leftBackCam  = new PhotonCamera("leftBackCam");
+    private final PhotonCamera leftFrontCam = new PhotonCamera("leftFrontCam");
+    private final PhotonCamera rightCam     = new PhotonCamera("rightCam");
 
     // Camera → Robot transforms
     private static final Transform3d kRobotToFrontCam = new Transform3d(
@@ -218,14 +218,17 @@ public class Vision extends SubsystemBase {
         return Optional.of(tagTranslation.minus(robotPose.getTranslation()));
     }
 
-    public Optional<Rotation2d> getRotationErrorToTag(int tagId) {
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) return Optional.empty();
+     public Optional<Rotation2d> getRotationErrorToTag(int tagId) {
+    //     Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+    //     if (tagPoseOpt.isEmpty()) return Optional.empty();
 
-        Pose2d robotPose = swerve.getState().Pose;
-        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
-        Rotation2d angleToTag = tagPos.minus(robotPose.getTranslation()).getAngle();
+    //     Translation2d robotTranslation = latestFieldPose.getTranslation();
+    //     Rotation2d robotHeading = swerve.getState().Pose.getRotation();
 
-        return Optional.of(angleToTag.minus(robotPose.getRotation()));
-    }
+    //     Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
+    //     Rotation2d angleToTag = tagPos.minus(robotTranslation).getAngle();
+
+    //     return Optional.of(angleToTag.minus(robotHeading));
+           return Optional.of(new Rotation2d());
+     }
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class CalcFromVision {
@@ -32,8 +33,11 @@ public class CalcFromVision {
 
         if (chosenDist.isEmpty()) return Optional.empty();
 
-        double rpm = ShooterMath.getRPM(chosenDist.get());
+        SmartDashboard.putNumber("vision Distance ", chosenDist.get());
+
+        double distance = chosenDist.get() + .6;
+        double rpm = ShooterMath.getRPM(distance);
         return Optional.of(rpm);
     }
-    
+
 }

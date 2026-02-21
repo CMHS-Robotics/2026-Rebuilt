@@ -1,5 +1,6 @@
 package frc.robot.commands;
 import frc.robot.subsystems.*;
+import frc.robot.tools.CalcFromVision;
 
 import java.util.Optional;
 
@@ -10,10 +11,12 @@ public class Hopp extends Command{
 
     private final Hopper hopper;
     private final Vision vision;
+    private final CalcFromVision calc;
 
     public Hopp(Hopper hopper, Vision vision) {
         this.hopper = hopper;
         this.vision = vision;
+        this.calc = new CalcFromVision(vision);
         addRequirements(hopper); // This prevents other commands from using the kicker at the same time
     }
 
@@ -26,14 +29,16 @@ public class Hopp extends Command{
     public void execute() {
          //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
          //double angleRad = Math.toRadians(angleDeg);
-    
          // double rpm = ShooterMath.getRPM(distance);
-         double rpm = SmartDashboard.getNumber("SetRPM", 0);
+    //     double rpm = SmartDashboard.getNumber("SetRPM", 0);
     //    calc.calcHubRPM().ifPresent(rpm -> {
     //    SmartDashboard.putNumber("Calculated RPM", rpm);
     //    hopper.setRPM(rpm);
     //    });
-      hopper.setRPM(rpm);
+
+    //double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
+       double rpm = 1000;
+        hopper.setRPM(rpm);
     }
 
     @Override
