@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
-import frc.robot.commands.FreeMoveClimber;
+import frc.robot.subsystems.Vision;
 import frc.robot.commands.MoveClimber;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.runIntake;
@@ -20,17 +19,14 @@ import frc.robot.commands.runIntake;
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.MoveClimber;
-import frc.robot.subsystems.Climber.*;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Intake;
-import frc.robot.commands.Kick;
-
+import frc.robot.commands.*;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 
 import frc.robot.generated.TunerConstants;
-
-//import frc.robot.apriltag.AprilTagFieldLayout;
 
 public class RobotContainer {
 
@@ -52,6 +48,11 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    
+    /* ================= FIELD LAYOUT ================= */
+    private final AprilTagFieldLayout layout =
+    AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
     Climber climber = new Climber();
 
 
@@ -60,7 +61,7 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
-  
+  private final Vision vision = new Vision(drivetrain, layout);
   /* ================= CONTROLLERS ================= */
   //private final CommandXboxController Driver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -102,6 +103,8 @@ public class RobotContainer {
        Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
+
+        Driver.x().onTrue(new PointAndRotate(drivetrain, vision));
             
       
 

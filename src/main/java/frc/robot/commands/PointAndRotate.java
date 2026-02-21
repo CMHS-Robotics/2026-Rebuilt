@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-public class PointAndRotate extends CommandBase {
+public class PointAndRotate extends Command {
 
     private final CommandSwerveDrivetrain drivetrain;
     private final Vision vision;
@@ -23,10 +23,12 @@ public class PointAndRotate extends CommandBase {
     private int primaryTag;
     private int secondaryTag;
 
-    public PointAndRotate(
-        CommandSwerveDrivetrain drivetrain,
-        Vision vision
-    ) {
+    private final SwerveRequest zero = new SwerveRequest.FieldCentric()
+            .withVelocityX(0)
+            .withVelocityY(0)
+            .withRotationalRate(0);
+
+    public PointAndRotate(CommandSwerveDrivetrain drivetrain, Vision vision) {
         this.drivetrain = drivetrain;
         this.vision = vision;
 
@@ -35,7 +37,7 @@ public class PointAndRotate extends CommandBase {
 
     @Override
     public void initialize() {
-        boolean isRed = DriverStation.getAlliance() == DriverStation.Alliance.Red;
+        boolean isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
 
         primaryTag   = isRed ? 10 : 26;
         secondaryTag = isRed ? 9  : 25;
@@ -60,7 +62,7 @@ public class PointAndRotate extends CommandBase {
             distanceToTag = vision.distanceToTagFromPose(secondaryTag).orElse(Double.NaN);
 
         } else {
-            drivetrain.stop();
+            drivetrain.setControl(zero);
             return;
         }
 
@@ -70,20 +72,23 @@ public class PointAndRotate extends CommandBase {
         SmartDashboard.putNumber("Distance to Target (m)", distanceToTag);
 
         if (Math.abs(errorRad) < rotTolerance) {
-            drivetrain.stop();
+            drivetrain.setControl(zero);
             return;
         }
 
         double turnPower = kP * errorRad;
 
-        SwerveRequest request = new SwerveRequest().withXSpeed(0).withYSpeed(0).withRotationalRate(turnPower);
+        SwerveRequest request = new SwerveRequest.FieldCentric()
+        .withVelocityX(0)
+        .withVelocityY(0)
+        .withRotationalRate(turnPower);
 
         drivetrain.setControl(request);
     }
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.stop();
+        drivetrain.setControl(zero);
     }
 
     @Override

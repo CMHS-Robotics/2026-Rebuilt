@@ -39,16 +39,16 @@ public class Vision extends SubsystemBase {
 
     // Camera → Robot transforms
     private static final Transform3d kRobotToFrontCam = new Transform3d(
-        0.3625,  0.22, 0.12, new Rotation3d(0, 0, Math.toRadians(15))
+        0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
     );
     private static final Transform3d kRobotToLeftBackCam = new Transform3d(
-        0.3625, -0.22, 0.12, new Rotation3d(0, 0, Math.toRadians(-15))
+        0.2413, 0.3175, 0.52705, new Rotation3d(0, Math.toRadians(15), Math.toRadians(135))
     );
     private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
-       -0.3625,  0.22, 0.12, new Rotation3d(0, 0, Math.toRadians(165))
+        0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))
     );
     private static final Transform3d kRobotToRightCam = new Transform3d(
-       -0.3625, -0.22, 0.12, new Rotation3d(0, 0, Math.toRadians(-165))
+       -0.0762, -0.3429, 0.5242052, new Rotation3d(0, 0, Math.toRadians(-90))
     );
 
     private final CommandSwerveDrivetrain swerve;
@@ -67,10 +67,10 @@ public class Vision extends SubsystemBase {
         this.fieldLayout = layout;
 
         // IMPORTANT: Pass the PhotonCamera instance into the PhotonPoseEstimator
-        estFront     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCam,     kRobotToFrontCam);
-        estLeftBack  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, leftBackCam,  kRobotToLeftBackCam);
-        estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, leftFrontCam, kRobotToLeftFrontCam);
-        estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCam,     kRobotToRightCam);
+        estFront     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontCam);
+        estLeftBack  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftBackCam);
+        estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftFrontCam);
+        estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,     kRobotToRightCam);
 
         fieldVisualizer.setRobotPose(latestFieldPose);
     }
