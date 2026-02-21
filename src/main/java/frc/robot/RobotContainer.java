@@ -97,11 +97,14 @@ public class RobotContainer {
         // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision));
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
+       Manipulator.rightTrigger().whileTrue(new index(kicker, vision));
        Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
         Driver.x().whileTrue(new PointAndRotate(drivetrain, vision));
+
+        Manipulator.y().whileTrue(intake.runOnce(() -> intake.engage()));
             
       
 

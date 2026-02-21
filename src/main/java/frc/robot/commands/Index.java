@@ -1,28 +1,35 @@
 package frc.robot.commands;
+package frc.robot.commands;
 import frc.robot.subsystems.*;
+import frc.robot.tools.CalcFromVision;
 
 import java.util.Optional;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Kick extends Command{
-    private final Kicker kicker;
-    private final Vision vision;
+public class Index extends Command{
 
-    public Kick(Kicker kicker, Vision vision) {
-        this.kicker = kicker;
+    private final Indexer indexer;
+    private final Vision vision;
+    private final CalcFromVision calc;
+
+    public Index(Indexer indexer, Vision vision) {
+        this.indexer = indexer;
         this.vision = vision;
-        addRequirements(kicker); // This prevents other commands from using the kicker at the same time
+        this.calc = new CalcFromVision(vision);
+        addRequirements(indexer); // This prevents other commands from using the kicker at the same time
     }
 
     @Override
     public void initialize() {
-        kicker.resetRamp();
+        indexer.resetRamp();
     }
 
     @Override
+    
     public void execute() {
+
          //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
          //double angleRad = Math.toRadians(angleDeg);
     
@@ -32,12 +39,11 @@ public class Kick extends Command{
     //    SmartDashboard.putNumber("Calculated RPM", rpm);
     //    indexer.setRPM(rpm);
     //    });
-      kicker.setRPM(-rpm);
     }
 
     @Override
     public void end(boolean interrupted) {
-      kicker.stop(); 
+      indexer.stop(); 
     }
 
     @Override
@@ -45,4 +51,5 @@ public class Kick extends Command{
         return false; // keep spinning until another command interrupts it
     }
 
+}
 }

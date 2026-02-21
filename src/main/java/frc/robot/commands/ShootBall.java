@@ -7,16 +7,19 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
+import frc.robot.tools.CalcFromVision;
 
 public class ShootBall extends Command {
 
     private final Shooter shooter;
     private final Vision vision;
+    private final CalcFromVision calc;
 
 
     public ShootBall(Shooter shooter, Vision vision) {
         this.shooter = shooter;
         this.vision = vision;
+        this.calc = new CalcFromVision(vision);
         addRequirements(shooter); // This prevents other commands from using the shooter at the same time
     }
 
@@ -27,33 +30,18 @@ public class ShootBall extends Command {
 
     @Override
     public void execute() {
-
-       Optional<Double> primaryDistance   = vision.distanceToTagFromPose(10);
-       Optional<Double> secondaryDistance = vision.distanceToTagFromPose(9);
-
-        
-        double distance;
-
-        if (primaryDistance.isPresent()) {
-            distance = vision.distanceToTagFromPose(10).orElse(Double.NaN);
-
-        } else if (secondaryDistance.isPresent()) {
-            distance = vision.distanceToTagFromPose(9).orElse(Double.NaN);
-
-        } else {
-
-            return;
-        }
       //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
       //double angleRad = Math.toRadians(angleDeg);
-      //double velocity = ShooterMath.calcVelocity(distance, angleRad);
-      //double rpm = ShooterMath.calcMotorRPM(velocity);
 
       // double rpm = ShooterMath.getRPM(distance);
-     // double rpm = SmartDashboard.getNumber("SetRPM", 0);
+      double rpm = SmartDashboard.getNumber("SetRPM", 0);
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
-     double rpm = ShooterMath.getRPM(distance);
-      shooter.setRPM(rpm);
+
+  //   calc.calcHubRPM().ifPresent(rpm -> {
+  //      SmartDashboard.putNumber("Calculated RPM", rpm);
+  //      shooter.setRPM(rpm);
+  //  });
+        shooter.setRPM(rpm);
     }
 
     @Override
