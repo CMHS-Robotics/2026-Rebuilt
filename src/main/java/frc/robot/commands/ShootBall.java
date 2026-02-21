@@ -29,7 +29,7 @@ public class ShootBall extends Command {
     public void execute() {
 
        Optional<Double> primaryDistance   = vision.distanceToTagFromPose(10);
-        Optional<Double> secondaryDistance = vision.distanceToTagFromPose(9);
+       Optional<Double> secondaryDistance = vision.distanceToTagFromPose(9);
 
         
         double distance;

@@ -9,7 +9,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends SubsystemBase{
-    private final TalonFX intakeMoter = new TalonFX(19); 
+    private final TalonFX intakeMoter = new TalonFX(19);
+    private final TalonFX intakeUpDownMoter = new TalonFX(20);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2500); // Limit to 500 RPM per second
 
@@ -20,7 +21,26 @@ public class Intake extends SubsystemBase{
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
 
+        TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
+        upDownConfig.Slot0.kP = 10.0; // Start small!
+        upDownConfig.Slot0.kI = 0.0;
+        upDownConfig.Slot0.kD = 0.1;
+
+        // 1. Limit current so we don't melt the motor when it stalls at the bottom
+        upDownConfig.CurrentLimits.StatorCurrentLimit = 20.0; // 20 Amps is safe for stalling briefly
+        upDownConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        // 2. Set the "Ceiling" (Top limit) so it never goes too far up
+      //  upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.999512;
+      //  upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
+       // upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -.117676;
+       // upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
+        intakeUpDownMoter.getConfigurator().apply(upDownConfig);
+
         intakeMoter.getConfigurator().apply(config);
+        intakeUpDownMoter.getConfigurator().apply(config);
     }
 
     public void resetRamp() {
@@ -33,6 +53,11 @@ public class Intake extends SubsystemBase{
         intakeMoter.setControl(velocityRequest.withVelocity(-targetRPS));
     }
 
+    public void engage(){
+        
+
+    }
+
     public void stop() {
         intakeMoter.set(0);
     }
@@ -43,10 +68,13 @@ public class Intake extends SubsystemBase{
     public void periodic() {
     // Correct way to get velocity in Phoenix 6
     // .getValueAsDouble() returns Rotations per Second (RPS)
+
+
     double currentRPS1 = intakeMoter.getVelocity().getValueAsDouble();
     double currentRPM1 = currentRPS1 * 60.0;
 
     SmartDashboard.putNumber("intakeMoter RPM", currentRPM1);
     SmartDashboard.putNumber("intake compliant speed", currentRPM1 * (16.0/30.0)); // account for gear ratio
+    SmartDashboard.putNumber("intake position", intakeUpDownMoter.getPosition().getValueAsDouble());
 }
 }

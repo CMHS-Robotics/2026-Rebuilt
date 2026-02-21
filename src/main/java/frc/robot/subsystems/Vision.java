@@ -32,10 +32,10 @@ import edu.wpi.first.math.VecBuilder;
 public class Vision extends SubsystemBase {
 
     // Four cameras
-    private final PhotonCamera frontCam     = new PhotonCamera("FrontLeftCamera");
-    private final PhotonCamera leftBackCam  = new PhotonCamera("FrontRightCamera");
-    private final PhotonCamera leftFrontCam = new PhotonCamera("BackLeftCamera");
-    private final PhotonCamera rightCam     = new PhotonCamera("BackRightCamera");
+    private final PhotonCamera frontCam     = new PhotonCamera("frontCam");
+    private final PhotonCamera leftBackCam  = new PhotonCamera("frontRightCam");
+    private final PhotonCamera leftFrontCam = new PhotonCamera("backLeftCam");
+    private final PhotonCamera rightCam     = new PhotonCamera("backRightCam");
 
     // Camera → Robot transforms
     private static final Transform3d kRobotToFrontCam = new Transform3d(
