@@ -34,9 +34,6 @@ public class CalcFromVision {
 
         double rpm = ShooterMath.getRPM(chosenDist.get());
         return Optional.of(rpm);
-
-
-        
-
     }
+    
 }

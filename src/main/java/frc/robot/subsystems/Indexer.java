@@ -58,8 +58,8 @@ public class Indexer extends SubsystemBase {
     double currentRPS2 = indexerBottomMoter.getVelocity().getValueAsDouble();
     double currentRPM2 = currentRPS2 * 60.0;
 
-    SmartDashboard.putNumber("indexerTopVelocity", currentRPM1);
-    SmartDashboard.putNumber("indexerBottomVelocity", currentRPM2); // account for gear ratio
+    SmartDashboard.putNumber("indexerTopRPM", currentRPM1);
+    SmartDashboard.putNumber("indexerBottomRPM", currentRPM2); // account for gear ratio
 }
 }
 

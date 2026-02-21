@@ -16,7 +16,7 @@ public class Shooter extends SubsystemBase {
     private static final double DEGREES_PER_MOTOR_ROTATION = 2.81; 
     private final TalonFX shooterMotor1 = new TalonFX(13);
     private final TalonFX shooterMotor2 = new TalonFX(14);
-    private final TalonFX hoodMotor = new TalonFX(18);
+    //private final TalonFX hoodMotor = new TalonFX(18);
 
     private final PositionVoltage hoodPositionRequest = new PositionVoltage(0);
 
@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
         hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -.117676;
         hoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
-        hoodMotor.getConfigurator().apply(hoodConfig);
+        //hoodMotor.getConfigurator().apply(hoodConfig);
     }
 
     public void setRPM(double rpm) {
@@ -77,12 +77,13 @@ public class Shooter extends SubsystemBase {
       }
 
     public double getHoodAngleDegrees() {
-            return hoodMotor.getPosition().getValueAsDouble() * DEGREES_PER_MOTOR_ROTATION;
+            //return hoodMotor.getPosition().getValueAsDouble() * DEGREES_PER_MOTOR_ROTATION;
+            return 0.0;
 }
 
 public void setDegrees(double degrees) {
     double motorRotations = degrees / DEGREES_PER_MOTOR_ROTATION;
-    hoodMotor.setControl(hoodPositionRequest.withPosition(motorRotations));
+    //hoodMotor.setControl(hoodPositionRequest.withPosition(motorRotations));
 }
 
     @Override
@@ -106,6 +107,6 @@ public void setDegrees(double degrees) {
     SmartDashboard.putNumber("ShooterMoter2 RPM", currentRPM2);
 
     SmartDashboard.putNumber("Flywheel speed", currentRPM1 / (15.0/36.0)); // account for gear ratio
-    SmartDashboard.putNumber("Shooter Hood position", hoodMotor.getPosition().getValueAsDouble());
+    //SmartDashboard.putNumber("Shooter Hood position", hoodMotor.getPosition().getValueAsDouble());
 }
 }

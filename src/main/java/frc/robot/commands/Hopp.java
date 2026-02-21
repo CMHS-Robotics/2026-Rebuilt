@@ -6,19 +6,20 @@ import java.util.Optional;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Kick extends Command{
-    private final Kicker kicker;
+public class Hopp extends Command{
+
+    private final Hopper hopper;
     private final Vision vision;
 
-    public Kick(Kicker kicker, Vision vision) {
-        this.kicker = kicker;
+    public Hopp(Hopper hopper, Vision vision) {
+        this.hopper = hopper;
         this.vision = vision;
-        addRequirements(kicker); // This prevents other commands from using the kicker at the same time
+        addRequirements(hopper); // This prevents other commands from using the kicker at the same time
     }
 
     @Override
     public void initialize() {
-        kicker.resetRamp();
+        hopper.resetRamp();
     }
 
     @Override
@@ -30,14 +31,14 @@ public class Kick extends Command{
          double rpm = SmartDashboard.getNumber("SetRPM", 0);
     //    calc.calcHubRPM().ifPresent(rpm -> {
     //    SmartDashboard.putNumber("Calculated RPM", rpm);
-    //    kicker.setRPM(rpm);
+    //    hopper.setRPM(rpm);
     //    });
-      kicker.setRPM(-rpm);
+      hopper.setRPM(rpm);
     }
 
     @Override
     public void end(boolean interrupted) {
-      kicker.stop(); 
+      hopper.stop(); 
     }
 
     @Override
@@ -46,3 +47,5 @@ public class Kick extends Command{
     }
 
 }
+
+

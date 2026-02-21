@@ -17,8 +17,9 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Kicker;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.Hopp;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
@@ -59,6 +60,8 @@ public class RobotContainer {
   private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
   private final Vision vision = new Vision(drivetrain, layout);
+  private final Indexer indexer = new Indexer();
+  private final Hopper hopper = new Hopper();
   /* ================= CONTROLLERS ================= */
   //private final CommandXboxController Driver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -97,7 +100,8 @@ public class RobotContainer {
         // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision));
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
-       Manipulator.rightTrigger().whileTrue(new index(kicker, vision));
+       Manipulator.rightTrigger().whileTrue(new Index(indexer, vision));
+       Manipulator.rightTrigger().whileTrue(new Hopp(hopper, vision));
        Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));

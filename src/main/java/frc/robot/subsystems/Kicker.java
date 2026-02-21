@@ -32,7 +32,7 @@ public class Kicker extends SubsystemBase {
         double rampedRPM = rpmRamp.calculate(rpm);
         double targetRPS = rampedRPM / 60.0;
         targetRPS *= KICKER_GEAR_RATIO;
-        kickerMoter.setControl(velocityRequest.withVelocity(targetRPS)) ;
+        kickerMoter.setControl(velocityRequest.withVelocity(targetRPS));
         
     }
 

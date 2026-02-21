@@ -41,7 +41,7 @@ public class ShootBall extends Command {
   //      SmartDashboard.putNumber("Calculated RPM", rpm);
   //      shooter.setRPM(rpm);
   //  });
-        shooter.setRPM(rpm);
+        shooter.setRPM(rpm / 2);
     }
 
     @Override

@@ -1,5 +1,4 @@
 package frc.robot.commands;
-package frc.robot.commands;
 import frc.robot.subsystems.*;
 import frc.robot.tools.CalcFromVision;
 
@@ -39,6 +38,7 @@ public class Index extends Command{
     //    SmartDashboard.putNumber("Calculated RPM", rpm);
     //    indexer.setRPM(rpm);
     //    });
+          indexer.setRPM(rpm);
     }
 
     @Override
@@ -52,4 +52,4 @@ public class Index extends Command{
     }
 
 }
-}
+
