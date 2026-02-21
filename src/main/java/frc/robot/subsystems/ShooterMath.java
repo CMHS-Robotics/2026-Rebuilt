@@ -48,17 +48,17 @@ public class ShooterMath {
     static {
         // ----- TUNE THESE VALUES -----
         // distance , RPM
-        rpmMap.put(2.159, 906.75);
-        rpmMap.put(2.413, 930.);
-        rpmMap.put(2.54, 975.);
-        rpmMap.put(2.667, 980.);
-        rpmMap.put(2.794, 985.);
-        rpmMap.put(3.048, 1025.);
-        rpmMap.put(3.302, 1050.);
-        rpmMap.put(3.556, 1090.);
-        rpmMap.put(3.81, 1100.);
-        rpmMap.put(3.937, 1125.);
-        rpmMap.put(4.191, 1175.);
+        rpmMap.put(2.159, 997.425);   // 906.75 * 1.10
+rpmMap.put(2.413, 1023.0);    // 930 * 1.10
+rpmMap.put(2.54, 1072.5);     // 975 * 1.10
+rpmMap.put(2.667, 1078.0);    // 980 * 1.10
+rpmMap.put(2.794, 1083.5);    // 985 * 1.10
+rpmMap.put(3.048, 1127.5);    // 1025 * 1.10
+rpmMap.put(3.302, 1155.0);    // 1050 * 1.10
+rpmMap.put(3.556, 1199.0);    // 1090 * 1.10
+rpmMap.put(3.81, 1210.0);     // 1100 * 1.10
+rpmMap.put(3.937, 1237.5);    // 1125 * 1.10
+rpmMap.put(4.191, 1292.5);    // 1175 * 1.10
 
 
         // distance , hood angle (degrees)
