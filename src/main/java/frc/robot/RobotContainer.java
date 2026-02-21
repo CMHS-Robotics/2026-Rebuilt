@@ -12,9 +12,6 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
-import frc.robot.commands.MoveClimber;
-import frc.robot.commands.ShootBall;
-import frc.robot.commands.runIntake;
 
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -98,13 +95,13 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
-       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter));
-       Manipulator.rightTrigger().whileTrue(new Kick(kicker));
+       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision));
+       Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
        Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
-        Driver.x().onTrue(new PointAndRotate(drivetrain, vision));
+        Driver.x().whileTrue(new PointAndRotate(drivetrain, vision));
             
       
 

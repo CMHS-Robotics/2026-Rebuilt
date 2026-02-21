@@ -1,13 +1,18 @@
 package frc.robot.commands;
 import frc.robot.subsystems.*;
+
+import java.util.Optional;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Kick extends Command{
     private final Kicker kicker;
+    private final Vision vision;
 
-    public Kick(Kicker kicker) {
+    public Kick(Kicker kicker, Vision vision) {
         this.kicker = kicker;
+        this.vision = vision;
         addRequirements(kicker); // This prevents other commands from using the kicker at the same time
     }
 
@@ -18,20 +23,24 @@ public class Kick extends Command{
 
     @Override
     public void execute() {
-      double distance = SmartDashboard.getNumber("Target Distance (m)", 0.0);
-    //  double angleDeg =
-    //  SmartDashboard.getNumber("Angle of Ejection (
-    
-    
-    //  double velocity = ShooterMath.calcVelocity(distance, angleRad);
-    //  double rpm = ShooterMath.calcMotorRPM(velocity);
-    double rpm = ShooterMath.getRPM(distance);
-    //double rpm = SmartDashboard.getNumber("SetRPM", 0);
-      //double angleRad = Math.toRadians(angleDeg);
-      //double velocity = ShooterMath.calcVelocity(distance, angleRad);
-      //double rpm = ShooterMath.calcMotorRPM(velocity);
-      //targetRPS /= (16/20);
+    Optional<Double> primaryDistance   = vision.distanceToTagFromPose(10);
+        Optional<Double> secondaryDistance = vision.distanceToTagFromPose(9);
 
+        
+        double distance;
+
+        if (primaryDistance.isPresent()) {
+            distance = vision.distanceToTagFromPose(10).orElse(Double.NaN);
+
+        } else if (secondaryDistance.isPresent()) {
+            distance = vision.distanceToTagFromPose(9).orElse(Double.NaN);
+
+        } else {
+
+            return;
+        }
+
+       double rpm = ShooterMath.getRPM(distance);
       kicker.setRPM(-rpm);
     }
 
