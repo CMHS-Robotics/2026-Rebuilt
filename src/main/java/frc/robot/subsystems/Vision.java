@@ -219,16 +219,17 @@ public class Vision extends SubsystemBase {
     }
 
      public Optional<Rotation2d> getRotationErrorToTag(int tagId) {
-    //     Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-    //     if (tagPoseOpt.isEmpty()) return Optional.empty();
+         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+         if (tagPoseOpt.isEmpty()) return Optional.empty();
 
-    //     Translation2d robotTranslation = latestFieldPose.getTranslation();
-    //     Rotation2d robotHeading = swerve.getState().Pose.getRotation();
+         Pose2d robotPose = swerve.getState().Pose;
 
-    //     Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
-    //     Rotation2d angleToTag = tagPos.minus(robotTranslation).getAngle();
+         Translation2d robotTranslation = robotPose.getTranslation();
+         Rotation2d robotHeading = robotPose.getRotation();
 
-    //     return Optional.of(angleToTag.minus(robotHeading));
-           return Optional.of(new Rotation2d());
+         Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
+         Rotation2d angleToTag = tagPos.minus(robotTranslation).getAngle();
+
+         return Optional.of(angleToTag.minus(robotHeading));
      }
 }

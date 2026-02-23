@@ -51,11 +51,10 @@ public class RobotContainer {
     private final AprilTagFieldLayout layout =
     AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-    Climber climber = new Climber();
-
 
 
   /* ================= SUBSYSTEMS ================= */
+  private final Climber climber = new Climber();
   private final Shooter shooter = new Shooter();
   private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
