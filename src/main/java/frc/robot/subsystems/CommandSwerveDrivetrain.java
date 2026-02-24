@@ -14,6 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -308,4 +309,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
+
+    // 1️⃣ Pose supplier for PathPlanner
+public Pose2d getPose() {
+    return getState().Pose;
+}
+
+// 3️⃣ Robot-relative chassis speeds
+public ChassisSpeeds getRobotRelativeSpeeds() {
+    return getState().Speeds;
+}
+
+// 4️⃣ Drive robot-relative
+public void driveRobotRelative(ChassisSpeeds speeds) {
+    setControl(
+        new SwerveRequest.ApplyRobotSpeeds()
+            .withSpeeds(speeds)
+    );
+}
+
 }
