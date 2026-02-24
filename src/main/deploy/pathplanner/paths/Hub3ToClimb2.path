@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.3042052980132453,
+        "y": 3.4542052980132456
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2515149006622517,
+        "y": 3.2727069536423836
+      },
+      "isLocked": false,
+      "linkedName": "Hub3"
+    },
+    {
+      "anchor": {
+        "x": 1.0826655629139075,
+        "y": 2.8371109271523176
+      },
+      "prevControl": {
+        "x": 1.4093625827814569,
+        "y": 1.2471854304635759
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Climb2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "HubToClimb",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 29.999999999999996
+  },
+  "useDefaultConstraints": true
+}
