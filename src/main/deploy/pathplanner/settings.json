@@ -3,9 +3,8 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "HToD",
-    "HToC",
-    "StartToH"
+    "StartToCenterField",
+    "StartToHub"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
