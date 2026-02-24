@@ -2,24 +2,19 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Vision;
 
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-import frc.robot.commands.Hopp;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
@@ -89,6 +84,11 @@ public class RobotContainer {
     configureBindings();
   }
 
+    public void teleopInit() {
+        drivetrain.resetPose(
+            new Pose2d(drivetrain.getPose().getTranslation(), Rotation2d.kZero));
+}
+
   /* ================= BUTTON BINDINGS ================= */
 
 
@@ -102,11 +102,11 @@ public class RobotContainer {
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
        Manipulator.rightTrigger().whileTrue(new Index(indexer, vision));
        Manipulator.rightTrigger().whileTrue(new Hopp(hopper, vision));
-       Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFeildCentric()));
+       Driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
-        Driver.x().whileTrue(new PointAndRotate(drivetrain, vision));
+        Driver.y().whileTrue(new PointAndRotate(drivetrain, vision));
 
         Manipulator.y().whileTrue(intake.runOnce(() -> intake.engage()));
             
@@ -120,6 +120,15 @@ public class RobotContainer {
                     .withRotationalRate(-Driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
+
+        Driver.x().whileTrue(
+          new LockOnHub(
+              drivetrain,
+              layout,
+              () -> -Driver.getLeftY() * MaxSpeed,
+              () -> -Driver.getLeftX() * MaxSpeed
+          )
+      );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -171,22 +180,8 @@ public class RobotContainer {
   //   return new ShootBall(shooter).withTimeout(2.5);
   // }
 
-  public Command getAutonomousCommand() {
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
-        );
-    }
+  //public Command getAutonomousCommand() {
+        // Simple drive forward auto
+  //      return kick(kicker, vision);
+  //  }
 }
