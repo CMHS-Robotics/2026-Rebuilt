@@ -124,7 +124,7 @@ public class RobotContainer {
         Driver.x().whileTrue(
           new LockOnHub(
               drivetrain,
-              layout,
+              vision,
               () -> -Driver.getLeftY() * MaxSpeed,
               () -> -Driver.getLeftX() * MaxSpeed
           )

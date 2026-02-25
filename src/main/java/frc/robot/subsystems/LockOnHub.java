@@ -1,9 +1,13 @@
+package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import java.util.Optional;
@@ -12,54 +16,46 @@ import java.util.function.DoubleSupplier;
 public class LockOnHub extends Command {
 
     private final CommandSwerveDrivetrain drivetrain;
-    private final AprilTagFieldLayout layout;
 
     private final DoubleSupplier xSupplier;
     private final DoubleSupplier ySupplier;
-
-    private final SwerveRequest.FieldCentricFacingAngle request =
-        new SwerveRequest.FieldCentricFacingAngle();
+    private final Vision vision;
 
     public LockOnHub(
         CommandSwerveDrivetrain drivetrain,
-        AprilTagFieldLayout layout,
+        Vision vision,
         DoubleSupplier xSupplier,
         DoubleSupplier ySupplier
     ) {
         this.drivetrain = drivetrain;
-        this.layout = layout;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
+        this.vision = vision;
 
         addRequirements(drivetrain);
     }
 
     @Override
     public void execute() {
-
-        Pose2d robotPose = drivetrain.getPose();
-
+    
         int tagID = getHubTagID();
+    
+        var errorOpt = vision.getRotationErrorToTag(tagID);
+    
+        if (errorOpt.isEmpty()) return;
+    
+        double omega = 5.0 * errorOpt.get().getRadians(); // tune this
+    
+        SwerveRequest request = new SwerveRequest.RobotCentric() //try robot centric if this is cooked
+         .withVelocityX(xSupplier.getAsDouble())
+         .withVelocityY(ySupplier.getAsDouble())
+         .withRotationalRate(omega);
 
-        Optional<Pose2d> tagPoseOpt =
-            layout.getTagPose(tagID).map(p -> p.toPose2d());
-
-        if (tagPoseOpt.isEmpty()) return;
-
-        Pose2d tagPose = tagPoseOpt.get();
-
-        double dx = tagPose.getX() - robotPose.getX();
-        double dy = tagPose.getY() - robotPose.getY();
-
-        Rotation2d targetAngle =
-            new Rotation2d(Math.atan2(dy, dx));
-
-        drivetrain.setControl(
-            request.withVelocityX(xSupplier.getAsDouble())
-                   .withVelocityY(ySupplier.getAsDouble())
-                   .withTargetDirection(targetAngle)
-        );
+         drivetrain.setControl(request);
+         SmartDashboard.putNumber("Heading", drivetrain.getState().Pose.getRotation().getDegrees());
+         SmartDashboard.putNumber("Error", errorOpt.get().getDegrees());
     }
+
 
     private int getHubTagID() {
         var alliance = DriverStation.getAlliance();
@@ -69,4 +65,4 @@ public class LockOnHub extends Command {
         }
         return 26;
     }
-}
+} 

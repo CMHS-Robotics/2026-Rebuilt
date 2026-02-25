@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,7 +37,9 @@ public class PointAndRotate extends Command {
 
     @Override
     public void initialize() {
-        boolean isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+        boolean isRed = DriverStation.getAlliance()
+        .orElse(DriverStation.Alliance.Blue)
+        == DriverStation.Alliance.Red;
 
         primaryTag   = isRed ? 10 : 26;
         secondaryTag = isRed ? 9  : 25;
@@ -73,9 +75,9 @@ public class PointAndRotate extends Command {
             return;
         }
 
-        double turnPower = kP * errorRad;
+        double turnPower = MathUtil.clamp(kP * errorRad, -3.0, 3.0);
 
-         SwerveRequest request = new SwerveRequest.RobotCentric() //try robot centric if this is cooked
+         SwerveRequest request = new SwerveRequest.RobotCentric() 
          .withVelocityX(0)
          .withVelocityY(0)
          .withRotationalRate(turnPower);
@@ -90,7 +92,7 @@ public class PointAndRotate extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.applyRequest(() -> zero);
+        drivetrain.setControl(zero);
     }
 
     @Override
