@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.photonvision.EstimatedRobotPose;
@@ -177,6 +178,11 @@ public class Vision extends SubsystemBase {
             weights.add(cam.getLatestResult().getTargets().size());
             cams.add(cam);
         }
+
+        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftBackCam has targets?", frontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftFrontCam has targets?", frontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("rightCam has targets?", frontCam.getLatestResult().hasTargets());
     }
 
     // --- Helper function: distance to a specific tag ID ---

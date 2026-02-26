@@ -77,7 +77,7 @@ public class PointAndRotate extends Command {
 
         double turnPower = MathUtil.clamp(kP * errorRad, -3.0, 3.0);
 
-         SwerveRequest request = new SwerveRequest.RobotCentric() 
+         SwerveRequest request = new SwerveRequest.FieldCentric() 
          .withVelocityX(0)
          .withVelocityY(0)
          .withRotationalRate(turnPower);

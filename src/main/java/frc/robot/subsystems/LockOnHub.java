@@ -5,9 +5,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-
-import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import java.util.Optional;
@@ -46,7 +43,7 @@ public class LockOnHub extends Command {
     
         double omega = 5.0 * errorOpt.get().getRadians(); // tune this
     
-        SwerveRequest request = new SwerveRequest.RobotCentric() //try robot centric if this is cooked
+        SwerveRequest request = new SwerveRequest.FieldCentric() //try robot centric if this is cooked
          .withVelocityX(xSupplier.getAsDouble())
          .withVelocityY(ySupplier.getAsDouble())
          .withRotationalRate(omega);
@@ -54,6 +51,9 @@ public class LockOnHub extends Command {
          drivetrain.setControl(request);
          SmartDashboard.putNumber("Heading", drivetrain.getState().Pose.getRotation().getDegrees());
          SmartDashboard.putNumber("Error", errorOpt.get().getDegrees());
+         SmartDashboard.putBoolean("Lock Seen", errorOpt.isPresent());
+         SmartDashboard.putNumber("Rotation Error Deg", Math.toDegrees(errorOpt.get().getRadians()));
+         SmartDashboard.putNumber("Turn Power", omega);
     }
 
 

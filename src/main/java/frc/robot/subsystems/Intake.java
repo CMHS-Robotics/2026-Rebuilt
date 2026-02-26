@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase{
         upDownConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.81103;
+        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 26.5244140625;
         upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
         upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -3.66943;
@@ -56,7 +56,7 @@ public class Intake extends SubsystemBase{
     }
 
     public void engage(){
-        double motorRotations = 3;
+        double motorRotations = 26.5244140625 + 3.66943;
         intakeUpDownMoter.setControl(intakeUpDownPositionRequest.withPosition(motorRotations));
     }
 
