@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import org.opencv.ml.SVM;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -68,10 +69,10 @@ public class Vision extends SubsystemBase {
         this.fieldLayout = layout;
 
         // IMPORTANT: Pass the PhotonCamera instance into the PhotonPoseEstimator
-        estFront     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontCam);
-        estLeftBack  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftBackCam);
-        estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftFrontCam);
-        estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,     kRobotToRightCam);
+        estFront     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToFrontCam);
+        estLeftBack  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToLeftBackCam);
+        estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToLeftFrontCam);
+        estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY,     kRobotToRightCam);
 
         fieldVisualizer.setRobotPose(latestFieldPose);
     }
@@ -99,8 +100,17 @@ public class Vision extends SubsystemBase {
         addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
         addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
-        if (poses.isEmpty()) return;
+        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
 
+        SmartDashboard.putNumber("total vision poses", poses.size());
+
+        if (poses.isEmpty()) {
+        SmartDashboard.putBoolean("V fused", false);
+         return;
+        }
         double totalWeight = 0;
         double x = 0, y = 0;
         double cosSum = 0, sinSum = 0;
@@ -116,7 +126,7 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 1.0)
+            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 3.0)
                 continue;
 
             x += pose2d.getX() * w;
@@ -178,11 +188,6 @@ public class Vision extends SubsystemBase {
             weights.add(cam.getLatestResult().getTargets().size());
             cams.add(cam);
         }
-
-        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftBackCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftFrontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("rightCam has targets?", frontCam.getLatestResult().hasTargets());
     }
 
     // --- Helper function: distance to a specific tag ID ---

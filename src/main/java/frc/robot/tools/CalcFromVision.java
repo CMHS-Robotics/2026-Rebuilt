@@ -20,10 +20,12 @@ public class CalcFromVision {
 
     public Optional<Double> calcHubRPM(){
 
-        boolean isRed = DriverStation.getAlliance().map(a -> a == DriverStation.Alliance.Red).orElse(false);
+       // boolean isRed = DriverStation.getAlliance().map(a -> a == DriverStation.Alliance.Red).orElse(false);
 
-        primaryTag   = isRed ? 10 : 26;
-        secondaryTag = isRed ? 9  : 25;
+       // primaryTag   = isRed ? 10 : 26;
+       // secondaryTag = isRed ? 9  : 25;
+
+       primaryTag = 13;
         // Grab rotation errors & optional distances
         Optional<Double> primaryDist = vision.distanceToTagFromPose(primaryTag);
 
