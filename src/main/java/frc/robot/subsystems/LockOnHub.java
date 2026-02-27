@@ -40,8 +40,9 @@ public class LockOnHub extends Command {
         var errorOpt = vision.getRotationErrorToTag(tagID);
     
         if (errorOpt.isEmpty()) return;
+
     
-        double omega = 5.0 * errorOpt.get().getRadians(); // tune this
+        double omega = 5.0 *(errorOpt.get().getRadians() - Math.toRadians(18)); // tune this
     
         SwerveRequest request = new SwerveRequest.FieldCentric() //try robot centric if this is cooked
          .withVelocityX(xSupplier.getAsDouble())
