@@ -99,7 +99,15 @@ public class Vision extends SubsystemBase {
         addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
         addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
-        if (poses.isEmpty()) return;
+        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
+
+        if (poses.isEmpty()) {
+            SmartDashboard.putBoolean("Vision Fused", false);
+            return;
+        }
 
         double totalWeight = 0;
         double x = 0, y = 0;
@@ -116,7 +124,7 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 1.0)
+            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 3.0)
                 continue;
 
             x += pose2d.getX() * w;
@@ -164,6 +172,8 @@ public class Vision extends SubsystemBase {
 
         latestFieldPose = fused;
         fieldVisualizer.setRobotPose(latestFieldPose);
+        SmartDashboard.putNumber("Total Vision Poses", poses.size());
+        
     }
 
     private void addPoseIfValid(
@@ -178,11 +188,6 @@ public class Vision extends SubsystemBase {
             weights.add(cam.getLatestResult().getTargets().size());
             cams.add(cam);
         }
-
-        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftBackCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftFrontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("rightCam has targets?", frontCam.getLatestResult().hasTargets());
     }
 
     // --- Helper function: distance to a specific tag ID ---
