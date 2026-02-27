@@ -32,6 +32,9 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import frc.robot.generated.TunerConstants;
 
 public class RobotContainer {
+  
+
+  private final SendableChooser<Command> autoChooser;
 
   private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -51,7 +54,7 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private final SendableChooser<Command> autoChooser;
+    
 
 
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
@@ -79,6 +82,8 @@ public class RobotContainer {
   public RobotContainer() {
     configureAutoBuilder();
     autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.updateValues();
+    SmartDashboard.putData("Auto Chooser",autoChooser);
     // --- SmartDashboard tuning values ---
     SmartDashboard.putNumber("Target Distance (m)", 3.0);
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
@@ -86,7 +91,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("Stage", climber.stages[0]);
     SmartDashboard.putNumber("SetRPM",0);
     SmartDashboard.putNumber("SetDegrees", 0);
-    SmartDashboard.putData("Auto Chooser", autoChooser );
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
 
@@ -203,9 +207,9 @@ public class RobotContainer {
       }
 
       AutoBuilder.configure(
-        drivetrain::getPose,
+        ()->drivetrain.getPose(),
         drivetrain::resetPose,
-        drivetrain::getRobotRelativeSpeeds,
+        ()->drivetrain.getRobotRelativeSpeeds(),
         (speeds,Feedforwards) ->drivetrain.setControl(autoRequest.withSpeeds(speeds)),
             new PPHolonomicDriveController(
             new PIDConstants(5.0,0,0),

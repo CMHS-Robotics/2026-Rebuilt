@@ -30,10 +30,10 @@ public class CalcFromVision {
         Optional<Double> secondaryDist = vision.distanceToTagFromPose(secondaryTag);
 
         Optional<Double> chosenDist = primaryDist.isPresent() ? primaryDist : secondaryDist;
-
+        SmartDashboard.putNumber("vision Distance", chosenDist.get());
         if (chosenDist.isEmpty()) return Optional.empty();
 
-        SmartDashboard.putNumber("vision Distance", chosenDist.get());
+
 
         double distance = chosenDist.get() + .6;
         double rpm = ShooterMath.getRPM(distance);

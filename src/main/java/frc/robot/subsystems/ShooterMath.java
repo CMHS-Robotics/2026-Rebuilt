@@ -48,7 +48,7 @@ public class ShooterMath {
     static {
         // ----- TUNE THESE VALUES -----
         // distance , RPM
-        rpmMap.put(2.159,  906.75);   // 906.75 * 1.10
+       rpmMap.put(2.159,  906.75);   // 906.75 * 1.10
         rpmMap.put(2.413, 930.0);    // 930 * 1.10
         rpmMap.put(2.54, 975.0);     // 975 * 1.10
         rpmMap.put(2.667, 980.0);    // 980 * 1.10

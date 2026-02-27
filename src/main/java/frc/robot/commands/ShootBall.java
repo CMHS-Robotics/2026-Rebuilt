@@ -35,10 +35,10 @@ public class ShootBall extends Command {
      // double rpm = SmartDashboard.getNumber("SetRPM", 0);
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
 
-  //   calc.calcHubRPM().ifPresent(rpm -> {
-  //      SmartDashboard.putNumber("Calculated RPM", rpm);
-  //      shooter.setRPM(rpm);
-  //  });
+   //  calc.calcHubRPM().ifPresent(rpm -> {
+   //     SmartDashboard.putNumber("Calculated RPM", rpm);
+   //     shooter.setRPM(rpm);
+   // });
         double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
        double rpm = ShooterMath.getRPM(distance);
         shooter.setRPM(rpm);
