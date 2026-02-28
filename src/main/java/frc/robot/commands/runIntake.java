@@ -21,7 +21,7 @@ public class runIntake extends Command{
 
     @Override
     public void execute() {
-      intake.startIntake(); //runs at 1000 rpm
+      intake.startIntake(); //runs at ? rpm based on Ratio of ?, Motor RPM is 7000
     }
 
     @Override

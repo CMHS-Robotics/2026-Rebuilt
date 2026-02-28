@@ -20,25 +20,34 @@ public class CalcFromVision {
 
     public Optional<Double> calcHubRPM(){
 
-       // boolean isRed = DriverStation.getAlliance().map(a -> a == DriverStation.Alliance.Red).orElse(false);
+        boolean isRed = DriverStation.getAlliance().map(a -> a == DriverStation.Alliance.Red).orElse(false);
 
-       // primaryTag   = isRed ? 10 : 26;
-       // secondaryTag = isRed ? 9  : 25;
+        primaryTag   = isRed ? 10 : 26;
+        secondaryTag = isRed ? 9  : 25;
 
-       primaryTag = 13;
+       
         // Grab rotation errors & optional distances
-        Optional<Double> primaryDist = vision.distanceToTagFromPose(primaryTag);
+        Optional<Double> primaryDist =   vision.distanceToTagFromPose(primaryTag);
 
-        Optional<Double> secondaryDist = vision.distanceToTagFromPose(secondaryTag);
+         Optional<Double> secondaryDist = vision.distanceToTagFromPose(secondaryTag);
 
         Optional<Double> chosenDist = primaryDist.isPresent() ? primaryDist : secondaryDist;
         SmartDashboard.putNumber("vision Distance", chosenDist.get());
-        if (chosenDist.isEmpty()) return Optional.empty();
+        if (chosenDist.isEmpty()) {
+            SmartDashboard.putBoolean("Vision Distance Valid", false);
+            return Optional.empty();
+
+}
 
 
 
-        double distance = chosenDist.get() + .6;
-        double rpm = ShooterMath.getRPM(distance);
+        double rawDistance = chosenDist.get(); // w/o hub offsett
+        SmartDashboard.putBoolean("Vision Distance Valid", true);
+        SmartDashboard.putNumber("Vision Raw Distance", rawDistance);
+
+        double compedDistance = rawDistance + 0.6; // with hub offset
+        double rpm = ShooterMath.getRPM(compedDistance);
+        SmartDashboard.putNumber("Vision calc RPM", rpm);
         return Optional.of(rpm);
     }
 

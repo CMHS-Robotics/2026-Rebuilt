@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4,
+        "x": 1.9003276353276353,
         "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.3999999999999995,
-        "y": 4.0
+        "x": 1.317991452991453,
+        "y": 4.564729344729345
       },
       "isLocked": false,
       "linkedName": "Hub2"

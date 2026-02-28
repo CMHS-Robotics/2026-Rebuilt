@@ -16,6 +16,7 @@ public class ShootBall extends Command {
     private final CalcFromVision calc;
 
 
+
     public ShootBall(Shooter shooter, Vision vision) {
         this.shooter = shooter;
         this.vision = vision;
@@ -39,9 +40,9 @@ public class ShootBall extends Command {
         SmartDashboard.putNumber("Calculated RPM", rpm);
         shooter.setRPM(rpm);
     });
-        double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
-       double rpm = ShooterMath.getRPM(distance);
-        shooter.setRPM(rpm);
+    //    double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
+    //   double rpm = ShooterMath.getRPM(distance);
+    //    shooter.setRPM(rpm);
     }
 
     @Override

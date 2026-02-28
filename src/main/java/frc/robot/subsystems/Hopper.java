@@ -38,7 +38,13 @@ public class Hopper extends SubsystemBase {
         hopperMoter.set(0);
     }
 
-
+    public void unjam(){
+        double rampedRPM = rpmRamp.calculate(1000);
+        double targetRPS = rampedRPM / 60.0;
+        //hopperMoter.
+        hopperMoter.setControl(velocityRequest.withVelocity(targetRPS));
+        
+    }
 
     public Command stopCommand() {
         return runOnce(this::stop);
