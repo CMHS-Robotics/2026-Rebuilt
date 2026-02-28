@@ -20,6 +20,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -109,7 +110,10 @@ public class RobotContainer {
     runIntake runIntakeCommand = new runIntake(intake);
     PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
 
-
+    NamedCommands.registerCommand("shootBallCommand", shootBallCommand);
+    NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
+    NamedCommands.registerCommand("runIntakeCommand", runIntakeCommand);
+    
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
 
