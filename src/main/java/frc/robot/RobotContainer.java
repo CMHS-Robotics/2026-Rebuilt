@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -93,6 +94,17 @@ public class RobotContainer {
     SmartDashboard.putNumber("Stage", climber.stages[0]);
     SmartDashboard.putNumber("SetRPM",0);
     SmartDashboard.putNumber("SetDegrees", 0);
+
+
+    //DEBUG
+    SmartDashboard.putBoolean("DEBUG COMMAND EXECUTES",false);
+    SmartDashboard.putNumber("DEBUG RAW LEFT STICK DOUBLE",0.0);
+    SmartDashboard.putBoolean("DEBUG PASSES STICKDRIFT",false);
+    SmartDashboard.putNumber("DEBUG MULTIPLIER APPLIED", 0.0);
+    SmartDashboard.putNumber("DEBUG NEGATIVE SQRT VALUE", 0.0);
+    SmartDashboard.putNumber("DEBUG POSITIVE SQRT VALUE", 0.0);
+
+
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
 
@@ -192,9 +204,17 @@ public class RobotContainer {
         Manipulator.povLeft().whileTrue(
             new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
         );
+        //freemove Intake Arm Command
 
-        
+        Trigger stickMoved = new Trigger( () -> Math.abs(Manipulator.getLeftY()) > 0.1);
+        stickMoved.whileTrue(
+          new IntakeArmFreeMoveCommand(intake, Manipulator)
+        );
         drivetrain.registerTelemetry(logger::telemeterize);
+
+      //  Manipulator.leftBumper().whileTrue();
+        
+
     }
 
 

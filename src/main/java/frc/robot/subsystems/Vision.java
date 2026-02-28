@@ -43,15 +43,15 @@ public class Vision extends SubsystemBase {
     private static final Transform3d kRobotToFrontCam = new Transform3d(
         0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
     );
-    private static final Transform3d kRobotToLeftBackCam = new Transform3d(
-        0.2413, 0.3175, 0.52705, new Rotation3d(0, Math.toRadians(15), Math.toRadians(135))
-    );
-    private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
-        0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))
-    );
-    private static final Transform3d kRobotToRightCam = new Transform3d(
-       -0.0762, -0.3429, 0.5242052, new Rotation3d(0, 0, Math.toRadians(-90))
-    );
+     private static final Transform3d kRobotToLeftBackCam = new Transform3d(
+         0.2413, 0.3175, 0.52705, new Rotation3d(0, Math.toRadians(15), Math.toRadians(135))
+     );
+     private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
+         0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))
+     );
+     private static final Transform3d kRobotToRightCam = new Transform3d(
+        -0.0762, -0.3429, 0.5242052, new Rotation3d(0, 0, Math.toRadians(-90))
+     );
 
     private final CommandSwerveDrivetrain swerve;
     private final AprilTagFieldLayout fieldLayout;
@@ -74,36 +74,38 @@ public class Vision extends SubsystemBase {
         estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToLeftFrontCam);
         estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY,     kRobotToRightCam);
 
-        fieldVisualizer.setRobotPose(latestFieldPose);
+        SmartDashboard.putData("Vision Field", fieldVisualizer);
     }
 
     @Override
     public void periodic() {
+
         Pose2d odomPose = swerve.getState().Pose;
+        fieldVisualizer.setRobotPose(odomPose);
 
         estFront.setReferencePose(odomPose);
-        estLeftBack.setReferencePose(odomPose);
-        estLeftFront.setReferencePose(odomPose);
-        estRight.setReferencePose(odomPose);
+        //estLeftBack.setReferencePose(odomPose);
+        //estLeftFront.setReferencePose(odomPose);
+        //estRight.setReferencePose(odomPose);
 
         Optional<EstimatedRobotPose> poseFront     = estFront.update(frontCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseLeftBack  = estLeftBack.update(leftBackCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
+        //Optional<EstimatedRobotPose> poseLeftBack  = estLeftBack.update(leftBackCam.getLatestResult());
+        //Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
+        //Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
 
         List<EstimatedRobotPose> poses = new ArrayList<>();
         List<Integer> weights = new ArrayList<>();
         List<PhotonCamera> cams = new ArrayList<>();
 
         addPoseIfValid(poseFront,     frontCam,     poses, weights, cams);
-        addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
-        addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-        addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+        //addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
+        //addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
+        //addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
         SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
+        //SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
+        //SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
+        //SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
 
         SmartDashboard.putNumber("total vision poses", poses.size());
 
@@ -126,7 +128,7 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 3.0)
+            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
                 continue;
 
             x += pose2d.getX() * w;

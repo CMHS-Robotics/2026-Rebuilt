@@ -50,7 +50,7 @@ public class Intake extends SubsystemBase{
     }
 
     public void startIntake() {
-        double rampedRPM = rpmRamp.calculate(5000);
+        double rampedRPM = rpmRamp.calculate(6250);
         double targetRPS = rampedRPM / 60.0;
         intakeMoter.setControl(velocityRequest.withVelocity(-targetRPS));
     }
@@ -62,6 +62,15 @@ public class Intake extends SubsystemBase{
 
     public void stop() {
         intakeMoter.set(0);
+    }
+    public double getArmPosition(){
+        return intakeUpDownMoter.getPosition().getValueAsDouble();
+    }
+    public void setArmOutput(double MotorOutput){
+        intakeUpDownMoter.set(MotorOutput);
+    }
+    public void stopArm(){
+        intakeUpDownMoter.stopMotor();
     }
 
     public Command stopCommand() {
@@ -77,6 +86,6 @@ public class Intake extends SubsystemBase{
 
     SmartDashboard.putNumber("intakeMoter RPM", currentRPM1);
     SmartDashboard.putNumber("intake compliant speed", currentRPM1 * (16.0/30.0)); // account for gear ratio
-    SmartDashboard.putNumber("intake position", intakeUpDownMoter.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("intake position", getArmPosition());    
 }
 }
