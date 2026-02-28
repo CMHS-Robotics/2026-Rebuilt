@@ -104,6 +104,11 @@ public class RobotContainer {
     SmartDashboard.putNumber("DEBUG NEGATIVE SQRT VALUE", 0.0);
     SmartDashboard.putNumber("DEBUG POSITIVE SQRT VALUE", 0.0);
 
+    //Named COmmands
+    ShootBall shootBallCommand = new ShootBall(shooter, vision);
+    runIntake runIntakeCommand = new runIntake(intake);
+    PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
+
 
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
