@@ -5,15 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Start2ToHub"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "alignToHubCommand"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start2ToHub"
+                }
+              }
+            ]
           }
         },
         {
@@ -23,13 +24,25 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shootBallCommand"
+                  "name": "hoppCommand"
                 }
               },
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 5.0
+                  "name": "kickCommand"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "indexCommand"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootBallCommand"
                 }
               }
             ]

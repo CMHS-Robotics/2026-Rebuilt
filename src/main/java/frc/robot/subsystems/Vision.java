@@ -92,14 +92,14 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
 
         estFront.setReferencePose(odomPose);
-        //estLeftBack.setReferencePose(odomPose);
-        //estLeftFront.setReferencePose(odomPose);
-        //estRight.setReferencePose(odomPose);
+        estLeftBack.setReferencePose(odomPose);
+        estLeftFront.setReferencePose(odomPose);
+        estRight.setReferencePose(odomPose);
 
         Optional<EstimatedRobotPose> poseFront     = estFront.update(frontCam.getLatestResult());
-        //Optional<EstimatedRobotPose> poseLeftBack  = estLeftBack.update(leftBackCam.getLatestResult());
-        //Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
-        //Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
+        Optional<EstimatedRobotPose> poseLeftBack  = estLeftBack.update(leftBackCam.getLatestResult());
+        Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
+        Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
 
         List<EstimatedRobotPose> poses = new ArrayList<>();
         List<Integer> weights = new ArrayList<>();
@@ -107,14 +107,20 @@ public class Vision extends SubsystemBase {
 
         addPoseIfValid(poseFront,     frontCam,     poses, weights, cams);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         //addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
         //addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
         //addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+=======
+        addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
+        addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
+        addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+>>>>>>> Stashed changes
 
         SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        //SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
-        //SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
-        //SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
 
 =======
         addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);

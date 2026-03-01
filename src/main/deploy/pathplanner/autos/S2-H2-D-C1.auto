@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shootBallCommand"
+                  "name": null
                 }
               },
               {
@@ -42,7 +42,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "runIntakeCommand"
+                  "name": null
                 }
               },
               {

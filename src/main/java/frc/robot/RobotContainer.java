@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.*;
+
+import java.util.jar.Attributes.Name;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -83,6 +86,24 @@ public class RobotContainer {
 
   /** The container for the robot */
   public RobotContainer() {
+
+    ShootBall shootBallCommand = new ShootBall(shooter, vision);
+    runIntake runIntakeCommand = new runIntake(intake);
+    PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
+    Hopp hoppCommand = new Hopp(hopper, vision);
+    Kick kickCommand = new Kick(kicker, vision);
+    Index indexCommand = new Index(indexer, vision);
+
+
+    NamedCommands.registerCommand("shootBallCommand", shootBallCommand.withTimeout(5));
+    NamedCommands.registerCommand("hoppCommand", hoppCommand.withTimeout(5));
+    NamedCommands.registerCommand("kickCommand", kickCommand.withTimeout(5));
+    NamedCommands.registerCommand("indexCommand", indexCommand.withTimeout(5));
+    NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
+    NamedCommands.registerCommand("runIntakeCommand", runIntakeCommand);
+
+  
+
     configureAutoBuilder();
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Default",new InstantCommand());
@@ -105,14 +126,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("DEBUG NEGATIVE SQRT VALUE", 0.0);
     SmartDashboard.putNumber("DEBUG POSITIVE SQRT VALUE", 0.0);
 
-    //Named COmmands
-    ShootBall shootBallCommand = new ShootBall(shooter, vision);
-    runIntake runIntakeCommand = new runIntake(intake);
-    PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
-
-    NamedCommands.registerCommand("shootBallCommand", shootBallCommand);
-    NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
-    NamedCommands.registerCommand("runIntakeCommand", runIntakeCommand);
+    
     
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
