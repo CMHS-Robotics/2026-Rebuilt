@@ -49,8 +49,8 @@ public class PointAndRotate extends Command {
     public void execute() {
 
         // Grab rotation errors & optional distances
-        Optional<Rotation2d> primaryError   = vision.getRotationErrorToTag(primaryTag);
-        Optional<Rotation2d> secondaryError = vision.getRotationErrorToTag(secondaryTag);
+        Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTag(primaryTag);
+        Optional<Rotation2d> secondaryError = vision.getRotationErrorRobotToTag(secondaryTag);
 
         Rotation2d rotError;
         double distanceToTag;

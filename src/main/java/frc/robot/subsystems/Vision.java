@@ -65,7 +65,6 @@ public class Vision extends SubsystemBase {
 
     private final Translation2d shooterOffset =
     new Translation2d(0.2921, -0.2286);
-    private Pose2d latestFieldPose = new Pose2d();
 
     public Vision(CommandSwerveDrivetrain drivetrain, AprilTagFieldLayout layout) {
         this.swerve = drivetrain;
@@ -90,6 +89,8 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
         SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
         SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
+        SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
+        getRotationErrorShooterToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter", rot.getDegrees()));
 
         estFront.setReferencePose(odomPose);
         estLeftBack.setReferencePose(odomPose);
@@ -106,33 +107,17 @@ public class Vision extends SubsystemBase {
         List<PhotonCamera> cams = new ArrayList<>();
 
         addPoseIfValid(poseFront,     frontCam,     poses, weights, cams);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        //addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
-        //addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-        //addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
-=======
         addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
         addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
         addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
->>>>>>> Stashed changes
 
-        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
-
-=======
-        addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
-        addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-        addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
->>>>>>> Stashed changes
         SmartDashboard.putNumber("total vision poses", poses.size());
         
         if (poses.isEmpty()) {
         SmartDashboard.putBoolean("V fused", false);
          return;
         }
+
         double totalWeight = 0;
         double x = 0, y = 0;
         double cosSum = 0, sinSum = 0;
@@ -148,13 +133,8 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-<<<<<<< Updated upstream
             if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
                 continue;
-=======
-           // if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 3.0)
-           //     continue;
->>>>>>> Stashed changes
 
             x += pose2d.getX() * w;
             y += pose2d.getY() * w;
@@ -184,12 +164,12 @@ public class Vision extends SubsystemBase {
 
         // ---- STD DEV CALC (simple version) ----
         double xyStd = 0.1 + 0.05 * avgDist;
-        double thetaStd = 0.2 + 0.1 * avgDist;
+        double thetaStd = .05; // 0.2 + 0.1 * avgDist; //changed this to be less restrictive
 
-       // if (totalTags <= 1) {
-       //     xyStd *= 2.0;
-       //     thetaStd *= 2.5;
-       // }
+        if (totalTags <= 1) {
+            xyStd *= 2.0;
+            thetaStd *= 2.5;
+        }
 
         Matrix<N3, N1> stdDevs = VecBuilder.fill(xyStd, xyStd, thetaStd);
 
@@ -199,8 +179,9 @@ public class Vision extends SubsystemBase {
             stdDevs
         );
 
-        latestFieldPose = fused;
-        fieldVisualizer.setRobotPose(latestFieldPose);
+        fieldVisualizer.setRobotPose(swerve.getState().Pose);
+        SmartDashboard.putBoolean("V fused", true);
+
     }
 
     private void addPoseIfValid(
@@ -238,29 +219,68 @@ public class Vision extends SubsystemBase {
 
     public Optional<Double> distanceToTagFromPose(int tagId) {
 
-        Translation2d shooterOffset = new Translation2d(0.2921,   // forward
-           -0.2286    // right
-        );
         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
         if (tagPoseOpt.isEmpty()) return Optional.empty();
+    
+        Pose2d robotPose = swerve.getState().Pose;
+    
+        Translation2d tagTranslation =
+            tagPoseOpt.get().toPose2d().getTranslation();
+    
+        // Rotate shooter offset into field frame
+      //  Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
+    
+        // Shooter world position
+        // Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
+    
+      //  return Optional.of(
+      //      shooterWorldPos.getDistance(tagTranslation)
+      //  );
 
-        Pose2d robotPose = latestFieldPose;
-        Translation2d tagTranslation = tagPoseOpt.get().toPose2d().getTranslation();
+      Translation2d robotTranslation = robotPose.getTranslation();
+      return Optional.of(robotTranslation.getDistance(tagTranslation));
+    }
 
-        return Optional.of(robotPose.getTranslation().getDistance(tagTranslation));
+    public Optional<Translation2d> translationShooterToTagFromPose(int tagId) {
+
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) return Optional.empty();
+    
+        Pose2d robotPose = swerve.getState().Pose;
+    
+        Translation2d tagTranslation =
+            tagPoseOpt.get().toPose2d().getTranslation();
+    
+        Translation2d shooterFieldOffset =
+            shooterOffset.rotateBy(robotPose.getRotation());
+    
+        Translation2d shooterWorldPos =
+            robotPose.getTranslation().plus(shooterFieldOffset);
+    
+        return Optional.of(
+            tagTranslation.minus(shooterWorldPos)
+        );
     }
 
     public Optional<Translation2d> translationToTagFromPose(int tagId) {
+
         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
         if (tagPoseOpt.isEmpty()) return Optional.empty();
-
-        Pose2d robotPose = latestFieldPose;
-        Translation2d tagTranslation = tagPoseOpt.get().toPose2d().getTranslation();
-
-        return Optional.of(tagTranslation.minus(robotPose.getTranslation()));
+    
+        Pose2d robotPose = swerve.getState().Pose;
+    
+        Translation2d tagTranslation =
+            tagPoseOpt.get().toPose2d().getTranslation();
+    
+        Translation2d robotTranslation = robotPose.getTranslation();
+            
+    
+        return Optional.of(
+            tagTranslation.minus(robotTranslation)
+        );
     }
 
-    public Optional<Rotation2d> getRotationErrorToTag(int tagId) {
+    public Optional<Rotation2d> getRotationErrorShooterToTag(int tagId) {
 
         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
         if (tagPoseOpt.isEmpty()) {
@@ -292,8 +312,35 @@ public class Vision extends SubsystemBase {
             vectorToHub.getAngle();
     
         // Rotation error = desired heading - current heading
-        Rotation2d rotError =
-            angleToHub.minus(robotPose.getRotation());
+        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
+    
+        return Optional.of(rotError);
+    }
+
+    public Optional<Rotation2d> getRotationErrorRobotToTag(int tagId) {
+
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+    
+        Pose2d robotPose = swerve.getState().Pose;
+
+        Translation2d  robotTranslation = robotPose.getTranslation();
+    
+        // Hub/tag world position
+        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
+    
+    
+        // ---- Compute Vector From Robot To Hub ----
+    
+        Translation2d vectorToHub = tagPos.minus(robotTranslation);
+    
+        Rotation2d angleToHub =
+            vectorToHub.getAngle();
+    
+        // Rotation error = desired heading - current heading
+        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
     
         return Optional.of(rotError);
     }
