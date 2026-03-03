@@ -328,4 +328,11 @@ public void driveRobotRelative(ChassisSpeeds speeds) {
     );
 }
 
+public void zeroGyro() {
+    resetPose(new Pose2d(
+        getState().Pose.getTranslation(),
+        Rotation2d.kZero
+    ));
+}
+
 }

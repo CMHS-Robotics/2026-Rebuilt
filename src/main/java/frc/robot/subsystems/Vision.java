@@ -33,6 +33,8 @@ import edu.wpi.first.math.VecBuilder;
 
 public class Vision extends SubsystemBase {
 
+    private boolean allowVisionFusion = false;
+
     // Four cameras
     private final PhotonCamera frontCam     = new PhotonCamera("frontCam");
     private final PhotonCamera leftBackCam  = new PhotonCamera("leftBackCam");
@@ -91,6 +93,8 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
         SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
         getRotationErrorShooterToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter", rot.getDegrees()));
+        getRotationErrorRobotToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from robot center", rot.getDegrees()));
+        SmartDashboard.putNumber("gyro Heading", swerve.getState().Pose.getRotation().getDegrees());
 
         estFront.setReferencePose(odomPose);
         estLeftBack.setReferencePose(odomPose);
@@ -173,11 +177,13 @@ public class Vision extends SubsystemBase {
 
         Matrix<N3, N1> stdDevs = VecBuilder.fill(xyStd, xyStd, thetaStd);
 
-        swerve.addVisionMeasurement(
-            fused,
-            timestamp / totalWeight,
-            stdDevs
-        );
+     //   if (allowVisionFusion) {
+     //   swerve.addVisionMeasurement(
+     //       fused,
+     //       timestamp / totalWeight,
+     //       stdDevs
+     //           );
+     //   }
 
         fieldVisualizer.setRobotPose(swerve.getState().Pose);
         SmartDashboard.putBoolean("V fused", true);
@@ -196,6 +202,13 @@ public class Vision extends SubsystemBase {
             weights.add(cam.getLatestResult().getTargets().size());
             cams.add(cam);
         }
+       if (poseOpt.isPresent()) {
+            Pose2d visionPose = poseOpt.get().estimatedPose.toPose2d();
+            SmartDashboard.putNumber(
+            cam.getName() + " vision heading",
+        visionPose.getRotation().getDegrees()
+    );
+}
     }
 
     // --- Helper function: distance to a specific tag ID ---
@@ -344,4 +357,8 @@ public class Vision extends SubsystemBase {
     
         return Optional.of(rotError);
     }
+
+    public void setVisionEnabled(boolean enabled) {
+            allowVisionFusion = enabled;
+        }
 }

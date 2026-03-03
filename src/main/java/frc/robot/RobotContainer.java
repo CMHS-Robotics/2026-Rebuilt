@@ -143,11 +143,6 @@ public class RobotContainer {
     configureBindings();
   }
 
-    public void teleopInit() {
-    //    drivetrain.resetPose(
-    //      new Pose2d(drivetrain.getPose().getTranslation(), Rotation2d.kZero));
-    //      drivetrain.seedFieldCentric();
-}
 
   /* ================= BUTTON BINDINGS ================= */
 
@@ -283,4 +278,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
       return autoChooser.getSelected();
   }
+
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return drivetrain;
+}
+
+public Vision getVision() {
+    return vision;
+}
 }

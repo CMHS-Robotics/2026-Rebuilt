@@ -5,24 +5,33 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import frc.robot.subsystems.Shooter;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ShootBall;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
+
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
 
-  Shooter shooter = new Shooter();
+
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -30,6 +39,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
+    new Translation2d(0, 0),
+    Rotation2d.fromDegrees(0)
+));
   }
 
   @Override
@@ -43,6 +56,9 @@ public class Robot extends TimedRobot {
    if (m_autonomousCommand != null) {
      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
+   // Pose2d startingPose = m_autonomousCommand.getStartingPose();
+   //swerve.resetPose(startingPose);
   }
   @Override
   public void autonomousExit() {
@@ -64,8 +80,18 @@ public class Robot extends TimedRobot {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
 
-    // Reset ramp so it always starts from 0 RPM
-    shooter.resetRamp();
+     m_robotContainer.getDrivetrain().zeroGyro();
+    m_robotContainer.getVision().setVisionEnabled(false);
+
+    CommandScheduler.getInstance().schedule(
+    new WaitCommand(0.5).andThen(
+        new InstantCommand(() ->
+            m_robotContainer.getVision().setVisionEnabled(false) // keep false turn off vision for test
+        )
+    )
+    );
+
+
   }
 
   @Override
