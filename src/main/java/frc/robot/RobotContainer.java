@@ -231,6 +231,13 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
       //  Manipulator.leftBumper().whileTrue();
+
+
+
+      //Driver Slow Commands
+      Driver.rightTrigger().whileTrue(
+        new SlowDrive(drivetrain, drive, null)
+      );
         
 
     }
