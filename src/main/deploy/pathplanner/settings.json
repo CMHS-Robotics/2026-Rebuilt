@@ -3,13 +3,10 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "DepotToHub",
-    "HubToClimb",
-    "HubToDepot",
-    "Actions",
-    "Other",
-    "StartToCenterField",
-    "StartToHub"
+    "Paths-1",
+    "Paths-3",
+    "Starts",
+    "Utils"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

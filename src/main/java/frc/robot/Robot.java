@@ -76,6 +76,12 @@ public class Robot extends TimedRobot {
     // if (m_autonomousCommand != null) {
     //   m_autonomousCommand.cancel();
     // }
+
+
+    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
+    new Translation2d(10, 2),
+    Rotation2d.fromDegrees(180)
+    ));
     if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
@@ -86,7 +92,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().schedule(
     new WaitCommand(0.5).andThen(
         new InstantCommand(() ->
-            m_robotContainer.getVision().setVisionEnabled(false) // keep false turn off vision for test
+            m_robotContainer.getVision().setVisionEnabled(true) // keep false turn off vision for test
         )
     )
     );

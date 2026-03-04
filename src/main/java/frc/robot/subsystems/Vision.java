@@ -111,9 +111,9 @@ public class Vision extends SubsystemBase {
         List<PhotonCamera> cams = new ArrayList<>();
 
         addPoseIfValid(poseFront,     frontCam,     poses, weights, cams);
-        addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
-        addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-        addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+    //    addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
+    //    addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
+    //    addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
         SmartDashboard.putNumber("total vision poses", poses.size());
         
@@ -137,8 +137,8 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
-                continue;
+          //  if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10)
+          //      continue;
 
             x += pose2d.getX() * w;
             y += pose2d.getY() * w;
@@ -167,7 +167,7 @@ public class Vision extends SubsystemBase {
         double avgDist = totalDist / totalTags;
 
         // ---- STD DEV CALC (simple version) ----
-        double xyStd = 0.1 + 0.05 * avgDist;
+        double xyStd = 0.5 + 0.1 * avgDist;
         double thetaStd = .05; // 0.2 + 0.1 * avgDist; //changed this to be less restrictive
 
         if (totalTags <= 1) {
@@ -177,13 +177,13 @@ public class Vision extends SubsystemBase {
 
         Matrix<N3, N1> stdDevs = VecBuilder.fill(xyStd, xyStd, thetaStd);
 
-     //   if (allowVisionFusion) {
-     //   swerve.addVisionMeasurement(
-     //       fused,
-     //       timestamp / totalWeight,
-     //       stdDevs
-     //           );
-     //   }
+        if (allowVisionFusion) {
+        swerve.addVisionMeasurement(
+            fused,
+            timestamp / totalWeight,
+            stdDevs
+                );
+        }
 
         fieldVisualizer.setRobotPose(swerve.getState().Pose);
         SmartDashboard.putBoolean("V fused", true);

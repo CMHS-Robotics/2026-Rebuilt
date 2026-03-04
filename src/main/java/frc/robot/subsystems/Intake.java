@@ -56,7 +56,9 @@ public class Intake extends SubsystemBase{
     }
 
     public void engage(){
-        double motorRotations = 26.5244140625 + 3.66943;
+        double motorRotations = 29.041015625;
+        
+        //-0.97705078125
         intakeUpDownMoter.setControl(intakeUpDownPositionRequest.withPosition(motorRotations));
     }
 
