@@ -39,10 +39,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
-    new Translation2d(0, 0),
-    Rotation2d.fromDegrees(0)
-));
+
+//    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
+//    new Translation2d(0, 0),
+//));
+
+
   }
 
   @Override
@@ -73,20 +75,21 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.cancel();
-    // }
+     if (m_autonomousCommand != null) {
+       m_autonomousCommand.cancel();
+     }
 
 
     m_robotContainer.getDrivetrain().resetPose(new Pose2d(
-    new Translation2d(10, 2),
+    new Translation2d(0, 0),
     Rotation2d.fromDegrees(180)
     ));
+
+
     if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
 
-     m_robotContainer.getDrivetrain().zeroGyro();
     m_robotContainer.getVision().setVisionEnabled(false);
 
     CommandScheduler.getInstance().schedule(

@@ -36,32 +36,32 @@ public class Vision extends SubsystemBase {
     private boolean allowVisionFusion = false;
 
     // Four cameras
-    private final PhotonCamera frontCam     = new PhotonCamera("frontCam");
-    private final PhotonCamera leftBackCam  = new PhotonCamera("leftBackCam");
-    private final PhotonCamera leftFrontCam = new PhotonCamera("leftFrontCam");
-    private final PhotonCamera rightCam     = new PhotonCamera("rightCam");
+    private final PhotonCamera frontRightCam     = new PhotonCamera("frontRightCam");// RENAME IN PHOTON!!!!!!
+    private final PhotonCamera frontLeftCam  = new PhotonCamera("frontLeftCam"); // RENAME IN PHOTON!!!!!!
+  //  private final PhotonCamera leftFrontCam = new PhotonCamera("leftFrontCam");
+  //  private final PhotonCamera rightCam     = new PhotonCamera("rightCam");
 
     // Camera → Robot transforms
-    private static final Transform3d kRobotToFrontCam = new Transform3d(
+    private static final Transform3d kRobotToFrontRightCam = new Transform3d(
         0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
     );
-     private static final Transform3d kRobotToLeftBackCam = new Transform3d(
-         0.2413, 0.3175, 0.52705, new Rotation3d(0, Math.toRadians(15), Math.toRadians(135))
+     private static final Transform3d kRobotToFrontLeftCam = new Transform3d(
+         0.2413, 0.3175, 0.52705, new Rotation3d(Math.toRadians(90), Math.toRadians(0), Math.toRadians(0))
      );
-     private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
-         0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))
-     );
-     private static final Transform3d kRobotToRightCam = new Transform3d(
-        -0.0762, -0.3429, 0.5242052, new Rotation3d(0, 0, Math.toRadians(-90))
-     );
+    //  private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
+    //      0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))
+    //  );
+    //  private static final Transform3d kRobotToRightCam = new Transform3d(
+    //     -0.0762, -0.3429, 0.5242052, new Rotation3d(0, 0, Math.toRadians(-90))
+    //  );
 
     private final CommandSwerveDrivetrain swerve;
     private final AprilTagFieldLayout fieldLayout;
 
-    private final PhotonPoseEstimator estFront;
-    private final PhotonPoseEstimator estLeftBack;
-    private final PhotonPoseEstimator estLeftFront;
-    private final PhotonPoseEstimator estRight;
+    private final PhotonPoseEstimator estFrontRight;
+    private final PhotonPoseEstimator estFrontLeft;
+    //private final PhotonPoseEstimator estLeftFront;
+    //private final PhotonPoseEstimator estRight;
 
     private final Field2d fieldVisualizer = new Field2d();
 
@@ -73,10 +73,10 @@ public class Vision extends SubsystemBase {
         this.fieldLayout = layout;
 
         // IMPORTANT: Pass the PhotonCamera instance into the PhotonPoseEstimator
-        estFront     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToFrontCam);
-        estLeftBack  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToLeftBackCam);
-        estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY, kRobotToLeftFrontCam);
-        estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY,     kRobotToRightCam);
+        estFrontRight = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontRightCam);
+        estFrontLeft  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontLeftCam);
+     //   estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftFrontCam);
+     //   estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,     kRobotToRightCam);
 
         SmartDashboard.putData("Vision Field", fieldVisualizer);
     }
@@ -87,33 +87,36 @@ public class Vision extends SubsystemBase {
         Pose2d odomPose = swerve.getState().Pose;
         fieldVisualizer.setRobotPose(odomPose);
 
-        SmartDashboard.putBoolean("frontCam has targets?", frontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftBackCam has targets?", leftBackCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("front right has targets?", frontRightCam.getLatestResult().hasTargets());
+        SmartDashboard.putBoolean("front left has targets?", frontLeftCam.getLatestResult().hasTargets());
+       // SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
+     //   SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
         SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
-        getRotationErrorShooterToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter", rot.getDegrees()));
-        getRotationErrorRobotToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from robot center", rot.getDegrees()));
+        getDirectRotationErrorShooterToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter", rot.getDegrees()));
+        getDirectRotationErrorToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from robot center", rot.getDegrees()));
         SmartDashboard.putNumber("gyro Heading", swerve.getState().Pose.getRotation().getDegrees());
 
-        estFront.setReferencePose(odomPose);
-        estLeftBack.setReferencePose(odomPose);
-        estLeftFront.setReferencePose(odomPose);
-        estRight.setReferencePose(odomPose);
+        getDirectDistanceToTag(10).ifPresent(distance -> SmartDashboard.putNumber("Distance pure vision not from Pose", distance)); 
 
-        Optional<EstimatedRobotPose> poseFront     = estFront.update(frontCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseLeftBack  = estLeftBack.update(leftBackCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
+
+        estFrontRight.setReferencePose(odomPose);
+        estFrontLeft.setReferencePose(odomPose);
+      //  estLeftFront.setReferencePose(odomPose);
+      //  estRight.setReferencePose(odomPose);
+
+        Optional<EstimatedRobotPose> poseFrontRight     = estFrontRight.update(frontRightCam.getLatestResult());
+        Optional<EstimatedRobotPose> poseFrontLeft  = estFrontLeft.update(frontLeftCam.getLatestResult());
+     //   Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
+     //   Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
 
         List<EstimatedRobotPose> poses = new ArrayList<>();
         List<Integer> weights = new ArrayList<>();
         List<PhotonCamera> cams = new ArrayList<>();
 
-        addPoseIfValid(poseFront,     frontCam,     poses, weights, cams);
-    //    addPoseIfValid(poseLeftBack,  leftBackCam,  poses, weights, cams);
-    //    addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-    //    addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+        addPoseIfValid(poseFrontRight,     frontRightCam,     poses, weights, cams);
+        addPoseIfValid(poseFrontLeft,  frontLeftCam,  poses, weights, cams);
+     //   addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
+     //   addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
         SmartDashboard.putNumber("total vision poses", poses.size());
         
@@ -137,8 +140,8 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-          //  if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10)
-          //      continue;
+            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
+                continue;
 
             x += pose2d.getX() * w;
             y += pose2d.getY() * w;
@@ -167,7 +170,7 @@ public class Vision extends SubsystemBase {
         double avgDist = totalDist / totalTags;
 
         // ---- STD DEV CALC (simple version) ----
-        double xyStd = 0.5 + 0.1 * avgDist;
+        double xyStd = 0.1 + 0.05 * avgDist;
         double thetaStd = .05; // 0.2 + 0.1 * avgDist; //changed this to be less restrictive
 
         if (totalTags <= 1) {
@@ -212,8 +215,8 @@ public class Vision extends SubsystemBase {
     }
 
     // --- Helper function: distance to a specific tag ID ---
-    public Optional<Double> distanceToTag(int tagId) {
-        List<PhotonCamera> cameras = List.of(frontCam, leftBackCam, leftFrontCam, rightCam);
+    public Optional<Double> getDirectDistanceToTag(int tagId) {
+        List<PhotonCamera> cameras = List.of(frontRightCam, frontLeftCam); 
 
         for (PhotonCamera cam : cameras) {
             var result = cam.getLatestResult();
@@ -230,7 +233,165 @@ public class Vision extends SubsystemBase {
         return Optional.empty();
     }
 
-    public Optional<Double> distanceToTagFromPose(int tagId) {
+    public Optional<Rotation2d> getDirectRotationErrorToTag(int tagId) {
+    List<PhotonCamera> cameras = List.of(frontRightCam, frontLeftCam);
+    // Corresponding yaw offsets for the cameras from your Transform3d constants
+    // frontRightCam yaw is 0, frontLeftCam yaw is 0 (based on your code)
+    double[] camYawOffsets = {0.0, 0.0}; 
+
+    for (int i = 0; i < cameras.size(); i++) {
+        var result = cameras.get(i).getLatestResult();
+        if (!result.hasTargets()) continue;
+
+        for (PhotonTrackedTarget target : result.getTargets()) {
+            if (target.getFiducialId() == tagId) {
+                // target.getYaw() is the angle from the CAMERA center to the tag.
+                // We add the camera's mounting yaw to get the angle relative to the ROBOT center.
+                double robotRelativeErrorDeg = target.getYaw() + camYawOffsets[i];
+                
+                // Return as a Rotation2d (Note: Photon Yaw is usually CCW-positive)
+                return Optional.of(Rotation2d.fromDegrees(-robotRelativeErrorDeg));
+            }
+        }
+    }
+    return Optional.empty();
+}
+
+public Optional<Rotation2d> getDirectRotationErrorShooterToTag(int tagId) {
+    return getDirectTranslationToTag(tagId).map(robotToTag -> {
+        // 1. Get Vector from Shooter to Tag in Robot Space
+        // We subtract where the shooter is relative to center
+        Translation2d shooterToTag = robotToTag.minus(shooterOffset);
+
+        // 2. Calculate the angle of that vector
+        // This is the angle the ROBOT must be at for the SHOOTER to face the tag
+        return new Rotation2d(shooterToTag.getX(), shooterToTag.getY());
+    });
+}
+
+public Optional<Translation2d> getDirectTranslationToTag(int tagId) {
+    // We'll check both cameras, but prioritize FrontRight for this example
+    List<PhotonCamera> cameras = List.of(frontRightCam, frontLeftCam);
+    List<Transform3d> robotToCams = List.of(kRobotToFrontRightCam, kRobotToFrontLeftCam);
+
+    for (int i = 0; i < cameras.size(); i++) {
+        var result = cameras.get(i).getLatestResult();
+        if (!result.hasTargets()) continue;
+
+        for (PhotonTrackedTarget target : result.getTargets()) {
+            if (target.getFiducialId() == tagId) {
+                // 1. Get the transform from the CAMERA to the TAG
+                Transform3d camToTag = target.getBestCameraToTarget();
+
+                // 2. Transform that into ROBOT coordinates
+                // RobotToTag = RobotToCamera * CameraToTag
+                Transform3d robotToTag = robotToCams.get(i).plus(camToTag);
+
+                // 3. Return the 2D component (X/Y distance from robot center)
+                return Optional.of(new Translation2d(
+                    robotToTag.getX(), 
+                    robotToTag.getY()
+                ));
+            }
+        }
+    }
+    return Optional.empty();
+}
+
+public Optional<Translation2d> getDirectTranslationShooterToTag(int tagId) {
+    List<PhotonCamera> cameras = List.of(frontRightCam, frontLeftCam);
+    List<Transform3d> robotToCams = List.of(kRobotToFrontRightCam, kRobotToFrontLeftCam);
+
+    for (int i = 0; i < cameras.size(); i++) {
+        var result = cameras.get(i).getLatestResult();
+        if (!result.hasTargets()) continue;
+
+        for (PhotonTrackedTarget target : result.getTargets()) {
+            if (target.getFiducialId() == tagId) {
+                // 1. Tag relative to Camera
+                Transform3d camToTag = target.getBestCameraToTarget();
+                
+                // 2. Tag relative to Robot Center
+                Transform3d robotToTag = robotToCams.get(i).plus(camToTag);
+                Translation2d robotToTagTranslation = robotToTag.getTranslation().toTranslation2d();
+
+                // 3. Subtract Shooter Offset (Robot Center to Shooter)
+                // Result: Vector from Shooter to Tag
+                return Optional.of(robotToTagTranslation.minus(shooterOffset));
+            }
+        }
+    }
+    return Optional.empty();
+}
+
+
+
+public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
+
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+    
+        Pose2d robotPose = swerve.getState().Pose;
+
+        Translation2d  robotTranslation = robotPose.getTranslation();
+    
+        // Hub/tag world position
+        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
+    
+    
+        // ---- Compute Vector From Robot To Hub ----
+    
+        Translation2d vectorToHub = tagPos.minus(robotTranslation);
+    
+        Rotation2d angleToHub =
+            vectorToHub.getAngle();
+    
+        // Rotation error = desired heading - current heading
+        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
+    
+        return Optional.of(rotError);
+    }
+
+    public Optional<Rotation2d> getRotationErrorShooterToTagFromPose(int tagId) {
+
+        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+        if (tagPoseOpt.isEmpty()) {
+            return Optional.empty();
+        }
+    
+        Pose2d robotPose = swerve.getState().Pose;
+    
+        // Hub/tag world position
+        Translation2d tagPos =
+            tagPoseOpt.get().toPose2d().getTranslation();
+    
+        // ---- Compute Shooter World Position ----
+    
+        // Rotate shooter offset into field frame
+        Translation2d shooterFieldOffset =
+            shooterOffset.rotateBy(robotPose.getRotation());
+    
+        // Shooter world position
+        Translation2d shooterWorldPos =
+            robotPose.getTranslation().plus(shooterFieldOffset);
+    
+        // ---- Compute Vector From Shooter To Hub ----
+    
+        Translation2d vectorToHub =
+            tagPos.minus(shooterWorldPos);
+    
+        Rotation2d angleToHub =
+            vectorToHub.getAngle();
+    
+        // Rotation error = desired heading - current heading
+        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
+    
+        return Optional.of(rotError);
+    }
+
+     public Optional<Double> distanceToTagFromPose(int tagId) {
 
         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
         if (tagPoseOpt.isEmpty()) return Optional.empty();
@@ -293,70 +454,9 @@ public class Vision extends SubsystemBase {
         );
     }
 
-    public Optional<Rotation2d> getRotationErrorShooterToTag(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) {
-            return Optional.empty();
-        }
-    
-        Pose2d robotPose = swerve.getState().Pose;
-    
-        // Hub/tag world position
-        Translation2d tagPos =
-            tagPoseOpt.get().toPose2d().getTranslation();
-    
-        // ---- Compute Shooter World Position ----
-    
-        // Rotate shooter offset into field frame
-        Translation2d shooterFieldOffset =
-            shooterOffset.rotateBy(robotPose.getRotation());
-    
-        // Shooter world position
-        Translation2d shooterWorldPos =
-            robotPose.getTranslation().plus(shooterFieldOffset);
-    
-        // ---- Compute Vector From Shooter To Hub ----
-    
-        Translation2d vectorToHub =
-            tagPos.minus(shooterWorldPos);
-    
-        Rotation2d angleToHub =
-            vectorToHub.getAngle();
-    
-        // Rotation error = desired heading - current heading
-        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
-    
-        return Optional.of(rotError);
-    }
 
-    public Optional<Rotation2d> getRotationErrorRobotToTag(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) {
-            return Optional.empty();
-        }
-    
-        Pose2d robotPose = swerve.getState().Pose;
-
-        Translation2d  robotTranslation = robotPose.getTranslation();
-    
-        // Hub/tag world position
-        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
-    
-    
-        // ---- Compute Vector From Robot To Hub ----
-    
-        Translation2d vectorToHub = tagPos.minus(robotTranslation);
-    
-        Rotation2d angleToHub =
-            vectorToHub.getAngle();
-    
-        // Rotation error = desired heading - current heading
-        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
-    
-        return Optional.of(rotError);
-    }
 
     public void setVisionEnabled(boolean enabled) {
             allowVisionFusion = enabled;

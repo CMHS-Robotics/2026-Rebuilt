@@ -37,7 +37,7 @@ public class LockOnHub extends Command {
     
         int tagID = getHubTagID();
     
-        var errorOpt = vision.getRotationErrorRobotToTag(tagID);
+        var errorOpt = vision.getDirectRotationErrorShooterToTag(tagID);
     
         if (errorOpt.isEmpty()) return;
 

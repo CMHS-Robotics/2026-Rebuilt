@@ -163,7 +163,7 @@ public class RobotContainer {
 
         Driver.y().whileTrue(new PointAndRotate(drivetrain, vision));
 
-        Manipulator.y().whileTrue(intake.runOnce(() -> intake.engage()));
+        Manipulator.y().onTrue(new EngageArm(intake));
             
       
 
@@ -223,6 +223,7 @@ public class RobotContainer {
             new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
         );
         //freemove Intake Arm Command
+        Manipulator.x().whileTrue( new unjamRobot(hopper, indexer));
 
         Trigger stickMoved = new Trigger( () -> Math.abs(Manipulator.getLeftY()) > 0.1);
         stickMoved.whileTrue(
