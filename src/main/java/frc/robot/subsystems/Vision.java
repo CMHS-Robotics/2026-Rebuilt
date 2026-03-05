@@ -46,7 +46,7 @@ public class Vision extends SubsystemBase {
         0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
     );
      private static final Transform3d kRobotToFrontLeftCam = new Transform3d(
-         0.2413, 0.3175, 0.52705, new Rotation3d(Math.toRadians(90), Math.toRadians(0), Math.toRadians(0))
+         0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(90), Math.toRadians(0), Math.toRadians(0))
      );
     //  private static final Transform3d kRobotToLeftFrontCam = new Transform3d(
     //      0.3175,  0.3175, 0.45085, new Rotation3d(0, Math.toRadians(15), Math.toRadians(45))

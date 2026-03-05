@@ -23,6 +23,10 @@ public class PointAndRotate extends Command {
     private int primaryTag;
     private int secondaryTag;
 
+    private double lastValidErrorRad = 0;
+    private int lostFramesCounter = 0;
+    private final int MAX_LOST_FRAMES = 15; // About 0.3 seconds at 50Hz
+
     private final SwerveRequest zero = new SwerveRequest.FieldCentric()
             .withVelocityX(0)
             .withVelocityY(0)
@@ -47,48 +51,52 @@ public class PointAndRotate extends Command {
 
     @Override
     public void execute() {
-
-        // Grab rotation errors & optional distances
         Optional<Rotation2d> primaryError   = vision.getDirectRotationErrorShooterToTag(primaryTag);
         Optional<Rotation2d> secondaryError = vision.getDirectRotationErrorShooterToTag(secondaryTag);
 
-        Rotation2d rotError;
-        double distanceToTag;
+        double errorRad;
+        boolean canSeeTarget = primaryError.isPresent() || secondaryError.isPresent();
 
-        if (primaryError.isPresent()) {
-            rotError = primaryError.get();
-            distanceToTag = vision.distanceToTagFromPose(primaryTag).orElse(Double.NaN);
-
-        } else if (secondaryError.isPresent()) {
-            rotError = secondaryError.get();
-            distanceToTag = vision.distanceToTagFromPose(secondaryTag).orElse(Double.NaN);
-
+        if (canSeeTarget) {
+            // Reset counter and update the "last known" error
+            lostFramesCounter = 0;
+            errorRad = primaryError.isPresent() ? 
+                       primaryError.get().getRadians() : 
+                       secondaryError.get().getRadians();
+            lastValidErrorRad = errorRad;
         } else {
-            drivetrain.setControl(zero);
-            return;
+            // We lost vision! Increment counter
+            lostFramesCounter++;
+            
+            if (lostFramesCounter <= MAX_LOST_FRAMES) {
+                // Keep using the last known error to "coast" through the dropout
+                errorRad = lastValidErrorRad;
+            } else {
+                // We've been blind for too long, safety stop
+                drivetrain.setControl(zero);
+                return;
+            }
         }
 
-        double errorRad = rotError.getRadians();
-
+        // Apply Deadband/Tolerance check
         if (Math.abs(errorRad) < rotTolerance) {
             drivetrain.setControl(zero);
             return;
         }
 
+        // Standard PID logic using either fresh or "ghost" errorRad
         double turnPower = MathUtil.clamp(kP * errorRad, -3.0, 3.0);
+        
+        drivetrain.setControl(new SwerveRequest.FieldCentric()
+            .withVelocityX(0)
+            .withVelocityY(0)
+            .withRotationalRate(turnPower));
 
-         SwerveRequest request = new SwerveRequest.FieldCentric() 
-         .withVelocityX(0)
-         .withVelocityY(0)
-         .withRotationalRate(turnPower);
-
-         drivetrain.setControl(request);
-
-         SmartDashboard.putBoolean("Primary Seen", primaryError.isPresent());
-         SmartDashboard.putBoolean("Secondary Seen", secondaryError.isPresent());
-         SmartDashboard.putNumber("Rotation Error Deg", Math.toDegrees(errorRad));
-         SmartDashboard.putNumber("Turn Power", turnPower);
+        // Feedback for debugging
+        SmartDashboard.putNumber("Lost Vision Frames", lostFramesCounter);
+        SmartDashboard.putBoolean("Vision Active", canSeeTarget);
     }
+
 
     @Override
     public void end(boolean interrupted) {
