@@ -4,28 +4,44 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 6.0
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.345647700046658,
-        "y": 6.0
+        "x": 3.3303679767404883,
+        "y": 5.158835729237621
       },
       "isLocked": false,
-      "linkedName": "Start1"
+      "linkedName": "Start2"
     },
     {
       "anchor": {
-        "x": 1.7215397350993378,
-        "y": 5.995182119205299
+        "x": 3.0655476190476194,
+        "y": 5.687035714285714
       },
       "prevControl": {
-        "x": 2.7887500000000003,
-        "y": 6.002442052980132
+        "x": 3.369778065677016,
+        "y": 5.419498820284705
+      },
+      "nextControl": {
+        "x": 2.719829384523948,
+        "y": 5.991056510654746
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.41,
+        "y": 6.0
+      },
+      "prevControl": {
+        "x": 2.737424009692397,
+        "y": 5.85146966966429
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +57,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 180.0
-  },
-  "reversed": false,
-  "folder": "Starts",
-  "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Paths-2",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

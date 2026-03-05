@@ -1,0 +1,76 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "engageArm"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start3ToOutpost"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OutpostToShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinUpFlyWheel"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmFeedAngle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootBall"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Autos-1",
+  "choreoAuto": false
+}

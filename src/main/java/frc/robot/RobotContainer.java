@@ -65,6 +65,10 @@ public class RobotContainer {
 
     private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
 
+    // Create a specific request for slow mode
+private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.FieldCentric()
+    .withDeadband(0.1).withRotationalDeadband(0.1); // Add deadbands
+
 
     
     /* ================= FIELD LAYOUT ================= */
@@ -235,10 +239,13 @@ public class RobotContainer {
 
 
 
-      //Driver Slow Commands
-      Driver.rightTrigger().whileTrue(
-        new SlowDrive(drivetrain, drive, null)
-      );
+    Driver.rightTrigger().whileTrue(
+      drivetrain.applyRequest(() -> 
+        slowDriveRequest.withVelocityX(-Driver.getLeftY() * 0.1) // 10% Speed
+            .withVelocityY(-Driver.getLeftX() * 0.1) 
+            .withRotationalRate(-Driver.getRightX() * 0.1)
+    )
+);
         
 
     }
