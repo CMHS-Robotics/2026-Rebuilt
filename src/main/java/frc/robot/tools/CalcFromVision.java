@@ -59,6 +59,8 @@ public class CalcFromVision {
          return Optional.of(rpm);
      }
 
+     
+
 
      public Optional<Double> calcHubRPMUsingDistance() { //in case the hubOffset is wrong for left tag 
 

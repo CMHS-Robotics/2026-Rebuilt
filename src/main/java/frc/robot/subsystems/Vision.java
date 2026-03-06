@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -140,8 +142,8 @@ public class Vision extends SubsystemBase {
 
             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-            if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
-                continue;
+          //  if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
+          //      continue;
 
             x += pose2d.getX() * w;
             y += pose2d.getY() * w;
@@ -233,6 +235,52 @@ public class Vision extends SubsystemBase {
         return Optional.empty();
     }
 
+    public Optional<Rotation2d> getRawRotationErrorToHubAnyTag() {
+    PhotonCamera[] cams = {frontRightCam, frontLeftCam};
+    Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
+
+    // 1. Determine target Hub based on Alliance
+    int targetHubId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26;
+    Optional<Pose3d> hubPoseOpt = fieldLayout.getTagPose(targetHubId);
+    
+    if (hubPoseOpt.isEmpty()) return Optional.empty();
+    Pose3d hubFieldPose = hubPoseOpt.get();
+
+    for (int i = 0; i < cams.length; i++) {
+        var result = cams[i].getLatestResult();
+        if (!result.hasTargets()) continue;
+
+        // 2. Pick the best target currently seen by this camera
+        PhotonTrackedTarget seenTarget = result.getBestTarget();
+        int seenTagId = seenTarget.getFiducialId();
+        
+        Optional<Pose3d> seenTagFieldPoseOpt = fieldLayout.getTagPose(seenTagId);
+        if (seenTagFieldPoseOpt.isEmpty()) continue;
+        
+        // 3. Math: Find where the Hub is relative to the Tag we see
+        // Transformation: HubRelative = Inverse(SeenTagFieldPose) * HubFieldPose
+        Pose3d seenTagFieldPose = seenTagFieldPoseOpt.get();
+        Transform3d tagToHub = new Transform3d(seenTagFieldPose, hubFieldPose);
+
+        // 4. Math: Find where the Hub is relative to the Camera
+        // CamToHub = CamToSeenTag * TagToHub
+        Transform3d camToSeenTag = seenTarget.getBestCameraToTarget();
+        Transform3d camToHub = camToSeenTag.plus(tagToHub);
+
+        // 5. Math: Find where the Hub is relative to the Robot Center
+        Transform3d robotToHub = robotToCamTransforms[i].plus(camToHub);
+
+        // 6. Math: Adjust for Shooter Offset
+        Translation2d shooterToHub = robotToHub.getTranslation().toTranslation2d().minus(shooterOffset);
+
+        // 7. Return the raw angle to the Hub
+        return Optional.of(new Rotation2d(shooterToHub.getX(), shooterToHub.getY()));
+    }
+    return Optional.empty();
+}
+
+    
+
     public Optional<Rotation2d> getDirectRotationErrorToTag(int tagId) {
     List<PhotonCamera> cameras = List.of(frontRightCam, frontLeftCam);
     // Corresponding yaw offsets for the cameras from your Transform3d constants
@@ -256,6 +304,8 @@ public class Vision extends SubsystemBase {
     }
     return Optional.empty();
 }
+
+
 
 public Optional<Rotation2d> getDirectRotationErrorShooterToTag(int tagId) {
     return getDirectTranslationToTag(tagId).map(robotToTag -> {

@@ -51,7 +51,7 @@ public class PointAndRotate extends Command {
 
     @Override
     public void execute() {
-        Optional<Rotation2d> primaryError   = vision.getDirectRotationErrorShooterToTag(primaryTag);
+        Optional<Rotation2d> primaryError   = vision.getRawRotationErrorToHubAnyTag(primaryTag);
         Optional<Rotation2d> secondaryError = vision.getDirectRotationErrorShooterToTag(secondaryTag);
 
         double errorRad;

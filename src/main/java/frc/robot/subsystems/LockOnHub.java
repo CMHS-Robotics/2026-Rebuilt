@@ -56,8 +56,8 @@ public class LockOnHub extends Command {
 
         // Apply control: Keep X and Y active even if vision is dead
         SwerveRequest request = new SwerveRequest.FieldCentric()
-            .withVelocityX(xSupplier.getAsDouble())
-            .withVelocityY(ySupplier.getAsDouble())
+            .withVelocityX(xSupplier.getAsDouble() * .6)
+            .withVelocityY(ySupplier.getAsDouble() *.6)
             .withRotationalRate(omega);
 
         drivetrain.setControl(request);

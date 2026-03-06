@@ -241,9 +241,9 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
     Driver.rightTrigger().whileTrue(
       drivetrain.applyRequest(() -> 
-        slowDriveRequest.withVelocityX(-Driver.getLeftY() * 0.1) // 10% Speed
-            .withVelocityY(-Driver.getLeftX() * 0.1) 
-            .withRotationalRate(-Driver.getRightX() * 0.1)
+        slowDriveRequest.withVelocityX(-Driver.getLeftY() * 0.6) // 40% Speed
+            .withVelocityY(-Driver.getLeftX() * 0.6) 
+            .withRotationalRate(-Driver.getRightX() * 0.7)
     )
 );
         
