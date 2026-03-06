@@ -10,9 +10,7 @@
     "Utils"
   ],
   "autoFolders": [
-    "Autos-1",
-    "Autos-2",
-    "Autos-3"
+    "CompAutos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

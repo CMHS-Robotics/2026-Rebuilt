@@ -22,6 +22,7 @@ import java.util.jar.Attributes.Name;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
@@ -97,14 +98,25 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     Hopp hoppCommand = new Hopp(hopper, vision);
     Kick kickCommand = new Kick(kicker, vision);
     Index indexCommand = new Index(indexer, vision);
+    EngageArm EngageArmCommand = new EngageArm(intake);
+    ArmFeedPose armFeedPose = new ArmFeedPose(null, intake);
 
+    NamedCommands.registerCommand("spinUpFlyWheel", shootBallCommand.withTimeout(5));
+    NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20).
+    alongWith(indexCommand.withTimeout(20)).
+    alongWith(kickCommand).withTimeout(20)
+    );
+    NamedCommands.registerCommand("engageArm", EngageArmCommand);
+    NamedCommands.registerCommand("intakeSpin", runIntakeCommand.withTimeout(1.65));
+    NamedCommands.registerCommand("intakeSpinUp", runIntakeCommand.withTimeout(1));
+    NamedCommands.registerCommand("armFeedAngle", armFeedPose);
 
-    NamedCommands.registerCommand("shootBallCommand", shootBallCommand.withTimeout(5));
     NamedCommands.registerCommand("hoppCommand", hoppCommand.withTimeout(5));
     NamedCommands.registerCommand("kickCommand", kickCommand.withTimeout(5));
     NamedCommands.registerCommand("indexCommand", indexCommand.withTimeout(5));
     NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
     NamedCommands.registerCommand("runIntakeCommand", runIntakeCommand);
+
 
   
 

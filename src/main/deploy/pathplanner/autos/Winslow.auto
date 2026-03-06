@@ -3,10 +3,118 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start2ToDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "engageArm"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeSpinUp"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SweepDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSpin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ExitDepot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "spinUpFlyWheel"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "DepotExitToShoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootBall"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armFeedAngle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "alignToHubCommand"
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   "resetOdom": true,
-  "folder": "Autos-1",
+  "folder": "CompAutos",
   "choreoAuto": false
 }

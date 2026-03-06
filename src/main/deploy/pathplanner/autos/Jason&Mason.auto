@@ -62,26 +62,31 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "ExitDepot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Join"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "ExitDepot"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "DepotExitToShoot"
-                      }
-                    }
-                  ]
+                  "pathName": "OutpostToShoot"
                 }
               },
               {
@@ -107,6 +112,12 @@
                 "type": "named",
                 "data": {
                   "name": "armFeedAngle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "alignToHubCommand"
                 }
               }
             ]
