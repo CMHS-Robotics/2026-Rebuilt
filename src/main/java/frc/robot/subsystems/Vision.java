@@ -374,6 +374,61 @@ public Optional<Translation2d> getDirectTranslationShooterToTag(int tagId) {
     return Optional.empty();
 }
 
+public Optional<Translation2d> getRawTranslationShooterToHubAnyTag() {
+    PhotonCamera[] cams = {frontRightCam, frontLeftCam};
+    Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
+
+    // 1. Identify the target Hub ID based on Alliance
+    int targetHubId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26;
+    Optional<Pose3d> hubPoseOpt = fieldLayout.getTagPose(targetHubId);
+    if (hubPoseOpt.isEmpty()) return Optional.empty();
+    Pose3d hubFieldPose = hubPoseOpt.get();
+
+    for (int i = 0; i < cams.length; i++) {
+        var result = cams[i].getLatestResult();
+        if (!result.hasTargets()) continue;
+
+        // 2. Use the best visible tag as a reference point
+        PhotonTrackedTarget seenTarget = result.getBestTarget();
+        Optional<Pose3d> seenTagFieldPoseOpt = fieldLayout.getTagPose(seenTarget.getFiducialId());
+        if (seenTagFieldPoseOpt.isEmpty()) continue;
+
+        // 3. Geometric Chain:
+        // TagToHub = (Field->Tag)^-1 * (Field->Hub)
+        Transform3d tagToHub = new Transform3d(seenTagFieldPoseOpt.get(), hubFieldPose);
+        
+        // CamToHub = CamToSeenTag + TagToHub
+        Transform3d camToHub = seenTarget.getBestCameraToTarget().plus(tagToHub);
+        
+        // RobotToHub = RobotToCam + CamToHub
+        Transform3d robotToHub = robotToCamTransforms[i].plus(camToHub);
+
+        // 4. Final step: Subtract shooter offset (Robot Center -> Shooter)
+        // Result is the vector from the Shooter to the Hub in Robot-Relative Space
+        return Optional.of(robotToHub.getTranslation().toTranslation2d().minus(shooterOffset));
+    }
+    return Optional.empty();
+}
+
+/**
+ * Calculates the straight-line distance from the shooter to the Hub
+ * using any visible tag as a reference.
+ */
+public Optional<Double> getRawDistanceShooterToHubAnyTag() {
+    return getRawTranslationShooterToHubAnyTag().map(Translation2d::getNorm);
+}
+
+/**
+ * Calculates the rotation the ROBOT must achieve for the SHOOTER to face the Hub
+ * using any visible tag as a reference.
+ */
+public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
+    return getRawTranslationShooterToHubAnyTag().map(translation -> 
+        new Rotation2d(translation.getX(), translation.getY())
+    );
+}
+
+
 
 
 public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {

@@ -59,7 +59,18 @@ public class CalcFromVision {
          return Optional.of(rpm);
      }
 
-     
+     public Optional<Double> calcHubRPMUsingAnyTag(){
+         Optional<Translation2d> hubTranslation = vision.getRawTranslationShooterToHubAnyTag();
+          double distance = hubTranslation.get().getNorm();
+    
+         SmartDashboard.putNumber("Vision Distance", distance);
+    
+         double adjustedDistance = distance + 0.6;
+         double rpm = ShooterMath.getRPM(adjustedDistance);
+    
+         return Optional.of(rpm);
+         
+     }
 
 
      public Optional<Double> calcHubRPMUsingDistance() { //in case the hubOffset is wrong for left tag 
