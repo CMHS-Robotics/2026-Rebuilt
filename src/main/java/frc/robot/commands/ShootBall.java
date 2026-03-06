@@ -36,7 +36,7 @@ public class ShootBall extends Command {
      // double rpm = SmartDashboard.getNumber("SetRPM", 0);
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
 
-     calc.calcHubRPM().ifPresent(rpm -> {
+     calc.calcHubRPMUsingPose().ifPresent(rpm -> {
         SmartDashboard.putNumber("Calculated RPM", rpm);
         shooter.setRPM(rpm);
     });

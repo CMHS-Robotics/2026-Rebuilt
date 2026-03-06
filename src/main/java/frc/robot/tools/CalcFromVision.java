@@ -17,92 +17,38 @@ public class CalcFromVision {
         this.vision = vision;
     }
 
-     public Optional<Double> calcHubRPM() {
-
-         boolean isRed = DriverStation.getAlliance()
-             .map(a -> a == DriverStation.Alliance.Red)
-             .orElse(false);
-    
-         int centerTag = isRed ? 10 : 26;
-         int leftTag   = isRed ? 9  : 25;
-    
-         // Try center tag first
-         Optional<Translation2d> centerTranslation = vision.getDirectTranslationShooterToTag(centerTag);
-        
-         Translation2d finalTranslation;
-    
-         if (centerTranslation.isPresent()) {
-    
-             finalTranslation = centerTranslation.get();
-    
-         } else {
-    
-             Optional<Translation2d> leftTranslation = vision.getDirectTranslationShooterToTag(leftTag); // can also use getDirectTranslationToTag for robot angling
-    
-             if (leftTranslation.isEmpty()) {
-                 return Optional.empty();
-             }
-    
-    //         // Offset 14in toward hub center
-    //         // IMPORTANT: This assumes left tag is 14in left along HUB FACE
-             Translation2d hubOffset = new Translation2d(0.3556, 0);
-             finalTranslation = leftTranslation.get().plus(hubOffset);
-         }
-    
-         double distance = finalTranslation.getNorm();
-    
-         SmartDashboard.putNumber("Vision Distance", distance);
-    
-         double adjustedDistance = distance + 0.6;
-         double rpm = ShooterMath.getRPM(adjustedDistance);
-    
-         return Optional.of(rpm);
-     }
-
      public Optional<Double> calcHubRPMUsingAnyTag(){
-         Optional<Translation2d> hubTranslation = vision.getRawTranslationShooterToHubAnyTag();
-          double distance = hubTranslation.get().getNorm();
+         Optional<Double> distance = vision.getRawDistanceShooterToHubAnyTag();
     
-         SmartDashboard.putNumber("Vision Distance", distance);
+         SmartDashboard.putNumber("Vision Distance", distance.get());
     
-         double adjustedDistance = distance + 0.6;
+         double adjustedDistance = distance.get() + 0.6;
          double rpm = ShooterMath.getRPM(adjustedDistance);
     
          return Optional.of(rpm);
          
      }
 
+     public Optional<Double> calcHubRPMUsingPose(){
 
-     public Optional<Double> calcHubRPMUsingDistance() { //in case the hubOffset is wrong for left tag 
+        int hubTag;
 
-        boolean isRed = DriverStation.getAlliance()
-            .map(a -> a == DriverStation.Alliance.Red)
-            .orElse(false);
-    
-        int centerTag = isRed ? 10 : 26;
-    
-        // only center
-        Optional<Double> distanceToCenter = vision.getDirectDistanceToTag(centerTag);
-
-        Double finalDistance;
-    
-        if (distanceToCenter.isPresent()) {
-    
-            finalDistance = distanceToCenter.get();
-    
-        } else {
-            return Optional.empty();
+        if(DriverStation.getAlliance().get().equals("red")){
+            hubTag = 10;
+        }
+        else {
+            hubTag = 26;
         }
     
-        double distance = finalDistance;
+        Optional<Double> distance = vision.distanceToTagFromPose(hubTag);
     
-        SmartDashboard.putNumber("Vision Distance", distance);
+         SmartDashboard.putNumber("Vision Distance", distance.get());
     
-        double adjustedDistance = distance + 0.6;
-        double rpm = ShooterMath.getRPM(adjustedDistance);
+         double adjustedDistance = distance.get() + 0.6;
+         double rpm = ShooterMath.getRPM(adjustedDistance);
     
-        return Optional.of(rpm);
-    }
+         return Optional.of(rpm);
+     }
 
 
 

@@ -36,7 +36,7 @@ public class PointAndRotate extends Command {
         this.drivetrain = drivetrain;
         this.vision = vision;
 
-        addRequirements(drivetrain, vision);
+        addRequirements(drivetrain);
     }
 
     @Override

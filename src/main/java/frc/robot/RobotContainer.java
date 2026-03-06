@@ -83,7 +83,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   private final Shooter shooter = new Shooter();
   private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
-  private final Vision vision = new Vision(drivetrain, layout);
+  private final Vision vision = new Vision(drivetrain);
   private final Indexer indexer = new Indexer();
   private final Hopper hopper = new Hopper();
   /* ================= CONTROLLERS ================= */
