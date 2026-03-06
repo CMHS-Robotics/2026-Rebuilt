@@ -7,7 +7,7 @@ public class EngageArm extends Command {
     Intake intake;
     public EngageArm(Intake intake){
         this.intake = intake;
-        addRequirements(intake);
+        //addRequirements(intake);
     }
 
     @Override

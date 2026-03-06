@@ -11,7 +11,7 @@ public class runIntake extends Command{
 
     public runIntake(Intake intake) {
         this.intake = intake;
-        addRequirements(intake); // This prevents other commands from using the kicker at the same time
+        //addRequirements(intake); // This prevents other commands from using the kicker at the same time
     }
 
     @Override

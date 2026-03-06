@@ -6,7 +6,7 @@ import frc.robot.subsystems.Intake;
 public class ArmFeedPose extends Command {
     double positionDouble;
     Intake intake;
-    public ArmFeedPose(Double positionDouble, Intake intake){
+    public ArmFeedPose(Intake intake){
         this.positionDouble = positionDouble;
         this.intake = intake;
     }
