@@ -60,12 +60,12 @@ public class Vision extends SubsystemBase {
     private final CommandSwerveDrivetrain swerve;
     private final AprilTagFieldLayout fieldLayout;
 
-    private final PhotonPoseEstimator estFrontRight;
-    private final PhotonPoseEstimator estFrontLeft;
+   // private final PhotonPoseEstimator estFrontRight;
+   // private final PhotonPoseEstimator estFrontLeft;
     //private final PhotonPoseEstimator estLeftFront;
     //private final PhotonPoseEstimator estRight;
 
-    private final Field2d fieldVisualizer = new Field2d();
+   // private final Field2d fieldVisualizer = new Field2d();
 
     private final Translation2d shooterOffset =
     new Translation2d(0.2921, -0.2286);
@@ -75,25 +75,25 @@ public class Vision extends SubsystemBase {
         this.fieldLayout = layout;
 
         // IMPORTANT: Pass the PhotonCamera instance into the PhotonPoseEstimator
-        estFrontRight = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontRightCam);
-        estFrontLeft  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontLeftCam);
+      //  estFrontRight = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontRightCam);
+      //  estFrontLeft  = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToFrontLeftCam);
      //   estLeftFront = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToLeftFrontCam);
      //   estRight     = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,     kRobotToRightCam);
 
-        SmartDashboard.putData("Vision Field", fieldVisualizer);
+     //   SmartDashboard.putData("Vision Field", fieldVisualizer);
     }
 
     @Override
     public void periodic() {
 
-        Pose2d odomPose = swerve.getState().Pose;
-        fieldVisualizer.setRobotPose(odomPose);
+   //     Pose2d odomPose = swerve.getState().Pose;
+   //     fieldVisualizer.setRobotPose(odomPose);
 
         SmartDashboard.putBoolean("front right has targets?", frontRightCam.getLatestResult().hasTargets());
         SmartDashboard.putBoolean("front left has targets?", frontLeftCam.getLatestResult().hasTargets());
        // SmartDashboard.putBoolean("leftFrontCam has targets?", leftFrontCam.getLatestResult().hasTargets());
      //   SmartDashboard.putBoolean("rightCam has targets?", rightCam.getLatestResult().hasTargets());
-        SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
+     //   SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
         getDirectRotationErrorShooterToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter", rot.getDegrees()));
         getDirectRotationErrorToTag(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from robot center", rot.getDegrees()));
         SmartDashboard.putNumber("gyro Heading", swerve.getState().Pose.getRotation().getDegrees());
@@ -101,119 +101,121 @@ public class Vision extends SubsystemBase {
         getDirectDistanceToTag(10).ifPresent(distance -> SmartDashboard.putNumber("Distance pure vision not from Pose", distance)); 
 
 
-        estFrontRight.setReferencePose(odomPose);
-        estFrontLeft.setReferencePose(odomPose);
-      //  estLeftFront.setReferencePose(odomPose);
-      //  estRight.setReferencePose(odomPose);
+//         estFrontRight.setReferencePose(odomPose);
+//         estFrontLeft.setReferencePose(odomPose);
+//       //  estLeftFront.setReferencePose(odomPose);
+//       //  estRight.setReferencePose(odomPose);
 
-        Optional<EstimatedRobotPose> poseFrontRight     = estFrontRight.update(frontRightCam.getLatestResult());
-        Optional<EstimatedRobotPose> poseFrontLeft  = estFrontLeft.update(frontLeftCam.getLatestResult());
-     //   Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
-     //   Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
+//         Optional<EstimatedRobotPose> poseFrontRight     = estFrontRight.update(frontRightCam.getLatestResult());
+//         Optional<EstimatedRobotPose> poseFrontLeft  = estFrontLeft.update(frontLeftCam.getLatestResult());
+//      //   Optional<EstimatedRobotPose> poseLeftFront = estLeftFront.update(leftFrontCam.getLatestResult());
+//      //   Optional<EstimatedRobotPose> poseRight     = estRight.update(rightCam.getLatestResult());
 
-        List<EstimatedRobotPose> poses = new ArrayList<>();
-        List<Integer> weights = new ArrayList<>();
-        List<PhotonCamera> cams = new ArrayList<>();
+//         List<EstimatedRobotPose> poses = new ArrayList<>();
+//         List<Integer> weights = new ArrayList<>();
+//         List<PhotonCamera> cams = new ArrayList<>();
 
-        addPoseIfValid(poseFrontRight,     frontRightCam,     poses, weights, cams);
-        addPoseIfValid(poseFrontLeft,  frontLeftCam,  poses, weights, cams);
-     //   addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
-     //   addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
+//         addPoseIfValid(poseFrontRight,     frontRightCam,     poses, weights, cams);
+//         addPoseIfValid(poseFrontLeft,  frontLeftCam,  poses, weights, cams);
+//      //   addPoseIfValid(poseLeftFront, leftFrontCam, poses, weights, cams);
+//      //   addPoseIfValid(poseRight,     rightCam,     poses, weights, cams);
 
-        SmartDashboard.putNumber("total vision poses", poses.size());
+//         SmartDashboard.putNumber("total vision poses", poses.size());
         
-        if (poses.isEmpty()) {
-        SmartDashboard.putBoolean("V fused", false);
-         return;
-        }
+//         if (poses.isEmpty()) {
+//         SmartDashboard.putBoolean("V fused", false);
+//          return;
+//         }
 
-        double totalWeight = 0;
-        double x = 0, y = 0;
-        double cosSum = 0, sinSum = 0;
-        double timestamp = 0;
+//         double totalWeight = 0;
+//         double x = 0, y = 0;
+//         double cosSum = 0, sinSum = 0;
+//         double timestamp = 0;
 
-        double totalTags = 0;
-        double totalDist = 0;
+//         double totalTags = 0;
+//         double totalDist = 0;
 
-        for (int i = 0; i < poses.size(); i++) {
-            EstimatedRobotPose p = poses.get(i);
-            int w = weights.get(i);
-            PhotonCamera cam = cams.get(i);
+//         for (int i = 0; i < poses.size(); i++) {
+//             EstimatedRobotPose p = poses.get(i);
+//             int w = weights.get(i);
+//             PhotonCamera cam = cams.get(i);
 
-            Pose2d pose2d = p.estimatedPose.toPose2d();
+//             Pose2d pose2d = p.estimatedPose.toPose2d();
 
-          //  if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
-          //      continue;
+//           //  if (pose2d.getTranslation().getDistance(odomPose.getTranslation()) > 10.0)
+//           //      continue;
 
-            x += pose2d.getX() * w;
-            y += pose2d.getY() * w;
-            cosSum += Math.cos(pose2d.getRotation().getRadians()) * w;
-            sinSum += Math.sin(pose2d.getRotation().getRadians()) * w;
-            timestamp += p.timestampSeconds * w;
+//             x += pose2d.getX() * w;
+//             y += pose2d.getY() * w;
+//             cosSum += Math.cos(pose2d.getRotation().getRadians()) * w;
+//             sinSum += Math.sin(pose2d.getRotation().getRadians()) * w;
+//             timestamp += p.timestampSeconds * w;
 
-            totalWeight += w;
+//             totalWeight += w;
 
-            var targets = cam.getLatestResult().getTargets();
-            totalTags += targets.size();
+//             var targets = cam.getLatestResult().getTargets();
+//             totalTags += targets.size();
 
-            for (var t : targets) {
-                totalDist += t.getBestCameraToTarget().getTranslation().getNorm();
-            }
-        }
+//             for (var t : targets) {
+//                 totalDist += t.getBestCameraToTarget().getTranslation().getNorm();
+//             }
+//         }
 
-        if (totalWeight <= 0 || totalTags <= 0) return;
+//         if (totalWeight <= 0 || totalTags <= 0) return;
 
-        Pose2d fused = new Pose2d(
-            x / totalWeight,
-            y / totalWeight,
-            new Rotation2d(cosSum / totalWeight, sinSum / totalWeight)
-        );
+//         Pose2d fused = new Pose2d(
+//             x / totalWeight,
+//             y / totalWeight,
+//             new Rotation2d(cosSum / totalWeight, sinSum / totalWeight)
+//         );
 
-        double avgDist = totalDist / totalTags;
+//         double avgDist = totalDist / totalTags;
 
-        // ---- STD DEV CALC (simple version) ----
-        double xyStd = 0.1 + 0.05 * avgDist;
-        double thetaStd = .05; // 0.2 + 0.1 * avgDist; //changed this to be less restrictive
+//         // ---- STD DEV CALC (simple version) ----
+//         double xyStd = 0.1 + 0.05 * avgDist;
+//         double thetaStd = .05; // 0.2 + 0.1 * avgDist; //changed this to be less restrictive
 
-        if (totalTags <= 1) {
-            xyStd *= 2.0;
-            thetaStd *= 2.5;
-        }
+//         if (totalTags <= 1) {
+//             xyStd *= 2.0;
+//             thetaStd *= 2.5;
+//         }
 
-        Matrix<N3, N1> stdDevs = VecBuilder.fill(xyStd, xyStd, thetaStd);
+//         Matrix<N3, N1> stdDevs = VecBuilder.fill(xyStd, xyStd, thetaStd);
 
-        if (allowVisionFusion) {
-        swerve.addVisionMeasurement(
-            fused,
-            timestamp / totalWeight,
-            stdDevs
-                );
-        }
+//         if (allowVisionFusion) {
+//         swerve.addVisionMeasurement(
+//             fused,
+//             timestamp / totalWeight,
+//             stdDevs
+//                 );
+//         }
 
-        fieldVisualizer.setRobotPose(swerve.getState().Pose);
-        SmartDashboard.putBoolean("V fused", true);
+//         //fieldVisualizer.setRobotPose(swerve.getState().Pose);
+//         //SmartDashboard.putBoolean("V fused", true);
 
-    }
+//     }
 
-    private void addPoseIfValid(
-        Optional<EstimatedRobotPose> poseOpt,
-        PhotonCamera cam,
-        List<EstimatedRobotPose> poses,
-        List<Integer> weights,
-        List<PhotonCamera> cams
-    ) {
-        if (poseOpt.isPresent() && cam.getLatestResult().hasTargets()) {
-            poses.add(poseOpt.get());
-            weights.add(cam.getLatestResult().getTargets().size());
-            cams.add(cam);
-        }
-       if (poseOpt.isPresent()) {
-            Pose2d visionPose = poseOpt.get().estimatedPose.toPose2d();
-            SmartDashboard.putNumber(
-            cam.getName() + " vision heading",
-        visionPose.getRotation().getDegrees()
-    );
-}
+//     private void addPoseIfValid(
+//         Optional<EstimatedRobotPose> poseOpt,
+//         PhotonCamera cam,
+//         List<EstimatedRobotPose> poses,
+//         List<Integer> weights,
+//         List<PhotonCamera> cams
+//     ) {
+//         if (poseOpt.isPresent() && cam.getLatestResult().hasTargets()) {
+//             poses.add(poseOpt.get());
+//             weights.add(cam.getLatestResult().getTargets().size());
+//             cams.add(cam);
+//         }
+//        if (poseOpt.isPresent()) {
+//             Pose2d visionPose = poseOpt.get().estimatedPose.toPose2d();
+//             SmartDashboard.putNumber(
+//             cam.getName() + " vision heading",
+//         visionPose.getRotation().getDegrees()
+//     );
+// }
+//     }
+
     }
 
     // --- Helper function: distance to a specific tag ID ---
@@ -431,133 +433,133 @@ public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
 
 
 
-public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
+// public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) {
-            return Optional.empty();
-        }
+//         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+//         if (tagPoseOpt.isEmpty()) {
+//             return Optional.empty();
+//         }
     
-        Pose2d robotPose = swerve.getState().Pose;
+//         Pose2d robotPose = swerve.getState().Pose;
 
-        Translation2d  robotTranslation = robotPose.getTranslation();
+//         Translation2d  robotTranslation = robotPose.getTranslation();
     
-        // Hub/tag world position
-        Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
+//         // Hub/tag world position
+//         Translation2d tagPos = tagPoseOpt.get().toPose2d().getTranslation();
     
     
-        // ---- Compute Vector From Robot To Hub ----
+//         // ---- Compute Vector From Robot To Hub ----
     
-        Translation2d vectorToHub = tagPos.minus(robotTranslation);
+//         Translation2d vectorToHub = tagPos.minus(robotTranslation);
     
-        Rotation2d angleToHub =
-            vectorToHub.getAngle();
+//         Rotation2d angleToHub =
+//             vectorToHub.getAngle();
     
-        // Rotation error = desired heading - current heading
-        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
+//         // Rotation error = desired heading - current heading
+//         Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
     
-        return Optional.of(rotError);
-    }
+//         return Optional.of(rotError);
+//     }
 
-    public Optional<Rotation2d> getRotationErrorShooterToTagFromPose(int tagId) {
+//     public Optional<Rotation2d> getRotationErrorShooterToTagFromPose(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) {
-            return Optional.empty();
-        }
+//         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+//         if (tagPoseOpt.isEmpty()) {
+//             return Optional.empty();
+//         }
     
-        Pose2d robotPose = swerve.getState().Pose;
+//         Pose2d robotPose = swerve.getState().Pose;
     
-        // Hub/tag world position
-        Translation2d tagPos =
-            tagPoseOpt.get().toPose2d().getTranslation();
+//         // Hub/tag world position
+//         Translation2d tagPos =
+//             tagPoseOpt.get().toPose2d().getTranslation();
     
-        // ---- Compute Shooter World Position ----
+//         // ---- Compute Shooter World Position ----
     
-        // Rotate shooter offset into field frame
-        Translation2d shooterFieldOffset =
-            shooterOffset.rotateBy(robotPose.getRotation());
+//         // Rotate shooter offset into field frame
+//         Translation2d shooterFieldOffset =
+//             shooterOffset.rotateBy(robotPose.getRotation());
     
-        // Shooter world position
-        Translation2d shooterWorldPos =
-            robotPose.getTranslation().plus(shooterFieldOffset);
+//         // Shooter world position
+//         Translation2d shooterWorldPos =
+//             robotPose.getTranslation().plus(shooterFieldOffset);
     
-        // ---- Compute Vector From Shooter To Hub ----
+//         // ---- Compute Vector From Shooter To Hub ----
     
-        Translation2d vectorToHub =
-            tagPos.minus(shooterWorldPos);
+//         Translation2d vectorToHub =
+//             tagPos.minus(shooterWorldPos);
     
-        Rotation2d angleToHub =
-            vectorToHub.getAngle();
+//         Rotation2d angleToHub =
+//             vectorToHub.getAngle();
     
-        // Rotation error = desired heading - current heading
-        Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
+//         // Rotation error = desired heading - current heading
+//         Rotation2d rotError = angleToHub.minus(robotPose.getRotation());
     
-        return Optional.of(rotError);
-    }
+//         return Optional.of(rotError);
+//     }
 
-     public Optional<Double> distanceToTagFromPose(int tagId) {
+//      public Optional<Double> distanceToTagFromPose(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) return Optional.empty();
+//         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+//         if (tagPoseOpt.isEmpty()) return Optional.empty();
     
-        Pose2d robotPose = swerve.getState().Pose;
+//         Pose2d robotPose = swerve.getState().Pose;
     
-        Translation2d tagTranslation =
-            tagPoseOpt.get().toPose2d().getTranslation();
+//         Translation2d tagTranslation =
+//             tagPoseOpt.get().toPose2d().getTranslation();
     
-        // Rotate shooter offset into field frame
-      //  Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
+//         // Rotate shooter offset into field frame
+//       //  Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
     
-        // Shooter world position
-        // Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
+//         // Shooter world position
+//         // Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
     
-      //  return Optional.of(
-      //      shooterWorldPos.getDistance(tagTranslation)
-      //  );
+//       //  return Optional.of(
+//       //      shooterWorldPos.getDistance(tagTranslation)
+//       //  );
 
-      Translation2d robotTranslation = robotPose.getTranslation();
-      return Optional.of(robotTranslation.getDistance(tagTranslation));
-    }
+//       Translation2d robotTranslation = robotPose.getTranslation();
+//       return Optional.of(robotTranslation.getDistance(tagTranslation));
+//     }
 
-    public Optional<Translation2d> translationShooterToTagFromPose(int tagId) {
+//     public Optional<Translation2d> translationShooterToTagFromPose(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) return Optional.empty();
+//         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+//         if (tagPoseOpt.isEmpty()) return Optional.empty();
     
-        Pose2d robotPose = swerve.getState().Pose;
+//         Pose2d robotPose = swerve.getState().Pose;
     
-        Translation2d tagTranslation =
-            tagPoseOpt.get().toPose2d().getTranslation();
+//         Translation2d tagTranslation =
+//             tagPoseOpt.get().toPose2d().getTranslation();
     
-        Translation2d shooterFieldOffset =
-            shooterOffset.rotateBy(robotPose.getRotation());
+//         Translation2d shooterFieldOffset =
+//             shooterOffset.rotateBy(robotPose.getRotation());
     
-        Translation2d shooterWorldPos =
-            robotPose.getTranslation().plus(shooterFieldOffset);
+//         Translation2d shooterWorldPos =
+//             robotPose.getTranslation().plus(shooterFieldOffset);
     
-        return Optional.of(
-            tagTranslation.minus(shooterWorldPos)
-        );
-    }
+//         return Optional.of(
+//             tagTranslation.minus(shooterWorldPos)
+//         );
+//     }
 
-    public Optional<Translation2d> translationToTagFromPose(int tagId) {
+//     public Optional<Translation2d> translationToTagFromPose(int tagId) {
 
-        Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) return Optional.empty();
+//         Optional<Pose3d> tagPoseOpt = fieldLayout.getTagPose(tagId);
+//         if (tagPoseOpt.isEmpty()) return Optional.empty();
     
-        Pose2d robotPose = swerve.getState().Pose;
+//         Pose2d robotPose = swerve.getState().Pose;
     
-        Translation2d tagTranslation =
-            tagPoseOpt.get().toPose2d().getTranslation();
+//         Translation2d tagTranslation =
+//             tagPoseOpt.get().toPose2d().getTranslation();
     
-        Translation2d robotTranslation = robotPose.getTranslation();
+//         Translation2d robotTranslation = robotPose.getTranslation();
             
     
-        return Optional.of(
-            tagTranslation.minus(robotTranslation)
-        );
-    }
+//         return Optional.of(
+//             tagTranslation.minus(robotTranslation)
+//         );
+//     }
 
 
 
