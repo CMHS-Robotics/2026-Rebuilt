@@ -13,7 +13,7 @@ public class Intake extends SubsystemBase{
     private final TalonFX intakeMoter = new TalonFX(19);
     private final TalonFX intakeUpDownMoter = new TalonFX(20);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
-    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2500); // Limit to 500 RPM per second
+    private final SlewRateLimiter rpmRamp = new SlewRateLimiter(3500); // Limit to 500 RPM per second
     private final PositionVoltage intakeUpDownPositionRequest = new PositionVoltage(0);
 
     public Intake() {

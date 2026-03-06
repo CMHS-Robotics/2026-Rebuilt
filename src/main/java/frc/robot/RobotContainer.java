@@ -101,13 +101,13 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     EngageArm EngageArmCommand = new EngageArm(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-    //NamedCommands.registerCommand("spinUpFlyWheel", shootBallCommand.withTimeout(1.5));
+    NamedCommands.registerCommand("spinUpFlyWheel", shootBallCommand);
     NamedCommands.registerCommand("shootBall", shootBallCommand.
      alongWith(indexCommand.withTimeout(20)).alongWith(kickCommand).withTimeout(20)
 );
     NamedCommands.registerCommand("engageArm", EngageArmCommand);
     NamedCommands.registerCommand("intakeSpin", runIntakeCommand);
-    NamedCommands.registerCommand("intakeSpinUp", runIntakeCommand.withTimeout(0.5));
+    NamedCommands.registerCommand("intakeSpinUp", runIntakeCommand);
     NamedCommands.registerCommand("armFeedAngle", armFeedPose);
     NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
 
@@ -164,7 +164,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision));
-       Manipulator.rightBumper().whileTrue(new Kick(kicker, vision));
+       Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
        Manipulator.rightBumper().whileTrue(new Index(indexer, vision));
        Manipulator.rightBumper().whileTrue(new Hopp(hopper, vision));
        Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

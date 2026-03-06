@@ -21,7 +21,7 @@ public class ShootBall extends Command {
         this.shooter = shooter;
         this.vision = vision;
         this.calc = new CalcFromVision(vision);
-        //addRequirements(shooter); // This prevents other commands from using the shooter at the same time
+        addRequirements(shooter); // This prevents other commands from using the shooter at the same time
     }
 
     @Override
