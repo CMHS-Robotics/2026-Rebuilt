@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase; // Use this instead of "Robot"
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,21 +24,26 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-public class Vision {
+import frc.robot.Constants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import org.littletonrobotics.junction.Logger;
+
+public class Vision extends SubsystemBase {
 
     private boolean allowVisionFusion = false;
     private final CommandSwerveDrivetrain swerve;
     private final PhotonCamera[] cameras;
     private final PhotonPoseEstimator[] estimators;
     private Matrix<N3, N1> curStdDevs;
-    private final Field2d fieldVisualizer = new Field2d();
-
+    
+private final Field2d fieldVisualizer = new Field2d();
     private final Translation2d shooterOffset = new Translation2d(0.2921, -0.2286);
 
     public Vision(CommandSwerveDrivetrain swerve) {
         this.swerve = swerve;
+        Logger.recordOutput("Vision/pose", 0);
+
 
         // Initialize arrays for 2 cameras
         cameras = new PhotonCamera[] {
@@ -52,8 +58,11 @@ public class Vision {
         SmartDashboard.putData("Vision Field", fieldVisualizer);
     }
 
+    @Override
     public void periodic() {
+
         Pose2d odomPose = swerve.getState().Pose;
+
         SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
         SmartDashboard.putBoolean("front right has targets?", cameras[1].getLatestResult().hasTargets());
         SmartDashboard.putBoolean("front left has targets?", cameras[0].getLatestResult().hasTargets());
@@ -66,7 +75,7 @@ public class Vision {
 
         boolean sawTagThisFrame = false;
 
-        for (int i = 0; i < cameras.length; i++) {
+        for (int i = 0; i < 1; i++) {
             PhotonCamera cam = cameras[i];
             PhotonPoseEstimator estimator = estimators[i];
 
@@ -74,19 +83,27 @@ public class Vision {
                 if (!result.hasTargets()) continue;
 
                 Optional<EstimatedRobotPose> visionEst = estimator.estimateCoprocMultiTagPose(result);
-                if (visionEst.isEmpty()) {
+                 if (visionEst.isEmpty()) {
+                
                     visionEst = estimator.estimateLowestAmbiguityPose(result);
-                }
 
+                 }
+
+               
+               fieldVisualizer.setRobotPose(visionEst.get().estimatedPose.toPose2d());
+               SmartDashboard.putData(fieldVisualizer);
+
+
+               
                 updateEstimationStdDevs(visionEst, result.getTargets(), estimator);
 
 
-                if(allowVisionFusion){
+                if(true){
                      visionEst.ifPresent(est -> {
                     swerve.addVisionMeasurement(
                         est.estimatedPose.toPose2d(), 
                         est.timestampSeconds, 
-                        curStdDevs
+                        Constants.Vision.kMultiTagStdDevs
                     );
                 });
                 sawTagThisFrame = true;

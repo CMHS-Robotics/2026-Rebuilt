@@ -51,18 +51,21 @@ public class PointAndRotate extends Command {
 
     @Override
     public void execute() {
-        Optional<Rotation2d> primaryError   = vision.getRawRotationShooterToHubAnyTag();
-        Optional<Rotation2d> secondaryError = vision.getRawRotationShooterToHubAnyTag();
 
-        double errorRad;
-        boolean canSeeTarget = primaryError.isPresent() || secondaryError.isPresent();
+        
+        Optional<Rotation2d> primaryError   = vision.getRawRotationErrorToHubAnyTag();
+        // Optional<Rotation2d> secondaryError = vision.getRotationErrorRobotToTagFromPose(secondaryTag);
+
+         double errorRad;
+        boolean canSeeTarget = primaryError.isPresent(); //|| secondaryError.isPresent();
 
         if (canSeeTarget) {
             // Reset counter and update the "last known" error
             lostFramesCounter = 0;
-            errorRad = primaryError.isPresent() ? 
-                       primaryError.get().getRadians() : 
-                       secondaryError.get().getRadians();
+           // errorRad = primaryError.isPresent() ? 
+           //            primaryError.get().getRadians() : 
+           //            secondaryError.get().getRadians();
+           errorRad = primaryError.get().getRadians();
             lastValidErrorRad = errorRad;
         } else {
             // We lost vision! Increment counter
@@ -77,6 +80,11 @@ public class PointAndRotate extends Command {
                 return;
             }
         }
+
+        // Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTagFromPose(primaryTag);
+
+        // errorRad = primaryError.get().getRadians();
+
 
         // Apply Deadband/Tolerance check
         if (Math.abs(errorRad) < rotTolerance) {
@@ -93,8 +101,8 @@ public class PointAndRotate extends Command {
             .withRotationalRate(turnPower));
 
         // Feedback for debugging
-        SmartDashboard.putNumber("Lost Vision Frames", lostFramesCounter);
-        SmartDashboard.putBoolean("Vision Active", canSeeTarget);
+      //  SmartDashboard.putNumber("Lost Vision Frames", lostFramesCounter);
+      //  SmartDashboard.putBoolean("Vision Active", canSeeTarget);
     }
 
 
