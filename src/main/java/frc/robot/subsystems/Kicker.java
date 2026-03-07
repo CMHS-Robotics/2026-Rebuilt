@@ -20,6 +20,8 @@ public class Kicker extends SubsystemBase {
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         kickerMoter.getConfigurator().apply(config);
     }

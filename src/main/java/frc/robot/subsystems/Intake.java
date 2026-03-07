@@ -22,6 +22,8 @@ public class Intake extends SubsystemBase{
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
         upDownConfig.Slot0.kP = 10.0; // Start small!
@@ -41,7 +43,7 @@ public class Intake extends SubsystemBase{
 
         intakeUpDownMoter.getConfigurator().apply(upDownConfig);
 
-        intakeMoter.getConfigurator().apply(config);
+      //  intakeMoter.getConfigurator().apply(config);
         intakeUpDownMoter.getConfigurator().apply(config);
     }
 

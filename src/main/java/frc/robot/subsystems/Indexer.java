@@ -20,6 +20,8 @@ public class Indexer extends SubsystemBase {
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
+        config.CurrentLimits.StatorCurrentLimit = 50;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         indexerTopMoter.getConfigurator().apply(config);
         indexerBottomMoter.getConfigurator().apply(config);

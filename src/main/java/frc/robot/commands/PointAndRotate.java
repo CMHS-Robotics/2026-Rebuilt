@@ -53,33 +53,33 @@ public class PointAndRotate extends Command {
     public void execute() {
 
         
-        Optional<Rotation2d> primaryError   = vision.getRawRotationErrorToHubAnyTag();
+        Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTagFromPose(primaryTag);
         // Optional<Rotation2d> secondaryError = vision.getRotationErrorRobotToTagFromPose(secondaryTag);
 
          double errorRad;
         boolean canSeeTarget = primaryError.isPresent(); //|| secondaryError.isPresent();
 
-        if (canSeeTarget) {
+  //      if (canSeeTarget) {
             // Reset counter and update the "last known" error
-            lostFramesCounter = 0;
+  //          lostFramesCounter = 0;
            // errorRad = primaryError.isPresent() ? 
            //            primaryError.get().getRadians() : 
            //            secondaryError.get().getRadians();
-           errorRad = primaryError.get().getRadians();
+            errorRad = primaryError.get().getRadians();
             lastValidErrorRad = errorRad;
-        } else {
+     //   } else {
             // We lost vision! Increment counter
-            lostFramesCounter++;
+      //      lostFramesCounter++;
             
-            if (lostFramesCounter <= MAX_LOST_FRAMES) {
+      //      if (lostFramesCounter <= MAX_LOST_FRAMES) {
                 // Keep using the last known error to "coast" through the dropout
-                errorRad = lastValidErrorRad;
-            } else {
+     //           errorRad = lastValidErrorRad;
+    //        } else {
                 // We've been blind for too long, safety stop
-                drivetrain.setControl(zero);
-                return;
-            }
-        }
+      //          drivetrain.setControl(zero);
+      //          return;
+      //      }
+      //  }
 
         // Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTagFromPose(primaryTag);
 

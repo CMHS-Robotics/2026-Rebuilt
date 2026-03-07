@@ -13,12 +13,15 @@ public class Hopper extends SubsystemBase {
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 500 RPM per second
 
+
     public Hopper() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = 0.1;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         //config.Slot0.kF = 0.05;
+        config.CurrentLimits.StatorCurrentLimit = 30;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         hopperMoter.getConfigurator().apply(config);
     }
