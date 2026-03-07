@@ -24,6 +24,7 @@ public class Intake extends SubsystemBase{
         //config.Slot0.kF = 0.05;
         config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
+        
 
         TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
         upDownConfig.Slot0.kP = 10.0; // Start small!
@@ -33,6 +34,8 @@ public class Intake extends SubsystemBase{
         // 1. Limit current so we don't melt the motor when it stalls at the bottom
         upDownConfig.CurrentLimits.StatorCurrentLimit = 20.0; // 20 Amps is safe for stalling briefly
         upDownConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+         upDownConfig.CurrentLimits.SupplyCurrentLimit = 20;
+        upDownConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
         upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 26.5244140625;

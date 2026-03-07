@@ -7,8 +7,10 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,7 +31,10 @@ import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import org.littletonrobotics.junction.Logger;
 
+
 public class Vision extends SubsystemBase {
+
+    private final Translation2d hubOffset = new Translation2d(.6,0);
 
     private boolean allowVisionFusion = false;
     private final CommandSwerveDrivetrain swerve;
@@ -75,7 +80,7 @@ private final Field2d fieldVisualizer = new Field2d();
 
         boolean sawTagThisFrame = false;
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < cameras.length; i++) {
             PhotonCamera cam = cameras[i];
             PhotonPoseEstimator estimator = estimators[i];
 
@@ -155,13 +160,27 @@ private final Field2d fieldVisualizer = new Field2d();
 
     // --- Pose Analysis Methods ---
 
-    public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
-        Pose2d robotPose = swerve.getState().Pose;
-        return kTagLayout.getTagPose(tagId).map(tagPose -> {
-            Translation2d vectorToHub = tagPose.toPose2d().getTranslation().minus(robotPose.getTranslation());
-            return vectorToHub.getAngle().minus(robotPose.getRotation());
-        });
-    }
+   public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
+    Pose2d robotPose = swerve.getState().Pose;
+    
+    return kTagLayout.getTagPose(tagId).map(tagPose3d -> {
+        // 1. Calculate the Target Point (0.6m back from the tag face)
+        Transform3d tagPullback = new Transform3d(new Translation3d(0.6, 0, 0), new Rotation3d());
+        Pose2d targetPose = tagPose3d.plus(tagPullback).toPose2d();
+
+        // 2. Calculate the Shooter's position in the Field Frame
+        // Convert shooterOffset (robot-relative) to field-relative using robot rotation
+        Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
+        Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
+
+        // 3. Calculate the vector from the SHOOTER to the TARGET
+        Translation2d vectorShooterToTarget = targetPose.getTranslation().minus(shooterWorldPos);
+        
+        // 4. Return the rotation error
+        // The angle the robot needs to point so the shooter (at its offset) faces the target
+        return vectorShooterToTarget.getAngle().minus(robotPose.getRotation());
+    });
+}
 
     
 

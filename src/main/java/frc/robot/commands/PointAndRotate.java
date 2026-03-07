@@ -27,6 +27,8 @@ public class PointAndRotate extends Command {
     private int lostFramesCounter = 0;
     private final int MAX_LOST_FRAMES = 15; // About 0.3 seconds at 50Hz
 
+    
+
     private final SwerveRequest zero = new SwerveRequest.FieldCentric()
             .withVelocityX(0)
             .withVelocityY(0)

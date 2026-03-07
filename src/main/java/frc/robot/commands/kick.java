@@ -33,7 +33,7 @@ public class Kick extends Command{
        //  double rpm = SmartDashboard.getNumber("SetRPM", 0);
         calc.calcHubRPMUsingAnyTag().ifPresent(rpm -> {
         SmartDashboard.putNumber("Calculated RPM", rpm);
-        kicker.setRPM(-rpm);
+        kicker.setRPM( (-rpm * 2));
         });
      // double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
      //  double rpm = ShooterMath.getRPM(distance);

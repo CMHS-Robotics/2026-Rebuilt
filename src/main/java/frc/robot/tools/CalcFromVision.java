@@ -19,8 +19,12 @@ public class CalcFromVision {
 
      public Optional<Double> calcHubRPMUsingAnyTag(){
          Optional<Double> distance = vision.getRawDistanceShooterToHubAnyTag();
-    
-         SmartDashboard.putNumber("Vision Distance", distance.get());
+         if(!distance.isEmpty()){
+            SmartDashboard.putNumber("Vision Distance", distance.get());
+         }
+         else{
+             SmartDashboard.putNumber("Vision Distance", 0); 
+         }
     
          double adjustedDistance = distance.get() + 0.6;
          double rpm = ShooterMath.getRPM(adjustedDistance);
@@ -31,14 +35,7 @@ public class CalcFromVision {
 
      public Optional<Double> calcHubRPMUsingPose(){
 
-        int hubTag;
-
-        if(DriverStation.getAlliance().get().equals("red")){
-            hubTag = 10;
-        }
-        else {
-            hubTag = 26;
-        }
+        int hubTag = getHubTagID();
     
         Optional<Double> distance = vision.distanceToTagFromPose(hubTag);
     
@@ -49,6 +46,11 @@ public class CalcFromVision {
     
          return Optional.of(rpm);
      }
+
+     private int getHubTagID() {
+        return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) 
+               == DriverStation.Alliance.Red ? 10 : 26;
+    }
 
 
 

@@ -22,6 +22,8 @@ public class Hopper extends SubsystemBase {
         //config.Slot0.kF = 0.05;
         config.CurrentLimits.StatorCurrentLimit = 30;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 50;
+        
 
         hopperMoter.getConfigurator().apply(config);
     }
