@@ -103,7 +103,7 @@ private final Field2d fieldVisualizer = new Field2d();
                 updateEstimationStdDevs(visionEst, result.getTargets(), estimator);
 
 
-                if(true){
+                if(allowVisionFusion){
                      visionEst.ifPresent(est -> {
                     swerve.addVisionMeasurement(
                         est.estimatedPose.toPose2d(), 
@@ -165,7 +165,7 @@ private final Field2d fieldVisualizer = new Field2d();
     
     return kTagLayout.getTagPose(tagId).map(tagPose3d -> {
         // 1. Calculate the Target Point (0.6m back from the tag face)
-        Transform3d tagPullback = new Transform3d(new Translation3d(0.6, 0, 0), new Rotation3d());
+        Transform3d tagPullback = new Transform3d(new Translation3d(-0.6, 0, 0), new Rotation3d());
         Pose2d targetPose = tagPose3d.plus(tagPullback).toPose2d();
 
         // 2. Calculate the Shooter's position in the Field Frame

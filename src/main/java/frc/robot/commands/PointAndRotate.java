@@ -51,61 +51,35 @@ public class PointAndRotate extends Command {
         secondaryTag = isRed ? 9  : 25;
     }
 
-    @Override
-    public void execute() {
+   @Override
+public void execute() {
+    // 1. Get the error. This uses your fused Pose, so it's always "live" 
+    // even if the camera is currently blocked.
+    var errorOptional = vision.getRotationErrorRobotToTagFromPose(primaryTag);
 
-        
-        Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTagFromPose(primaryTag);
-        // Optional<Rotation2d> secondaryError = vision.getRotationErrorRobotToTagFromPose(secondaryTag);
+    // 2. Safety Gate: If the tag doesn't exist in the layout, stop.
+    if (errorOptional.isEmpty()) {
+        drivetrain.setControl(zero);
+        return;
+    }
 
-         double errorRad;
-        boolean canSeeTarget = primaryError.isPresent(); //|| secondaryError.isPresent();
+    // 3. Extract the rotation error
+    double errorRad = errorOptional.get().getRadians();
 
-  //      if (canSeeTarget) {
-            // Reset counter and update the "last known" error
-  //          lostFramesCounter = 0;
-           // errorRad = primaryError.isPresent() ? 
-           //            primaryError.get().getRadians() : 
-           //            secondaryError.get().getRadians();
-            errorRad = primaryError.get().getRadians();
-            lastValidErrorRad = errorRad;
-     //   } else {
-            // We lost vision! Increment counter
-      //      lostFramesCounter++;
-            
-      //      if (lostFramesCounter <= MAX_LOST_FRAMES) {
-                // Keep using the last known error to "coast" through the dropout
-     //           errorRad = lastValidErrorRad;
-    //        } else {
-                // We've been blind for too long, safety stop
-      //          drivetrain.setControl(zero);
-      //          return;
-      //      }
-      //  }
-
-        // Optional<Rotation2d> primaryError   = vision.getRotationErrorRobotToTagFromPose(primaryTag);
-
-        // errorRad = primaryError.get().getRadians();
-
-
-        // Apply Deadband/Tolerance check
-        if (Math.abs(errorRad) < rotTolerance) {
-            drivetrain.setControl(zero);
-            return;
-        }
-
-        // Standard PID logic using either fresh or "ghost" errorRad
-        double turnPower = MathUtil.clamp(kP * errorRad, -3.0, 3.0);
+    // 4. Deadband: Stop vibrating when we are "close enough"
+    if (Math.abs(errorRad) < rotTolerance) {
+        drivetrain.setControl(zero);
+    } else {
+        // 5. PID Calculation
+        // Use a P-loop to turn faster when the error is large
+        double turnPower = MathUtil.clamp(kP * errorRad, -4.0, 4.0);
         
         drivetrain.setControl(new SwerveRequest.FieldCentric()
             .withVelocityX(0)
             .withVelocityY(0)
             .withRotationalRate(turnPower));
-
-        // Feedback for debugging
-      //  SmartDashboard.putNumber("Lost Vision Frames", lostFramesCounter);
-      //  SmartDashboard.putBoolean("Vision Active", canSeeTarget);
     }
+}
 
 
     @Override

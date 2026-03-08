@@ -58,6 +58,16 @@ public class Robot extends TimedRobot {
    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
    if (m_autonomousCommand != null) {
      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+
+    m_robotContainer.getVision().setVisionEnabled(false);
+
+    CommandScheduler.getInstance().schedule(
+    new WaitCommand(1).andThen(
+        new InstantCommand(() ->
+            m_robotContainer.getVision().setVisionEnabled(true) 
+        )
+    )
+    );
     }
 
    // Pose2d startingPose = m_autonomousCommand.getStartingPose();
@@ -81,25 +91,9 @@ public class Robot extends TimedRobot {
      }
 
 
-    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
-    new Translation2d(0, 0),
-    Rotation2d.fromDegrees(180)
-    ));
-
-
     if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
-
-    m_robotContainer.getVision().setVisionEnabled(false);
-
-    CommandScheduler.getInstance().schedule(
-    new WaitCommand(0.5).andThen(
-        new InstantCommand(() ->
-            m_robotContainer.getVision().setVisionEnabled(true) // keep false turn off vision for test
-        )
-    )
-    );
 
 
   }
