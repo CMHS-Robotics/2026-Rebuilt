@@ -25,9 +25,13 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,14 +44,16 @@ public class Vision extends SubsystemBase {
     private final CommandSwerveDrivetrain swerve;
     private final PhotonCamera[] cameras;
     private final PhotonPoseEstimator[] estimators;
-    private Matrix<N3, N1> curStdDevs;
+
+    private VisionSystemSim visionSim;
+    private PhotonCameraSim[] cameraSims;
     
-private final Field2d fieldVisualizer = new Field2d();
-    private final Translation2d shooterOffset = new Translation2d(0.2921, -0.2286);
+    private Matrix<N3, N1> curStdDevs;
+
+    private final Translation2d shooterOffset = new Translation2d(0.2921, -0.1);
 
     public Vision(CommandSwerveDrivetrain swerve) {
         this.swerve = swerve;
-        Logger.recordOutput("Vision/pose", 0);
 
 
         // Initialize arrays for 2 cameras
@@ -60,66 +66,103 @@ private final Field2d fieldVisualizer = new Field2d();
             new PhotonPoseEstimator(kTagLayout, kRobotToFrontLeftCam),
             new PhotonPoseEstimator(kTagLayout, kRobotToFrontRightCam)
         };
-        SmartDashboard.putData("Vision Field", fieldVisualizer);
+
+
+       // SmartDashboard.putData("Vision Field", fieldVisualizer);
+
+         if (RobotBase.isSimulation()) {
+            visionSim = new VisionSystemSim("main");
+            visionSim.addAprilTags(kTagLayout);
+
+            var cameraProp = new SimCameraProperties();
+            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+            cameraProp.setFPS(45);
+            cameraProp.setAvgLatencyMs(50);
+
+            // Create a sim for EACH camera
+            cameraSims = new PhotonCameraSim[cameras.length];
+            
+            // Link Sim 0 to Camera 0 (Front Left)
+            cameraSims[0] = new PhotonCameraSim(cameras[0], cameraProp);
+            visionSim.addCamera(cameraSims[0], kRobotToFrontLeftCam);
+
+            // Link Sim 1 to Camera 1 (Front Right)
+            cameraSims[1] = new PhotonCameraSim(cameras[1], cameraProp);
+            visionSim.addCamera(cameraSims[1], kRobotToFrontRightCam);
+        }
     }
 
     @Override
-    public void periodic() {
+    public void simulationPeriodic() {
+        // Update the vision simulation with the ACTUAL robot pose from the drivetrain
+        visionSim.update(swerve.getState().Pose);
+    }
 
-        Pose2d odomPose = swerve.getState().Pose;
+    @Override
+public void periodic() {
+    EstimatedRobotPose bestEstimate = null;
+    Matrix<N3, N1> bestStdDevs = null;
+    double bestScore = Double.MAX_VALUE; // Lower score is better (less uncertainty)
 
-        SmartDashboard.putNumber("Robot Heading", odomPose.getRotation().getDegrees());
-        SmartDashboard.putBoolean("front right has targets?", cameras[1].getLatestResult().hasTargets());
-        SmartDashboard.putBoolean("front left has targets?", cameras[0].getLatestResult().hasTargets());
-        getRawRotationErrorToHubAnyTag().ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter from direct", rot.getDegrees()));
-        distanceToTagFromPose(10).ifPresent(distance -> SmartDashboard.putNumber("distance direct to hub", distance));
-        distanceToTagFromPose(10).ifPresent(distance -> SmartDashboard.putNumber("distance fromPose to hub", distance));
-        getRotationErrorRobotToTagFromPose(10).ifPresent(rot -> SmartDashboard.putNumber("Angle To Hub from shooter from pose", rot.getDegrees()));
+    boolean sawTagThisFrame = false;
 
+    // 1. Iterate through all cameras and unread results
+    for (int i = 0; i < cameras.length; i++) {
+        PhotonCamera cam = cameras[i];
+        PhotonPoseEstimator estimator = estimators[i];
 
+        for (var result : cam.getAllUnreadResults()) {
+            if (!result.hasTargets()) continue;
 
-        boolean sawTagThisFrame = false;
+            // Try Multi-tag first, fall back to lowest ambiguity single tag
+            Optional<EstimatedRobotPose> visionEst = estimator.estimateCoprocMultiTagPose(result);
+            if (visionEst.isEmpty()) {
+                visionEst = estimator.estimateLowestAmbiguityPose(result);
+            }
 
-        for (int i = 0; i < cameras.length; i++) {
-            PhotonCamera cam = cameras[i];
-            PhotonPoseEstimator estimator = estimators[i];
-
-            for (var result : cam.getAllUnreadResults()) {
-                if (!result.hasTargets()) continue;
-
-                Optional<EstimatedRobotPose> visionEst = estimator.estimateCoprocMultiTagPose(result);
-                 if (visionEst.isEmpty()) {
+            if (visionEst.isPresent()) {
+                EstimatedRobotPose est = visionEst.get();
                 
-                    visionEst = estimator.estimateLowestAmbiguityPose(result);
-
-                 }
-
-               
-               fieldVisualizer.setRobotPose(visionEst.get().estimatedPose.toPose2d());
-               SmartDashboard.putData(fieldVisualizer);
-
-
-               
+                // Calculate uncertainty for THIS specific result
                 updateEstimationStdDevs(visionEst, result.getTargets(), estimator);
+                
+                // Scoring: We use the sum of X and Y standard deviations
+                // A smaller value means the pose is more trustworthy
+                double currentScore = curStdDevs.get(0, 0) + curStdDevs.get(1, 0);
 
-
-                if(allowVisionFusion){
-                     visionEst.ifPresent(est -> {
-                    swerve.addVisionMeasurement(
-                        est.estimatedPose.toPose2d(), 
-                        est.timestampSeconds, 
-                        Constants.Vision.kMultiTagStdDevs
-                    );
-                });
-                sawTagThisFrame = true;
+                if (currentScore < bestScore) {
+                    bestScore = currentScore;
+                    bestEstimate = est;
+                    bestStdDevs = curStdDevs;
                 }
+                sawTagThisFrame = true;
             }
         }
-
-        // --- Move these outside the loop so they update every 20ms regardless of vision ---
-        fieldVisualizer.setRobotPose(swerve.getState().Pose);
-        SmartDashboard.putBoolean("V fused", sawTagThisFrame);
     }
+
+    
+    // 2. Fusion: Only add the absolute best estimate found across all cameras
+    if (allowVisionFusion && bestEstimate != null) {
+        swerve.addVisionMeasurement(
+            bestEstimate.estimatedPose.toPose2d(),
+            bestEstimate.timestampSeconds,
+            bestStdDevs
+        );
+        
+        Logger.recordOutput("Pose/VisionEstimate", bestEstimate.estimatedPose.toPose2d());
+    }
+
+    // 3. Logging & Debugging
+    if (Robot.isSimulation() && bestEstimate != null) {
+        getSimDebugField().getObject("VisionEstimation").setPose(bestEstimate.estimatedPose.toPose2d());
+    } else if (Robot.isSimulation()) {
+        getSimDebugField().getObject("VisionEstimation").setPoses();
+    }
+
+    Logger.recordOutput("Pose/Robot", swerve.getState().Pose);
+    Logger.recordOutput("Vision/FusionEnabled", allowVisionFusion);
+    Logger.recordOutput("Vision/SawTag", sawTagThisFrame);
+}
 
     private void updateEstimationStdDevs(
             Optional<EstimatedRobotPose> estimatedPose, 
@@ -273,7 +316,7 @@ private final Field2d fieldVisualizer = new Field2d();
     if (hubPoseOpt.isEmpty()) return Optional.empty();
     Pose3d hubFieldPose = hubPoseOpt.get();
 
-    for (int i = 0; i < cameras.length; i++) {
+    for (int i = 0; i < 1; i++) {
         var result = cameras[i].getLatestResult();
         if (!result.hasTargets()) continue;
 
@@ -321,6 +364,16 @@ public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
     @FunctionalInterface
     public static interface EstimateConsumer {
         public void accept(Pose2d pose, double timestamp, Matrix<N3, N1> estimationStdDevs);
+    }
+
+    /** Reset pose history of the robot in the vision system simulation. */
+    public void resetSimPose(Pose2d pose) {
+        if (Robot.isSimulation()) visionSim.resetRobotPose(pose);
+    }
+
+    /** A Field2d for visualizing our robot and objects on the field. */
+    public Field2d getSimDebugField() {
+        return visionSim.getDebugField();
     }
 
 

@@ -173,6 +173,9 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
         Driver.y().whileTrue(new PointAndRotate(drivetrain, vision));
 
+
+        Driver.button(11).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
+
         Manipulator.y().onTrue(new EngageArm(intake));
             
       
@@ -194,6 +197,12 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
               () -> -Driver.getLeftX() * MaxSpeed
           )
       );
+       Driver.button(1).whileTrue( new LockOnHub(
+              drivetrain,
+              vision,
+              () -> -Driver.getLeftY() * MaxSpeed,
+              () -> -Driver.getLeftX() * MaxSpeed
+          )); //bind to spacebar for sim
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

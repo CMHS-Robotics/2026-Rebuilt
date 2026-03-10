@@ -1,0 +1,107 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Start1ToDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "engageArm"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSpin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "SweepDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSpin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ExitDepot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Join"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OutpostToShoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "armFeedAngle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "alignToHubCommand"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "CompAutos",
+  "choreoAuto": false
+}

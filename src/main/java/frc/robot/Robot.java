@@ -26,19 +26,34 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-public class Robot extends TimedRobot {
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+public class Robot extends LoggedRobot {
 
   private Command m_autonomousCommand;
-  private final RobotContainer m_robotContainer;
-
-
-
-  public Robot() {
-    m_robotContainer = new RobotContainer();
-  }
+  private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
+    Logger.recordMetadata("ProjectName", "Robot");
+
+if (isReal()) {
+    Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+    Logger.addDataReceiver(new NT4Publisher());
+} else {
+    Logger.addDataReceiver(new NT4Publisher());
+}
+
+if (isSimulation()) {
+    setUseTiming(false);
+}
+
+Logger.start();
+m_robotContainer = new RobotContainer();
+
 
 //    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
 //    new Translation2d(0, 0),
@@ -89,6 +104,7 @@ public class Robot extends TimedRobot {
      if (m_autonomousCommand != null) {
        m_autonomousCommand.cancel();
      }
+     m_robotContainer.getVision().setVisionEnabled(true);
 
 
     if (m_autonomousCommand != null) {
@@ -124,6 +140,9 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationInit() {}
 
-  @Override
-  public void simulationPeriodic() {}
+  //@Override
+  //public void simulationPeriodic() {
+  //  m_robotContainer.getVision().simulationPeriodic();
+ // }
+ //l
 }
