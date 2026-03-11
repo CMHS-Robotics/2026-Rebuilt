@@ -33,6 +33,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.tools.FieldUtil;
+
 import org.littletonrobotics.junction.Logger;
 
 
@@ -247,6 +249,30 @@ public void periodic() {
             shooterWorldPos.getDistance(tagTranslation)
         );
     }
+
+    public Optional<Double> distanceToHubFromPose() {
+
+    int tagId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26; 
+    
+    Pose2d robotPose = swerve.getState().Pose;
+
+    Optional<Translation2d> hubOpt =
+        FieldUtil.getHubTranslation(kTagLayout, tagId);
+
+    if (hubOpt.isEmpty()) return Optional.empty();
+
+    Translation2d hubTranslation = hubOpt.get();
+
+    Translation2d shooterFieldOffset =
+        shooterOffset.rotateBy(robotPose.getRotation());
+
+    Translation2d shooterWorldPos =
+        robotPose.getTranslation().plus(shooterFieldOffset);
+
+    return Optional.of(
+        shooterWorldPos.getDistance(hubTranslation)
+    );
+}
 
     public Optional<Translation2d> translationShooterToTagFromPose(int tagId) {
         return kTagLayout.getTagPose(tagId).map(tagPose -> {

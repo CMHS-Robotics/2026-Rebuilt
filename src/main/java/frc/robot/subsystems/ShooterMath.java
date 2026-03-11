@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.tools.FieldUtil;
 import edu.wpi.first.math.MathUtil;
@@ -17,16 +19,11 @@ import frc.robot.Constants;
 
 public class ShooterMath {
 
-    private static final double g = 9.81;
+    private static final double kickerMultiplier = 1.7;
 
     // Distance (meters) → RPM
     private static final InterpolatingDoubleTreeMap rpmMap = 
         new InterpolatingDoubleTreeMap();
-
-    // Distance (meters) → Hood Angle (degrees)
-    private static final InterpolatingDoubleTreeMap hoodMap = 
-        new InterpolatingDoubleTreeMap();
-
 
     private static final double SHOOTER_HEIGHT = 0.3175; // meters
     private static final double HUB_HEIGHT = 1.8288;     // meters
@@ -34,27 +31,6 @@ public class ShooterMath {
 
     private static final double WHEEL_DIAMETER = 0.102;  // meters
     private static final double MOTOR_TO_WHEEL_RATIO = 36.0 / 15.0;
-    
-        // public static double calcVelocity(double distance, double theta) {
-        //     double adjustedDistance = distance + HUB_RADIUS;
-        //     double deltaH = HUB_HEIGHT - SHOOTER_HEIGHT;
-    
-        //     double numerator = g * Math.pow(adjustedDistance, 2);
-        //     double denominator =
-        //         2 * Math.pow(Math.cos(theta), 2) *
-        //         (adjustedDistance * Math.tan(theta) - deltaH);
-    
-        //     double term = numerator / denominator;
-    
-        //     return Math.sqrt(term);
-        // }
-    
-        // public static double calcMotorRPM(double velocity) {
-        //     double wheelCircumference = Math.PI * WHEEL_DIAMETER;
-    
-        //     double flywheelRPM = (velocity / wheelCircumference) * 60.0;
-        //     return flywheelRPM * MOTOR_TO_WHEEL_RATIO;
-        // }
     
         static {
             // ----- TUNE THESE VALUES -----
@@ -70,17 +46,26 @@ public class ShooterMath {
             rpmMap.put(3.81, 1100.0);     // 1100 * 1.10
             rpmMap.put(3.937, 1125.5);    // 1125 * 1.10
             rpmMap.put(4.191, 1175.0);    // 1175 * 1.10
-    
-            
+        }
+
+        public static double getShooterRPM(double distance){
+
+            double unclampedRPM = rpmMap.get(distance);
+
+            double clampedRPM = MathUtil.clamp(unclampedRPM, 800, 6000);
+
+            return clampedRPM;
         }
     
-        public static double getRPMWhileMoving(CommandSwerveDrivetrain swerve, int tagId) {
+        public static double getShooterRPMWhileMoving(CommandSwerveDrivetrain swerve) {
+
+            int tagId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26;
 
             Pose2d robotPose = swerve.getState().Pose;
 
             ChassisSpeeds speeds = swerve.getState().Speeds;
 
-            Translation2d hubTranslation = FieldUtil.getHubPosition(kTagLayout, tagId);
+            Translation2d hubTranslation = FieldUtil.getHubTranslation(kTagLayout, tagId).get();
 
             ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(speeds, robotPose.getRotation());
 
@@ -105,56 +90,20 @@ public class ShooterMath {
             return clampedRPM; 
         }
 
-        public static double getRPMCompensated(CommandSwerveDrivetrain swerve, int tagId) {
+    public static double getKickerRPM(double distanceMeters){
 
-    Pose2d robotPose = swerve.getState().Pose;
+        double unclampedRPM = rpmMap.get(distanceMeters) * kickerMultiplier;
 
-    Translation2d hub = FieldUtil.getHubPosition(kTagLayout, tagId);
-
-    double distance =
-        hub.getDistance(robotPose.getTranslation());
-
-    double baseRPM = rpmMap.get(distance);
-
-    ChassisSpeeds speeds = swerve.getState().Speeds;
-
-    ChassisSpeeds fieldSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(
-            speeds,
-            robotPose.getRotation()
-        );
-
-    Translation2d velocity =
-        new Translation2d(
-            fieldSpeeds.vxMetersPerSecond,
-            fieldSpeeds.vyMetersPerSecond
-        );
-
-    Translation2d toHub =
-        hub.minus(robotPose.getTranslation());
-
-    Translation2d direction =
-        toHub.div(toHub.getNorm());
-
-    double towardHubVelocity =
-        velocity.getX() * direction.getX() +
-        velocity.getY() * direction.getY();
-
-    double rpmAdjustment = towardHubVelocity * 120;
-
-    return baseRPM - rpmAdjustment;
-}
-
-    public static double getHoodAngle(double distanceMeters) {
-        return hoodMap.get(distanceMeters);
+        return MathUtil.clamp(unclampedRPM, 800, 6000); // clamp the RPM for kicker
     }
 
-    public static double getKickerRPM(double distanceMeters){
-        return hoodMap.get(distanceMeters) * 1.7; //applied 1.7 scaler for better through-put
+    public static double getKickerRPMWhileMoving(CommandSwerveDrivetrain swerve){
+        double unclampedRPM = getShooterRPMWhileMoving(swerve) * kickerMultiplier;
+        return MathUtil.clamp(unclampedRPM, 800, 6000);
     }
 
     public static double getShotTolerance(double distance) {
-    double targetRadius = 0.5; // meters
+    double targetRadius = 0.2; // meters
     return Math.atan2(targetRadius, distance);
 }
 }

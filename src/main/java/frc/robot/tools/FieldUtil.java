@@ -4,21 +4,51 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.Optional;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 public class FieldUtil {
-    public static Translation2d getHubPosition(AprilTagFieldLayout layout, int tagID) {
 
-    Pose3d tagPose = layout.getTagPose(tagID).get();
+    private static final double HUB_OFFSET = 0.6;
 
-    Pose2d tagPose2d = tagPose.toPose2d();
+    /** Returns the translation of the tag */
+    public static Optional<Translation2d> getTagTranslation(AprilTagFieldLayout layout,int tagId) {
+        return layout.getTagPose(tagId)
+            .map(tagPose -> tagPose.toPose2d().getTranslation());
+    }
 
-    Translation2d hubPosition =
-        tagPose2d.getTranslation().plus(
-            new Translation2d(-0.6, 0).rotateBy(tagPose2d.getRotation())
-        );
+    /** Returns the hub center by offsetting back from the tag */
+    public static Optional<Translation2d> getHubTranslation(AprilTagFieldLayout layout,int tagId) {
+        return layout.getTagPose(tagId).map(tagPose3d -> {
 
-    return hubPosition;
-}
+            Pose2d tagPose = tagPose3d.toPose2d();
 
+            Translation2d hubOffset =
+                new Translation2d(-HUB_OFFSET, 0)
+                    .rotateBy(tagPose.getRotation());
+
+            return tagPose.getTranslation().plus(hubOffset);
+        });
+    }
+
+    /** Returns the hub pose (useful for aiming) */
+    public static Optional<Pose2d> getHubPose(AprilTagFieldLayout layout,int tagId) {
+        return layout.getTagPose(tagId).map(tagPose3d -> {
+
+            Pose2d tagPose = tagPose3d.toPose2d();
+
+            Translation2d hubOffset =
+                new Translation2d(-HUB_OFFSET, 0)
+                    .rotateBy(tagPose.getRotation());
+
+            return new Pose2d(
+                tagPose.getTranslation().plus(hubOffset),
+                tagPose.getRotation()
+            );
+        });
+    }
 
 }

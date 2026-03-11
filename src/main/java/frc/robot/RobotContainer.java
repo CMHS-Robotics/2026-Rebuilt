@@ -92,11 +92,11 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   /** The container for the robot */
   public RobotContainer() {
 
-    ShootBall shootBallCommand = new ShootBall(shooter, vision);
+    ShootBall shootBallCommand = new ShootBall(shooter, vision, drivetrain);
     runIntake runIntakeCommand = new runIntake(intake);
     PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
     Hopp hoppCommand = new Hopp(hopper, vision);
-    Kick kickCommand = new Kick(kicker, vision);
+    Kick kickCommand = new Kick(kicker, vision, drivetrain);
     Index indexCommand = new Index(indexer, vision);
     EngageArm EngageArmCommand = new EngageArm(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
@@ -163,8 +163,8 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
-       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision));
-       Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision));
+       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain));
+       Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
        Manipulator.rightBumper().whileTrue(new Index(indexer, vision));
        Manipulator.rightBumper().whileTrue(new Hopp(hopper, vision));
        Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

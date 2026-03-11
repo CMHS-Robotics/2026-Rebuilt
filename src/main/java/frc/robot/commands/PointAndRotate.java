@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ShooterMath;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -52,7 +53,9 @@ public class PointAndRotate extends Command {
     }
 
    @Override
-public void execute() {
+    public void execute() {
+
+    double distance = vision.distanceToHubFromPose().get();
     // 1. Get the error. This uses your fused Pose, so it's always "live" 
     // even if the camera is currently blocked.
     var errorOptional = vision.getRotationErrorRobotToTagFromPose(primaryTag);
@@ -67,7 +70,7 @@ public void execute() {
     double errorRad = errorOptional.get().getRadians();
 
     // 4. Deadband: Stop vibrating when we are "close enough"
-    if (Math.abs(errorRad) < rotTolerance) {
+    if (Math.abs(errorRad) < ShooterMath.getShotTolerance(distance)) {
         drivetrain.setControl(zero);
     } else {
         // 5. PID Calculation

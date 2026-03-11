@@ -27,7 +27,7 @@ public class CalcFromVision {
          }
     
          double adjustedDistance = distance.get() + 0.6;
-         double rpm = ShooterMath.getRPM(adjustedDistance);
+         double rpm = ShooterMath.getShooterRPM(adjustedDistance);
     
          return Optional.of(rpm);
          
@@ -42,7 +42,7 @@ public class CalcFromVision {
          SmartDashboard.putNumber("Vision Distance", distance.get());
     
          double adjustedDistance = distance.get() + 0.6;
-         double rpm = ShooterMath.getRPM(adjustedDistance);
+         double rpm = ShooterMath.getShooterRPM(adjustedDistance);
     
          return Optional.of(rpm);
      }
