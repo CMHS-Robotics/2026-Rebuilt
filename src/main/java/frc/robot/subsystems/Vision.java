@@ -164,6 +164,7 @@ public void periodic() {
     Logger.recordOutput("Pose/Robot", swerve.getState().Pose);
     Logger.recordOutput("Vision/FusionEnabled", allowVisionFusion);
     Logger.recordOutput("Vision/SawTag", sawTagThisFrame);
+    Logger.recordOutput("vision rot error robot center to hub", getRotationErrorRobotToTagFromPose(10).get().getDegrees());
 }
 
     private void updateEstimationStdDevs(
@@ -205,7 +206,7 @@ public void periodic() {
 
     // --- Pose Analysis Methods ---
 
-   public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
+   public Optional<Rotation2d> getRotationErrorShooterToTagFromPose(int tagId) {
     Pose2d robotPose = swerve.getState().Pose;
     
     return kTagLayout.getTagPose(tagId).map(tagPose3d -> {
@@ -380,6 +381,28 @@ public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
     return getRawTranslationShooterToHubAnyTag().map(translation -> 
         new Rotation2d(translation.getX(), translation.getY())
     );
+}
+
+   public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
+    Pose2d robotPose = swerve.getState().Pose;
+    Translation2d robotTranslation = robotPose.getTranslation(); // FIX 1: Define the variable
+    
+    return kTagLayout.getTagPose(tagId).map(tagPose3d -> {
+        // 1. Calculate the Target Point (0.6m IN FRONT of the tag face)
+        // Note: X is out of the tag, so +0.6 moves toward the field center
+        Transform3d tagPullback = new Transform3d(new Translation3d(0.6, 0, 0), new Rotation3d());
+        Pose2d targetPose = tagPose3d.plus(tagPullback).toPose2d();
+
+        // 2. Vector from robot to the point in front of the tag
+        Translation2d vectorToTarget = targetPose.getTranslation().minus(robotTranslation);
+
+        // 3. Absolute angle from the field origin to that vector
+        Rotation2d angleToTarget = vectorToTarget.getAngle();
+    
+        // 4. Rotation error = desired heading - current heading
+        // FIX 2: Return the object directly, .map() handles the Optional wrapping
+        return angleToTarget.minus(robotPose.getRotation());
+    });
 }
 
 

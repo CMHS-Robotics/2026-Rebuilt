@@ -69,8 +69,11 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
     );
 
     // 2. Spawn the game pieces
-    m_fuelSim.spawnStartingFuel();
+    //m_fuelSim.spawnStartingFuel();
     m_fuelSim.start();
+    m_fuelSim.enableAirResistance();
+    m_fuelSim.setLoggingFrequency(50);
+    m_fuelSim.setSubticks(50);
 
 
 //    m_robotContainer.getDrivetrain().resetPose(new Pose2d(

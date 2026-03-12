@@ -32,7 +32,7 @@ public class FuelSim {
     protected static final double FUEL_COR = 0.5; // coefficient of restitution with another fuel
     protected static final double NET_COR = 0.2; // coefficient of restitution with the net
     protected static final double ROBOT_COR = 0.1; // coefficient of restitution with a robot
-    protected static final double FUEL_RADIUS = 0.075;
+    protected static final double FUEL_RADIUS = 0.05; //changed for colision sensitivity 
     protected static final double FIELD_LENGTH = 16.51;
     protected static final double FIELD_WIDTH = 8.04;
     protected static final double TRENCH_WIDTH = 1.265;

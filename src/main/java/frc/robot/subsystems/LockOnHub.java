@@ -33,7 +33,7 @@ public class LockOnHub extends Command {
    @Override
     public void execute() {
         int tagID = getHubTagID();
-        var errorOpt = vision.getRotationErrorRobotToTagFromPose(tagID);
+        var errorOpt = vision.getRotationErrorShooterToTagFromPose(tagID);
 
         double omega;
         boolean isVisionValid = errorOpt.isPresent();

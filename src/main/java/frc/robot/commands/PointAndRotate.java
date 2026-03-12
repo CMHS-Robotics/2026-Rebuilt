@@ -58,7 +58,7 @@ public class PointAndRotate extends Command {
     double distance = vision.distanceToHubFromPose().get();
     // 1. Get the error. This uses your fused Pose, so it's always "live" 
     // even if the camera is currently blocked.
-    var errorOptional = vision.getRotationErrorRobotToTagFromPose(primaryTag);
+    var errorOptional = vision.getRotationErrorShooterToTagFromPose(primaryTag);
 
     // 2. Safety Gate: If the tag doesn't exist in the layout, stop.
     if (errorOptional.isEmpty()) {

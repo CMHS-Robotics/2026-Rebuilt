@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.*;
@@ -23,6 +24,9 @@ public class ShootBall extends Command {
     private final CommandSwerveDrivetrain swerve;
     private final FuelSim fs;
     private boolean hasFired = false;
+    private final Timer m_timer = new Timer();
+    private double m_lastShotTime = 0;
+    private final double m_cooldown = 0.2; // 1.0 second / 5 balls = 0.2s
 
 
 
@@ -38,7 +42,8 @@ public class ShootBall extends Command {
     @Override
     public void initialize() {
         shooter.resetRamp();
-        hasFired = false;
+        m_timer.restart(); // Start/Reset the timer when the command begins
+        m_lastShotTime = -m_cooldown; // Allow immediate first shot
     }
 
     @Override
@@ -79,18 +84,25 @@ public class ShootBall extends Command {
     //   double rpm = ShooterMath.getRPM(distance);
         shooter.setRPM(rpm);
 
-   if (!hasFired) {
+        double currentTime = m_timer.get();
+
+    // Condition 1: Is it time to shoot again? (Cooldown)
+    // Condition 2: Is the shooter at the right speed?
+    if ((currentTime - m_lastShotTime) >= m_cooldown) {
+        
         double velocityMPS = (rpm * 2 * Math.PI * Units.inchesToMeters(4)) / 60.0;
-        double exitVelocity = velocityMPS * 0.7; 
+        double exitVelocity = velocityMPS * 0.75; 
 
         fs.launchFuel(
             MetersPerSecond.of(exitVelocity),
             Degrees.of(70), 
-            Degrees.of(0.0),  
-            Meters.of(0.8)    
+            Degrees.of(0.0), 
+            Meters.of(0.8)
         );
-        hasFired = true; // Prevents spawning 50 balls per second
+
+        m_lastShotTime = currentTime; // Update the timestamp of the last shot
     }
+
     }
 
     @Override
