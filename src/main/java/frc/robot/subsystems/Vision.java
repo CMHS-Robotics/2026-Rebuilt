@@ -94,11 +94,11 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    @Override
-    public void simulationPeriodic() {
-        // Update the vision simulation with the ACTUAL robot pose from the drivetrain
-        visionSim.update(swerve.getState().Pose);
-    }
+     @Override
+     public void simulationPeriodic() {
+         // Update the vision simulation with the ACTUAL robot pose from the drivetrain
+         visionSim.update(swerve.getState().Pose);
+     }
 
     @Override
 public void periodic() {
@@ -342,7 +342,7 @@ public void periodic() {
     if (hubPoseOpt.isEmpty()) return Optional.empty();
     Pose3d hubFieldPose = hubPoseOpt.get();
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < cameras.length; i++) {
         var result = cameras[i].getLatestResult();
         if (!result.hasTargets()) continue;
 

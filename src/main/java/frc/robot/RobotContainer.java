@@ -31,6 +31,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.*;
+import frc.robot.tools.FuelSim;
 import frc.robot.commands.*;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -60,6 +61,8 @@ public class RobotContainer {
     private final CommandXboxController Manipulator = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final FuelSim fuelSim = new FuelSim();
 
     
 
@@ -92,7 +95,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   /** The container for the robot */
   public RobotContainer() {
 
-    ShootBall shootBallCommand = new ShootBall(shooter, vision, drivetrain);
+    ShootBall shootBallCommand = new ShootBall(shooter, vision, drivetrain, fuelSim);
     runIntake runIntakeCommand = new runIntake(intake);
     PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
     Hopp hoppCommand = new Hopp(hopper, vision);
@@ -163,7 +166,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
-       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain));
+       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain, fuelSim));
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
        Manipulator.rightBumper().whileTrue(new Index(indexer, vision));
        Manipulator.rightBumper().whileTrue(new Hopp(hopper, vision));

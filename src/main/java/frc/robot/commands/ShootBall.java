@@ -6,8 +6,14 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.subsystems.*;
 import frc.robot.tools.CalcFromVision;
+import frc.robot.tools.FuelSim;
+import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 public class ShootBall extends Command {
 
@@ -15,20 +21,24 @@ public class ShootBall extends Command {
     private final Vision vision;
     private final CalcFromVision calc;
     private final CommandSwerveDrivetrain swerve;
+    private final FuelSim fs;
+    private boolean hasFired = false;
 
 
 
-    public ShootBall(Shooter shooter, Vision vision, CommandSwerveDrivetrain swerve) {
+    public ShootBall(Shooter shooter, Vision vision, CommandSwerveDrivetrain swerve, FuelSim fs) {
         this.shooter = shooter;
         this.vision = vision;
         this.swerve = swerve;
         this.calc = new CalcFromVision(vision);
+        this.fs = fs;
         addRequirements(shooter); // This prevents other commands from using the shooter at the same time
     }
 
     @Override
     public void initialize() {
         shooter.resetRamp();
+        hasFired = false;
     }
 
     @Override
@@ -68,6 +78,19 @@ public class ShootBall extends Command {
     //    double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
     //   double rpm = ShooterMath.getRPM(distance);
         shooter.setRPM(rpm);
+
+   if (!hasFired) {
+        double velocityMPS = (rpm * 2 * Math.PI * Units.inchesToMeters(4)) / 60.0;
+        double exitVelocity = velocityMPS * 0.7; 
+
+        fs.launchFuel(
+            MetersPerSecond.of(exitVelocity),
+            Degrees.of(70), 
+            Degrees.of(0.0),  
+            Meters.of(0.8)    
+        );
+        hasFired = true; // Prevents spawning 50 balls per second
+    }
     }
 
     @Override

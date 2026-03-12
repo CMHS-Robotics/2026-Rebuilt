@@ -337,4 +337,13 @@ public void zeroGyro() {
     ));
 }
 
+// Inside your CommandSwerveDrivetrain class
+public ChassisSpeeds getFieldRelativeSpeeds() {
+    // This takes robot-relative speeds and converts them to field-relative
+    return ChassisSpeeds.fromRobotRelativeSpeeds(
+        getState().Speeds, 
+        getState().Pose.getRotation()
+    );
+}
+
 }

@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ShootBall;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
-
+import frc.robot.tools.FuelSim;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
@@ -30,11 +30,14 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import edu.wpi.first.units.*;
+import edu.wpi.first.math.util.Units;
 
 public class Robot extends LoggedRobot {
 
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
+  private FuelSim m_fuelSim;
 
   @Override
   public void robotInit() {
@@ -53,6 +56,21 @@ if (isSimulation()) {
 
 Logger.start();
 m_robotContainer = new RobotContainer();
+m_fuelSim = m_robotContainer.fuelSim;
+CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
+
+// 1. Tell the sim about your robot's size and how to find it
+    m_fuelSim.registerRobot(
+        Units.inchesToMeters(27), // Width
+        Units.inchesToMeters(27), // Length
+        Units.inchesToMeters(6), // Bumper Height
+        () -> m_drive.getPose(),  // Supplier for robot pose
+        () -> m_drive.getFieldRelativeSpeeds() // Supplier for velocity
+    );
+
+    // 2. Spawn the game pieces
+    m_fuelSim.spawnStartingFuel();
+    m_fuelSim.start();
 
 
 //    m_robotContainer.getDrivetrain().resetPose(new Pose2d(
@@ -140,9 +158,10 @@ m_robotContainer = new RobotContainer();
   @Override
   public void simulationInit() {}
 
-  //@Override
-  //public void simulationPeriodic() {
-  //  m_robotContainer.getVision().simulationPeriodic();
- // }
- //l
+  @Override
+  public void simulationPeriodic() {
+   m_robotContainer.getVision().simulationPeriodic();
+   m_fuelSim.updateSim();
+
+ }
 }
