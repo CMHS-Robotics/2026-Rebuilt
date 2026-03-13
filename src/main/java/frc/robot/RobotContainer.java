@@ -82,11 +82,11 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
 
   /* ================= SUBSYSTEMS ================= */
+  private final Vision vision = new Vision(drivetrain);
   private final Climber climber = new Climber();
-  private final Shooter shooter = new Shooter();
+  private final Shooter shooter = new Shooter(vision);
   private final Kicker kicker = new Kicker();
   private final Intake intake = new Intake();
-  private final Vision vision = new Vision(drivetrain);
   private final Indexer indexer = new Indexer();
   private final Hopper hopper = new Hopper();
   /* ================= CONTROLLERS ================= */
@@ -106,6 +106,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
     NamedCommands.registerCommand("spinUpFlyWheel", shootBallCommand);
     NamedCommands.registerCommand("shootBall", 
+
     shootBallCommand
         .alongWith(new Index(indexer, shooter, kicker).withTimeout(20))
         .alongWith(kickCommand)
@@ -171,7 +172,10 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain, fuelSim));
+       Driver.button(1).whileTrue( new ShootBall(shooter, vision, drivetrain, fuelSim)); //bind to spacebar for sim
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
+       Manipulator.rightTrigger().whileTrue(new Index(indexer, shooter, kicker));
+
        Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
        Manipulator.rightBumper().whileTrue(new Hopp(hopper, vision));
        Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
@@ -181,7 +185,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         Driver.y().whileTrue(new PointAndRotate(drivetrain, vision));
 
 
-        Driver.button(11).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
+        Driver.button(2).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
 
         Manipulator.y().onTrue(new EngageArm(intake));
             
@@ -204,7 +208,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
               () -> -Driver.getLeftX() * MaxSpeed
           )
       );
-       Driver.button(1).whileTrue( new LockOnHub(
+       Driver.button(3).whileTrue( new LockOnHub(
               drivetrain,
               vision,
               () -> -Driver.getLeftY() * MaxSpeed,

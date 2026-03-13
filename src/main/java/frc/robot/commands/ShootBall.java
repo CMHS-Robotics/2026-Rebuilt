@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import java.util.Optional;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.*;
-import frc.robot.tools.CalcFromVision;
 import frc.robot.tools.FuelSim;
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -20,7 +20,6 @@ public class ShootBall extends Command {
 
     private final Shooter shooter;
     private final Vision vision;
-    private final CalcFromVision calc;
     private final CommandSwerveDrivetrain swerve;
     private final FuelSim fs;
     private boolean hasFired = false;
@@ -34,7 +33,6 @@ public class ShootBall extends Command {
         this.shooter = shooter;
         this.vision = vision;
         this.swerve = swerve;
-        this.calc = new CalcFromVision(vision);
         this.fs = fs;
         addRequirements(shooter); // This prevents other commands from using the shooter at the same time
     }
@@ -54,37 +52,10 @@ public class ShootBall extends Command {
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
 
      double rpm;
-     double distance;
 
-     Optional <Double> rawDistance = vision.getRawDistanceShooterToHubAnyTag();
-     Optional <Double> poseDistance = vision.distanceToHubFromPose();
+     rpm = ShooterMath.getBestKickerRPM(swerve, vision);
 
-     if(!(rawDistance).isEmpty()){
-        distance = rawDistance.get();
-        SmartDashboard.putBoolean("Vision Calced rpm", true);
-     }
-     else if(!(poseDistance).isEmpty()){
-        distance = poseDistance.get();
-        SmartDashboard.putBoolean("Vision Calced rpm", true);
-     }
-     else{
-        System.out.print("VISION FAILED default default distance set to 2m");
-        SmartDashboard.putBoolean("Vision Calced rpm", false);
-        distance = 2.0; // default distance is 2 meters 
-     }
-
-     double speed = Math.hypot(swerve.getState().Speeds.vxMetersPerSecond, swerve.getState().Speeds.vyMetersPerSecond);
-
-     if(speed > 0.5) {
-     rpm = ShooterMath.getShooterRPMWhileMoving(swerve);
-     } else {
-     rpm = ShooterMath.getShooterRPM(distance);
-     }
-    //    double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
-    //   double rpm = ShooterMath.getRPM(distance);
-        shooter.setRPM(rpm);
-
-        double currentTime = m_timer.get();
+     double currentTime = m_timer.get();
 
     // Condition 1: Is it time to shoot again? (Cooldown)
     // Condition 2: Is the shooter at the right speed?

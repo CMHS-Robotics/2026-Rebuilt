@@ -31,9 +31,10 @@ public class LockOnHub extends Command {
     }
 
    @Override
+
     public void execute() {
-        int tagID = getHubTagID();
-        var errorOpt = vision.getRotationErrorShooterToTagFromPose(tagID);
+        
+        var errorOpt = vision.getRotationErrorShooterToTagFromPose();
 
         double omega;
         boolean isVisionValid = errorOpt.isPresent();
@@ -66,10 +67,5 @@ public class LockOnHub extends Command {
         SmartDashboard.putBoolean("Lock Seen", isVisionValid);
         SmartDashboard.putNumber("Vision Lost Counter", lostFramesCounter);
         SmartDashboard.putNumber("Turn Power", omega);
-    }
-
-    private int getHubTagID() {
-        return DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) 
-               == DriverStation.Alliance.Red ? 10 : 26;
     }
 }

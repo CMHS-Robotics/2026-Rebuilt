@@ -44,21 +44,15 @@ public class PointAndRotate extends Command {
 
     @Override
     public void initialize() {
-        boolean isRed = DriverStation.getAlliance()
-        .orElse(DriverStation.Alliance.Blue)
-        == DriverStation.Alliance.Red;
-
-        primaryTag   = isRed ? 10 : 26;
-        secondaryTag = isRed ? 9  : 25;
     }
 
    @Override
     public void execute() {
 
-    double distance = vision.distanceToHubFromPose().get();
+    double distance = vision.getBestHubDistance();
     // 1. Get the error. This uses your fused Pose, so it's always "live" 
     // even if the camera is currently blocked.
-    var errorOptional = vision.getRotationErrorShooterToTagFromPose(primaryTag);
+    var errorOptional = vision.getRotationErrorShooterToTagFromPose();
 
     // 2. Safety Gate: If the tag doesn't exist in the layout, stop.
     if (errorOptional.isEmpty()) {

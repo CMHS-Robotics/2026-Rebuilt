@@ -71,7 +71,13 @@ public class ShooterMath {
 
             Translation2d velocity = new Translation2d(fieldSpeeds.vxMetersPerSecond, fieldSpeeds.vyMetersPerSecond);
 
-            Translation2d futurePose = robotPose.getTranslation().plus(velocity.times(0.2));
+            double distance = hubTranslation.getDistance(robotPose.getTranslation());
+
+            double ballSpeed = rpmMap.get(distance) / 60.0 * Math.PI * WHEEL_DIAMETER;
+
+            double timeOfFlight = distance / ballSpeed;
+
+            Translation2d futurePose = robotPose.getTranslation().plus(velocity.times(timeOfFlight));
 
             double futureDistance = hubTranslation.getDistance(futurePose);
 
@@ -90,22 +96,43 @@ public class ShooterMath {
             return clampedRPM; 
         }
 
-    public static double getKickerRPM(double distanceMeters){
-
-        double unclampedRPM = rpmMap.get(distanceMeters) * kickerMultiplier;
-
-        return MathUtil.clamp(unclampedRPM, 800, 6000); // clamp the RPM for kicker
-    }
-
-    public static double getKickerRPMWhileMoving(CommandSwerveDrivetrain swerve){
-        double unclampedRPM = getShooterRPMWhileMoving(swerve) * kickerMultiplier;
-        return MathUtil.clamp(unclampedRPM, 800, 6000);
-    }
-
     public static double getShotTolerance(double distance) {
     double targetRadius = 0.2; // meters
     return Math.atan2(targetRadius, distance);
 }
+
+    public static double getBestShooterRPM(CommandSwerveDrivetrain swerve, Vision vision){
+    double rpm;
+    double speed = Math.hypot(swerve.getState().Speeds.vxMetersPerSecond, swerve.getState().Speeds.vyMetersPerSecond);
+
+    double distance = vision.getBestHubDistance();
+
+     if(speed > 0.5) {
+     rpm = ShooterMath.getShooterRPMWhileMoving(swerve);
+     } else {
+     rpm = ShooterMath.getShooterRPM(distance);
+     }
+
+     return rpm;
+    }
+
+    public static double getBestKickerRPM(CommandSwerveDrivetrain swerve, Vision vision){
+    double rpm;
+    double speed = Math.hypot(swerve.getState().Speeds.vxMetersPerSecond, swerve.getState().Speeds.vyMetersPerSecond);
+
+    double distance = vision.getBestHubDistance();
+
+     if(speed > 0.5) {
+     rpm = ShooterMath.getShooterRPMWhileMoving(swerve);
+     } else {
+     rpm = ShooterMath.getShooterRPM(distance);
+     }
+
+     double unclampedRPM = rpm * kickerMultiplier;
+
+    return MathUtil.clamp(unclampedRPM, 800, 6000);
+    
+    }
 }
 
     

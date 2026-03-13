@@ -1,7 +1,5 @@
 package frc.robot.commands;
 import frc.robot.subsystems.*;
-import frc.robot.tools.CalcFromVision;
-
 import java.util.Optional;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,12 +9,10 @@ public class Hopp extends Command{
 
     private final Hopper hopper;
     private final Vision vision;
-    private final CalcFromVision calc;
 
     public Hopp(Hopper hopper, Vision vision) {
         this.hopper = hopper;
         this.vision = vision;
-        this.calc = new CalcFromVision(vision);
         addRequirements(hopper); // This prevents other commands from using the kicker at the same time
     }
 

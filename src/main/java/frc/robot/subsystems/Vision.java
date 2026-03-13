@@ -206,7 +206,10 @@ public void periodic() {
 
     // --- Pose Analysis Methods ---
 
-   public Optional<Rotation2d> getRotationErrorShooterToTagFromPose(int tagId) {
+   public Optional<Rotation2d> getRotationErrorShooterToTagFromPose() {
+
+    int tagId = getHubTagId();
+
     Pose2d robotPose = swerve.getState().Pose;
     
     return kTagLayout.getTagPose(tagId).map(tagPose3d -> {
@@ -230,30 +233,32 @@ public void periodic() {
 
     
 
-    public Optional<Double> distanceToTagFromPose(int tagId) {
+    // public Optional<Double> distanceToTagFromPose() {
 
-        Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(tagId);
-        if (tagPoseOpt.isEmpty()) return Optional.empty();
+    //     int tagId = getHubTagId();
+
+    //     Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(tagId);
+    //     if (tagPoseOpt.isEmpty()) return Optional.empty();
     
-        Pose2d robotPose = swerve.getState().Pose;
+    //     Pose2d robotPose = swerve.getState().Pose;
     
-        Translation2d tagTranslation =
-            tagPoseOpt.get().toPose2d().getTranslation();
+    //     Translation2d tagTranslation =
+    //         tagPoseOpt.get().toPose2d().getTranslation();
     
-        // Rotate shooter offset into field frame
-        Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
+    //     // Rotate shooter offset into field frame
+    //     Translation2d shooterFieldOffset = shooterOffset.rotateBy(robotPose.getRotation());
     
-        // Shooter world position
-         Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
+    //     // Shooter world position
+    //      Translation2d shooterWorldPos = robotPose.getTranslation().plus(shooterFieldOffset);
     
-        return Optional.of(
-            shooterWorldPos.getDistance(tagTranslation)
-        );
-    }
+    //     return Optional.of(
+    //         shooterWorldPos.getDistance(tagTranslation)
+    //     );
+    // }
 
     public Optional<Double> distanceToHubFromPose() {
 
-    int tagId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26; 
+    int tagId = getHubTagId();
     
     Pose2d robotPose = swerve.getState().Pose;
 
@@ -275,7 +280,10 @@ public void periodic() {
     );
 }
 
-    public Optional<Translation2d> translationShooterToTagFromPose(int tagId) {
+    public Optional<Translation2d> translationShooterToTagFromPose() {
+
+        int tagId = getHubTagId();
+        
         return kTagLayout.getTagPose(tagId).map(tagPose -> {
             Pose2d robotPose = swerve.getState().Pose;
             
@@ -292,11 +300,12 @@ public void periodic() {
 
 
 
-    public Optional<Rotation2d> getRawRotationErrorToHubAnyTag() {
+    public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
     // 1. Determine target Hub based on Alliance
     Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
 
-    int targetHubId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26;
+   int targetHubId = getHubTagId();
+
     Optional<Pose3d> hubPoseOpt = kTagLayout.getTagPose(targetHubId);
     
     if (hubPoseOpt.isEmpty()) return Optional.empty();
@@ -338,7 +347,8 @@ public void periodic() {
     public Optional<Translation2d> getRawTranslationShooterToHubAnyTag() {
     Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
     // 1. Identify the target Hub ID based on Alliance
-    int targetHubId = (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 10 : 26;
+    int targetHubId = getHubTagId();
+
     Optional<Pose3d> hubPoseOpt = kTagLayout.getTagPose(targetHubId);
     if (hubPoseOpt.isEmpty()) return Optional.empty();
     Pose3d hubFieldPose = hubPoseOpt.get();
@@ -377,11 +387,6 @@ public void periodic() {
  * Calculates the rotation the ROBOT must achieve for the SHOOTER to face the Hub
  * using any visible tag as a reference.
  */
-public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
-    return getRawTranslationShooterToHubAnyTag().map(translation -> 
-        new Rotation2d(translation.getX(), translation.getY())
-    );
-}
 
    public Optional<Rotation2d> getRotationErrorRobotToTagFromPose(int tagId) {
     Pose2d robotPose = swerve.getState().Pose;
@@ -403,6 +408,29 @@ public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
         // FIX 2: Return the object directly, .map() handles the Optional wrapping
         return angleToTarget.minus(robotPose.getRotation());
     });
+}
+
+
+    public double getBestHubDistance(){
+    double distance;
+
+     Optional <Double> rawDistance = getRawDistanceShooterToHubAnyTag();
+     Optional <Double> poseDistance = distanceToHubFromPose();
+
+     if((rawDistance).isPresent()){
+        distance = rawDistance.get();
+        SmartDashboard.putBoolean("Vision Calced rpm", true);
+     }
+     else if((poseDistance).isPresent()){
+        distance = poseDistance.get();
+        SmartDashboard.putBoolean("Vision Calced rpm", true);
+     }
+     else{
+        System.out.print("VISION FAILED default default distance set to 2m");
+        SmartDashboard.putBoolean("Vision Calced rpm", false);
+        distance = 2.0; // default distance is 2 meters 
+     }
+     return distance;
 }
 
 
@@ -429,4 +457,9 @@ public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
     public void setVisionEnabled(boolean enabled) {
              allowVisionFusion = enabled;
          }
+
+    public int getHubTagId() {
+    return DriverStation.getAlliance().orElse(Alliance.Blue)
+            == Alliance.Red ? 10 : 26;
+}
 }

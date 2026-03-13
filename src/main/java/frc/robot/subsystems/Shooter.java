@@ -19,8 +19,10 @@ public class Shooter extends SubsystemBase {
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
     private final double RPM_TOLLERANCE = 100;
     private double targetRPM = 0;
+    private final Vision vision;
 
-    public Shooter() {
+    public Shooter(Vision vision) {
+        this.vision = vision;
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = 0.12;
         config.Slot0.kI = 0.0;
@@ -79,6 +81,9 @@ public class Shooter extends SubsystemBase {
         double currentRPM = shooterMotor.getVelocity().getValueAsDouble() * 60.0;
         
         // Use Math.abs to check if the difference is within the tolerance range
-        return Math.abs(currentRPM - targetRPM) <= RPM_TOLLERANCE;
+        if ((Math.abs(currentRPM - targetRPM) <= RPM_TOLLERANCE) && (vision.getRotationErrorShooterToTagFromPose().get().getDegrees()  < ShooterMath.getShotTolerance(vision.getBestHubDistance())) ){
+            return true;
+        }
+        else return false;
     }
 }
