@@ -13,11 +13,12 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX shooterMotor1 = new TalonFX(13);
-    private final TalonFX shooterMotor2 = new TalonFX(14);
+    private final TalonFX shooterMotor = new TalonFX(13); //reset this to wtv it is gonna be
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
+    private final double RPM_TOLLERANCE = 100;
+    private double targetRPM = 0;
 
     public Shooter() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -27,20 +28,18 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kV = 0.135;
         //config.CurrentLimits.StatorCurrentLimit = 80;
         //config.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterMotor1.getConfigurator().apply(config);
-        shooterMotor2.getConfigurator().apply(config);
+        shooterMotor.getConfigurator().apply(config);
     }
 
     public void setRPM(double rpm) {
         double rampedRPM = rpmRamp.calculate(rpm);
         double targetRPS = rampedRPM / 60.0;
-        shooterMotor1.setControl(velocityRequest.withVelocity(targetRPS));
-        shooterMotor2.setControl(velocityRequest.withVelocity(targetRPS));
+        shooterMotor.setControl(velocityRequest.withVelocity(targetRPS));
+        this.targetRPM = rpm;
     }
 
     public void stop() {
-        shooterMotor1.set(0);
-        shooterMotor2.set(0);
+        shooterMotor.set(0);
     }
 
 
@@ -61,22 +60,25 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
     // Correct way to get velocity in Phoenix 6
     // .getValueAsDouble() returns Rotations per Second (RPS)
-    double currentRPS1 = shooterMotor1.getVelocity().getValueAsDouble();
-    double currentRPM1 = currentRPS1 * 60.0;
-    double targetRPM = SmartDashboard.getNumber("SetRPM", 0);
-    
-    double currentRPS2 = shooterMotor2.getVelocity().getValueAsDouble();
-    double currentRPM2 = currentRPS2 * 60.0;
+    double currentRPS = shooterMotor.getVelocity().getValueAsDouble();
+    double currentRPM = currentRPS * 60.0;
+    double target = SmartDashboard.getNumber("SetRPM", 0);
 
-    double shooter1Error = targetRPM - currentRPM1;
-    double shooter2Error = targetRPM - currentRPM2;
+    double shooter1Error = target - currentRPM;
 
-    SmartDashboard.putNumber("ShooterMoter1 Error", shooter1Error);
-    SmartDashboard.putNumber("ShooterMoter2 Error", shooter2Error);
+    SmartDashboard.putNumber("ShooterMotor Error", shooter1Error);
 
-    SmartDashboard.putNumber("ShooterMoter1 RPM", currentRPM1);
-    SmartDashboard.putNumber("ShooterMoter2 RPM", currentRPM2);
+    SmartDashboard.putNumber("ShooterMotor RPM", currentRPM);
 
-    SmartDashboard.putNumber("Flywheel speed", currentRPM1 / (15.0/36.0)); // account for gear ratio
+    SmartDashboard.putNumber("Flywheel speed", currentRPM); // account for gear ratio
 }
+
+
+    public boolean atSetPoint(){
+        
+        double currentRPM = shooterMotor.getVelocity().getValueAsDouble() * 60.0;
+        
+        // Use Math.abs to check if the difference is within the tolerance range
+        return Math.abs(currentRPM - targetRPM) <= RPM_TOLLERANCE;
+    }
 }

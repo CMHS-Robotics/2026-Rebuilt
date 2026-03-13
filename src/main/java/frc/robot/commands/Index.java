@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class Index extends Command{
 
     private final Indexer indexer;
-    private final Vision vision;
-    private final CalcFromVision calc;
+    private final Kicker kicker;
+    private final Shooter shooter;
 
-    public Index(Indexer indexer, Vision vision) {
+    public Index(Indexer indexer, Shooter shooter, Kicker kicker) {
         this.indexer = indexer;
-        this.vision = vision;
-        this.calc = new CalcFromVision(vision);
+        this.kicker = kicker;
+        this.shooter = shooter;
         addRequirements(indexer); // This prevents other commands from using the kicker at the same time
     }
 
@@ -26,22 +26,13 @@ public class Index extends Command{
     }
 
     @Override
-    
     public void execute() {
-
-         //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
-         //double angleRad = Math.toRadians(angleDeg);
-    
-         // double rpm = ShooterMath.getRPM(distance);
-       //  double rpm = SmartDashboard.getNumber("SetRPM", 0);
-      //  calc.calcHubRPM().ifPresent(rpm -> {
-      //  SmartDashboard.putNumber("Calculated RPM", rpm);
-      //  indexer.setRPM(rpm);
-      //  });
-
-      //double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
-       double rpm = 2500;
-        indexer.setRPM(rpm);
+        // Only spin the indexer if shooter and kicker are ready
+        if (shooter.atSetPoint() && kicker.atSetPoint()) {
+            indexer.setRPM(2000); 
+        } else {
+            indexer.setRPM(0); // Stay still until up to speed
+        }
     }
 
     @Override
