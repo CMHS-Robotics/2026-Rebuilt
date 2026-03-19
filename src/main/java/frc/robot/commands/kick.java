@@ -1,9 +1,7 @@
 package frc.robot.commands;
 import frc.robot.subsystems.*;
-
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Kick extends Command{
@@ -28,14 +26,16 @@ public class Kick extends Command{
          //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
          //double angleRad = Math.toRadians(angleDeg);
     
-         // double rpm = ShooterMath.getRPM(distance);
-       //  double rpm = SmartDashboard.getNumber("SetRPM", 0);
-     double rpm;
+         double rpm = SmartDashboard.getNumber("SetKickerRPM", 0);
 
-     rpm = ShooterMath.getBestKickerRPM(swerve, vision);
+    // double rpm;
+
+   //  rpm = ShooterMath.getBestKickerRPM(swerve, vision);
+
+
     //    double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
     //   double rpm = ShooterMath.getRPM(distance);
-        kicker.setRPM(-rpm);
+        kicker.setRPM(rpm);
      // double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
      //  double rpm = ShooterMath.getRPM(distance);
      //   kicker.setRPM(-rpm);

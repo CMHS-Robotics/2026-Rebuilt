@@ -2,15 +2,11 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -18,11 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.jar.Attributes.Name;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
-import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.PIDConstants;
@@ -37,14 +29,14 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.TunerConstantsOld;
 
 public class RobotContainer {
   
 
   private final SendableChooser<Command> autoChooser;
 
-  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 1.0 * TunerConstantsOld.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -60,7 +52,7 @@ public class RobotContainer {
 
     private final CommandXboxController Manipulator = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstantsOld.createDrivetrain();
 
     public final FuelSim fuelSim = new FuelSim();
 
@@ -132,7 +124,9 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
     SmartDashboard.putNumber("Climber Position", climber.getPosition());
     SmartDashboard.putNumber("Stage", climber.stages[0]);
-    SmartDashboard.putNumber("SetRPM",0);
+    SmartDashboard.putNumber("SetKickerRPM",0);
+    SmartDashboard.putNumber("SetShooterRPM",0);
+
     SmartDashboard.putNumber("SetDegrees", 0);
 
 

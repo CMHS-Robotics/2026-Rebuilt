@@ -346,4 +346,8 @@ public ChassisSpeeds getFieldRelativeSpeeds() {
     );
 }
 
+public void overridePose(Pose2d pose){
+    getState().Pose = pose;
+}
+
 }

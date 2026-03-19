@@ -17,11 +17,13 @@ public class Kicker extends SubsystemBase {
 
     public Kicker() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0.1;
+        config.Slot0.kP = 0.12;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
+        config.Slot0.kV = 0.12;
+        config.Slot0.kS = 0.25;
         //config.Slot0.kF = 0.05;
-        config.CurrentLimits.StatorCurrentLimit = 100;
+       config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit = 100;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;

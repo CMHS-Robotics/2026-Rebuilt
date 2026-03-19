@@ -13,7 +13,7 @@ import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Shooter extends SubsystemBase {
 
-    private final TalonFX shooterMotor = new TalonFX(13); //reset this to wtv it is gonna be
+    private final TalonFX shooterMotor = new TalonFX(14); //reset this to wtv it is gonna be
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
@@ -34,10 +34,12 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setRPM(double rpm) {
-        double rampedRPM = rpmRamp.calculate(rpm);
-        double targetRPS = rampedRPM / 60.0;
-        shooterMotor.setControl(velocityRequest.withVelocity(targetRPS));
-        this.targetRPM = rpm;
+         double rampedRPM = rpmRamp.calculate(rpm);
+         double targetRPS = rampedRPM / 60.0;
+         shooterMotor.setControl(velocityRequest.withVelocity(targetRPS));
+         this.targetRPM = rpm;
+
+        
     }
 
     public void stop() {
@@ -71,8 +73,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("ShooterMotor Error", shooter1Error);
 
     SmartDashboard.putNumber("ShooterMotor RPM", currentRPM);
-
-    SmartDashboard.putNumber("Flywheel speed", currentRPM); // account for gear ratio
 }
 
 

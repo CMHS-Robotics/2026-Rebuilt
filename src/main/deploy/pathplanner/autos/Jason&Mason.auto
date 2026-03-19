@@ -75,12 +75,6 @@
                 "data": {
                   "pathName": "OutpostToShoot"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "spinUpFlyWheel"
-                }
               }
             ]
           }

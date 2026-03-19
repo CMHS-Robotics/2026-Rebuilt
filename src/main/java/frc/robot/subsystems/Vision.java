@@ -46,6 +46,7 @@ public class Vision extends SubsystemBase {
     private final CommandSwerveDrivetrain swerve;
     private final PhotonCamera[] cameras;
     private final PhotonPoseEstimator[] estimators;
+    private Pose2d latestEstimatedPose = new Pose2d();
 
     private VisionSystemSim visionSim;
     private PhotonCameraSim[] cameraSims;
@@ -109,7 +110,7 @@ public void periodic() {
     boolean sawTagThisFrame = false;
 
     // 1. Iterate through all cameras and unread results
-    for (int i = 0; i < cameras.length; i++) {
+    for (int i = 0; i < 1; i++) {
         PhotonCamera cam = cameras[i];
         PhotonPoseEstimator estimator = estimators[i];
 
@@ -144,10 +145,11 @@ public void periodic() {
 
     
     // 2. Fusion: Only add the absolute best estimate found across all cameras
-    if (allowVisionFusion && bestEstimate != null) {
+    if (bestEstimate != null) {
+        latestEstimatedPose = bestEstimate.estimatedPose.toPose2d(); // Update the getter variable
         swerve.addVisionMeasurement(
             bestEstimate.estimatedPose.toPose2d(),
-            bestEstimate.timestampSeconds,
+            bestEstimate.timestampSeconds, // instead of actual currenttime   
             bestStdDevs
         );
         
@@ -431,6 +433,14 @@ public void periodic() {
         distance = 2.0; // default distance is 2 meters 
      }
      return distance;
+}
+
+/**
+ * Returns the latest estimated pose from the vision system.
+ * Returns an empty optional if no tags have been seen yet.
+ */
+public Optional<Pose2d> getEstimatedPose() {
+    return Optional.ofNullable(latestEstimatedPose);
 }
 
 

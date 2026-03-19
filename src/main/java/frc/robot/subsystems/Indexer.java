@@ -9,8 +9,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX indexerBottomMoter = new TalonFX(22); // Assuming CAN ID 4 for kicker motor
-    private final TalonFX indexerTopMoter = new TalonFX(21); // Assuming CAN ID 4 for kicker motor
+    private final TalonFX indexerBottomMoter = new TalonFX(6000); // Assuming CAN ID 4 for kicker motor
+ private final TalonFX indexerTopMoter = new TalonFX(6000000); // Assuming CAN ID 4 for kicker motor
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2500); // Limit to 500 RPM per second
 

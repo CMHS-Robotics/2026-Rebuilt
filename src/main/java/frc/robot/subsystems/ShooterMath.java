@@ -113,7 +113,7 @@ public class ShooterMath {
      rpm = ShooterMath.getShooterRPM(distance);
      }
 
-     return rpm;
+     return MathUtil.clamp(rpm, 800, 6000);
     }
 
     public static double getBestKickerRPM(CommandSwerveDrivetrain swerve, Vision vision){

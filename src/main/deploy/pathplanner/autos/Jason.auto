@@ -5,7 +5,7 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -49,9 +49,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "ExitDepot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "ExitDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeSpin"
+                }
+              }
+            ]
           }
         },
         {

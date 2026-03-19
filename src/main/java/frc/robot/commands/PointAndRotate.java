@@ -5,11 +5,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ShooterMath;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 

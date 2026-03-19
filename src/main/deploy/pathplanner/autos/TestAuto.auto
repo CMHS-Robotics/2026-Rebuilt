@@ -13,14 +13,14 @@
                 "data": {
                   "pathName": "Start2ToShoot"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "spinUpFlyWheel"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
           }
         },
         {

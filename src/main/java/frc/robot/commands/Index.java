@@ -1,9 +1,7 @@
 package frc.robot.commands;
 import frc.robot.subsystems.*;
 
-import java.util.Optional;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Index extends Command{

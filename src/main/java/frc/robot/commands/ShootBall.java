@@ -2,19 +2,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-import java.util.Optional;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 import frc.robot.subsystems.*;
 import frc.robot.tools.FuelSim;
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShootBall extends Command {
 
@@ -48,12 +44,14 @@ public class ShootBall extends Command {
     public void execute() {
       //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
       //double angleRad = Math.toRadians(angleDeg);
-     // double rpm = SmartDashboard.getNumber("SetRPM", 0);
+      double rpm = SmartDashboard.getNumber("SetShooterRPM", 0);
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
 
-     double rpm;
 
-     rpm = ShooterMath.getBestKickerRPM(swerve, vision);
+    //double  rpm = ShooterMath.getBestShooterRPM(swerve, vision);
+    
+
+     shooter.setRPM(rpm);
 
      double currentTime = m_timer.get();
 

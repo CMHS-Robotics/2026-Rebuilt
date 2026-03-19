@@ -20,7 +20,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ShootBall;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.TunerConstantsOld;
 import frc.robot.subsystems.*;
 import frc.robot.tools.FuelSim;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -104,6 +104,10 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
         )
     )
     );
+
+     m_robotContainer.getVision().getEstimatedPose().ifPresent(pose -> {
+    m_robotContainer.getDrivetrain().resetPose(pose); 
+});
     }
 
    // Pose2d startingPose = m_autonomousCommand.getStartingPose();
@@ -125,12 +129,15 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
      if (m_autonomousCommand != null) {
        m_autonomousCommand.cancel();
      }
+
      m_robotContainer.getVision().setVisionEnabled(true);
-
-
+    m_robotContainer.getVision().getEstimatedPose().ifPresent(pose -> {
+    m_robotContainer.getDrivetrain().resetPose(pose); 
+});
     if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
     }
+
 
 
   }
