@@ -10,11 +10,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends SubsystemBase{
-    private final TalonFX intakeMoter = new TalonFX(19);
-    private final TalonFX intakeUpDownMoter = new TalonFX(20);
+    private final TalonFX intakeMotor = new TalonFX(19);
+    private final TalonFX intakeUpDownMotor = new TalonFX(20);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(3500); // Limit to 500 RPM per second
-    private final PositionVoltage intakeUpDownPositionRequest = new PositionVoltage(0);
+    private final PositionVoltage intakeEngangeRequest = new PositionVoltage(0);
+
+    private final PositionVoltage intakeCompressRequest = new PositionVoltage(0).withVelocity(.2);
 
     public Intake() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -24,6 +26,8 @@ public class Intake extends SubsystemBase{
         //config.Slot0.kF = 0.05;
         config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 60;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
         
 
         TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
@@ -38,16 +42,16 @@ public class Intake extends SubsystemBase{
         upDownConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 26.5244140625;
+        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1; //tune this
         upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -3.66943;
+        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0; //tune this 
         upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
-        intakeUpDownMoter.getConfigurator().apply(upDownConfig);
+        intakeUpDownMotor.getConfigurator().apply(upDownConfig);
 
       //  intakeMoter.getConfigurator().apply(config);
-        intakeUpDownMoter.getConfigurator().apply(config);
+        intakeMotor.getConfigurator().apply(config);
     }
 
     public void resetRamp() {
@@ -57,27 +61,34 @@ public class Intake extends SubsystemBase{
     public void startIntake() {
         double rampedRPM = rpmRamp.calculate(6250);
         double targetRPS = rampedRPM / 60.0;
-        intakeMoter.setControl(velocityRequest.withVelocity(-targetRPS));
+        intakeMotor.setControl(velocityRequest.withVelocity(-targetRPS));
     }
 
     public void engage(){
-        double motorRotations = 29.041015625;
+        double motorRotations = 1;
         
         //-0.97705078125
-        intakeUpDownMoter.setControl(intakeUpDownPositionRequest.withPosition(motorRotations));
+        intakeUpDownMotor.setControl(intakeEngangeRequest.withPosition(motorRotations));
+    }
+
+    public void compress(){
+        double motorRotations = -1;
+        
+        //-0.97705078125
+        intakeUpDownMotor.setControl(intakeCompressRequest.withPosition(motorRotations));
     }
 
     public void stop() {
-        intakeMoter.set(0);
+        intakeMotor.set(0);
     }
     public double getArmPosition(){
-        return intakeUpDownMoter.getPosition().getValueAsDouble();
+        return intakeUpDownMotor.getPosition().getValueAsDouble();
     }
     public void setArmOutput(double MotorOutput){
-        intakeUpDownMoter.set(MotorOutput);
+        intakeUpDownMotor.set(MotorOutput);
     }
     public void stopArm(){
-        intakeUpDownMoter.stopMotor();
+        intakeUpDownMotor.stopMotor();
     }
 
     public Command stopCommand() {
@@ -88,7 +99,7 @@ public class Intake extends SubsystemBase{
     // .getValueAsDouble() returns Rotations per Second (RPS)
 
 
-    double currentRPS1 = intakeMoter.getVelocity().getValueAsDouble();
+    double currentRPS1 = intakeMotor.getVelocity().getValueAsDouble();
     double currentRPM1 = currentRPS1 * 60.0;
 
     SmartDashboard.putNumber("intakeMoter RPM", currentRPM1);

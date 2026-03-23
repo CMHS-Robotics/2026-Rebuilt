@@ -28,17 +28,33 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
     public static class Vision {
-        public static final String frontRightCam = "frontRightCam";
+        public static final String frontCam = "frontCam";
         public static final String frontLeftCam = "frontLeftCam";
+        public static final String backCam = "backCam";
+        public static final String backRightCam = "backRightCam";
+        public static final String backLeftCam = "backLeftCam";
+        
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-        public static final Transform3d kRobotToFrontRightCam = new Transform3d(
+
+        public static final Transform3d kRobotToFrontCam = new Transform3d(
         0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
-    );
+        );
 
+        public static final Transform3d kRobotToFrontLeftCam = new Transform3d(
+        0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
+        );
 
- public static final Transform3d kRobotToFrontLeftCam = new Transform3d(
-         0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
-     );
+        public static final Transform3d kRobotToBackCam = new Transform3d(
+        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        );
+
+        public static final Transform3d kRobotToBackRightCam = new Transform3d(
+        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        );
+
+        public static final Transform3d kRobotToBackLeftCam = new Transform3d(
+        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        );
 
 
         // The layout of the AprilTags on the field

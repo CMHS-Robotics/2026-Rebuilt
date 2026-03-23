@@ -6,11 +6,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class Hopp extends Command{
 
     private final Hopper hopper;
-    private final Vision vision;
+    private final Shooter shooter;
+    private final Kicker kicker;
 
-    public Hopp(Hopper hopper, Vision vision) {
+
+    public Hopp(Hopper hopper, Shooter shooter, Kicker kicker) {
         this.hopper = hopper;
-        this.vision = vision;
+        this.shooter = shooter;
+        this.kicker = kicker;
         addRequirements(hopper); // This prevents other commands from using the kicker at the same time
     }
 
@@ -31,8 +34,12 @@ public class Hopp extends Command{
     //    });
 
     //double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
-       double rpm = 1000;
-        hopper.setRPM(rpm);
+       // Only spin the indexer if shooter and kicker are ready
+        if (shooter.atSetPoint() && kicker.atSetPoint()) {
+            hopper.setRPM(2000); 
+        } else {
+            hopper.setRPM(0); // Stay still until up to speed
+        }
     }
 
     @Override

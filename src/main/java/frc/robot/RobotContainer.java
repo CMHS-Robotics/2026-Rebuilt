@@ -88,22 +88,23 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     ShootBall shootBallCommand = new ShootBall(shooter, vision, drivetrain, fuelSim);
     runIntake runIntakeCommand = new runIntake(intake);
     PointAndRotate alignToHubCommand = new PointAndRotate(drivetrain, vision);
-    Hopp hoppCommand = new Hopp(hopper, vision);
+    Hopp hoppCommand = new Hopp(hopper, shooter, kicker);
     Kick kickCommand = new Kick(kicker, vision, drivetrain);
     Index indexCommand = new Index(indexer, shooter, kicker);
-    EngageArm EngageArmCommand = new EngageArm(intake);
+    EngageIntake EngageIntake = new EngageIntake(intake);
+    CompressIntake CompressIntake = new CompressIntake(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-    NamedCommands.registerCommand("spinUpFlyWheel", shootBallCommand);
-    NamedCommands.registerCommand("shootBall", 
-
-    shootBallCommand
+    NamedCommands.registerCommand("shoot", shootBallCommand
         .alongWith(new Index(indexer, shooter, kicker).withTimeout(20))
         .alongWith(kickCommand)
-        .withTimeout(20)
-);
+        .alongWith(hoppCommand)
+        .alongWith(EngageIntake)
+        .withTimeout(20));
 
-    NamedCommands.registerCommand("engageArm", EngageArmCommand);
+    
+    NamedCommands.registerCommand("compressIntake", CompressIntake);
+    NamedCommands.registerCommand("engageIntake", EngageIntake);
     NamedCommands.registerCommand("intakeSpin", runIntakeCommand);
     NamedCommands.registerCommand("intakeSpinUp", runIntakeCommand);
     NamedCommands.registerCommand("armFeedAngle", armFeedPose);
@@ -169,7 +170,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
        Manipulator.rightTrigger().whileTrue(new Index(indexer, shooter, kicker));
 
        Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
-       Manipulator.rightBumper().whileTrue(new Hopp(hopper, vision));
+       Manipulator.rightBumper().whileTrue(new Hopp(hopper, shooter, kicker));
        Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
@@ -179,7 +180,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
         Driver.button(2).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
 
-        Manipulator.y().onTrue(new EngageArm(intake));
+        Manipulator.y().onTrue(new EngageIntake(intake));
             
       
 

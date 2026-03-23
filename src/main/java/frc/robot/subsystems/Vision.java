@@ -55,19 +55,27 @@ public class Vision extends SubsystemBase {
 
     private final Translation2d shooterOffset = new Translation2d(0.2921, -0.1);
 
+    private final Transform3d[] robotToCamTransforms = {kRobotToFrontCam, kRobotToBackCam, kRobotToBackLeftCam, kRobotToBackRightCam};
+
     public Vision(CommandSwerveDrivetrain swerve) {
         this.swerve = swerve;
 
 
         // Initialize arrays for 2 cameras
         cameras = new PhotonCamera[] {
+            new PhotonCamera(frontCam),
             new PhotonCamera(frontLeftCam),
-            new PhotonCamera(frontRightCam)
+            new PhotonCamera(backCam),
+            new PhotonCamera(backRightCam),
+            new PhotonCamera(backLeftCam)
         };
 
         estimators = new PhotonPoseEstimator[] {
-            new PhotonPoseEstimator(kTagLayout, kRobotToFrontLeftCam),
-            new PhotonPoseEstimator(kTagLayout, kRobotToFrontRightCam)
+            new PhotonPoseEstimator(kTagLayout, kRobotToFrontCam),
+            //new PhotonPoseEstimator(kTagLayout, kRobotToFrontLeftCam),
+            new PhotonPoseEstimator(kTagLayout, kRobotToBackCam),
+            new PhotonPoseEstimator(kTagLayout, kRobotToBackRightCam),
+            new PhotonPoseEstimator(kTagLayout, kRobotToBackLeftCam)
         };
 
 
@@ -87,11 +95,17 @@ public class Vision extends SubsystemBase {
             
             // Link Sim 0 to Camera 0 (Front Left)
             cameraSims[0] = new PhotonCameraSim(cameras[0], cameraProp);
-            visionSim.addCamera(cameraSims[0], kRobotToFrontLeftCam);
+            visionSim.addCamera(cameraSims[0], kRobotToFrontCam);
 
             // Link Sim 1 to Camera 1 (Front Right)
             cameraSims[1] = new PhotonCameraSim(cameras[1], cameraProp);
-            visionSim.addCamera(cameraSims[1], kRobotToFrontRightCam);
+            visionSim.addCamera(cameraSims[1], kRobotToBackCam);
+
+            cameraSims[2] = new PhotonCameraSim(cameras[2], cameraProp);
+            visionSim.addCamera(cameraSims[2], kRobotToBackLeftCam);
+
+            cameraSims[3] = new PhotonCameraSim(cameras[3], cameraProp);
+            visionSim.addCamera(cameraSims[3], kRobotToBackRightCam);
         }
     }
 
@@ -304,8 +318,6 @@ public void periodic() {
 
     public Optional<Rotation2d> getRawRotationShooterToHubAnyTag() {
     // 1. Determine target Hub based on Alliance
-    Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
-
    int targetHubId = getHubTagId();
 
     Optional<Pose3d> hubPoseOpt = kTagLayout.getTagPose(targetHubId);
@@ -347,7 +359,6 @@ public void periodic() {
     }
 
     public Optional<Translation2d> getRawTranslationShooterToHubAnyTag() {
-    Transform3d[] robotToCamTransforms = {kRobotToFrontRightCam, kRobotToFrontLeftCam};
     // 1. Identify the target Hub ID based on Alliance
     int targetHubId = getHubTagId();
 
