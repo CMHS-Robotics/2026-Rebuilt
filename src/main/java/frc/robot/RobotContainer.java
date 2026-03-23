@@ -27,16 +27,14 @@ import frc.robot.tools.FuelSim;
 import frc.robot.commands.*;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-
-
-import frc.robot.generated.TunerConstantsOld;
+import frc.robot.generated.TunerConstants;
 
 public class RobotContainer {
   
 
   private final SendableChooser<Command> autoChooser;
 
-  private double MaxSpeed = 1.0 * TunerConstantsOld.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -52,7 +50,7 @@ public class RobotContainer {
 
     private final CommandXboxController Manipulator = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstantsOld.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final FuelSim fuelSim = new FuelSim();
 

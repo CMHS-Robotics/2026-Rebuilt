@@ -295,7 +295,7 @@ public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampS
      */
 @Override
 public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-
+    System.out.println("DRIVETRAIN RECEIVED: " + visionRobotPoseMeters.getX());
     super.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     //this.resetPose(new Pose2d(visionRobotPoseMeters.getTranslation(), this.getRotation3d().toRotation2d()));
     //System.out.println(getState().Pose);

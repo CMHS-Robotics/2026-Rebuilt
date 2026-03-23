@@ -149,7 +149,7 @@ public void periodic() {
         latestEstimatedPose = bestEstimate.estimatedPose.toPose2d(); // Update the getter variable
         swerve.addVisionMeasurement(
             bestEstimate.estimatedPose.toPose2d(),
-            bestEstimate.timestampSeconds, // instead of actual currenttime   
+            edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - 0.04, //bestEstimate.timestampSeconds, // instead of actual currenttime   
             bestStdDevs
         );
         
