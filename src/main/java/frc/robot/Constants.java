@@ -37,23 +37,19 @@ public final class Constants {
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         public static final Transform3d kRobotToFrontCam = new Transform3d(
-        0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
-        );
-
-        public static final Transform3d kRobotToFrontLeftCam = new Transform3d(
-        0.3429,  -0.2667, 0.758063, new Rotation3d(0, Math.toRadians(13), Math.toRadians(0))
+        0.3556,  -0.06985, 0.4699, new Rotation3d(0, Math.toRadians(0), Math.toRadians(0))
         );
 
         public static final Transform3d kRobotToBackCam = new Transform3d(
-        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        -0.16383, -0.23495, 0.45085, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(180))
         );
 
         public static final Transform3d kRobotToBackRightCam = new Transform3d(
-        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        -0.20955, -0.33655, 0.45085, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(135))
         );
 
         public static final Transform3d kRobotToBackLeftCam = new Transform3d(
-        0.3175, 0.2794, 0.508, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(0))
+        -0.320675, -0.127, 0.45085, new Rotation3d(Math.toRadians(0.0), Math.toRadians(0), Math.toRadians(225))
         );
 
 

@@ -9,7 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Hopper extends SubsystemBase {
-     private final TalonFX hopperMoter = new TalonFX(16); 
+     private final TalonFX hopperMoter = new TalonFX(0); 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 500 RPM per second
 

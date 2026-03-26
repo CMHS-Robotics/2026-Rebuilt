@@ -39,7 +39,7 @@ public class Hopp extends Command{
             hopper.setRPM(2000); 
         } else {
             hopper.setRPM(0); // Stay still until up to speed
-        }
+       }
     }
 
     @Override

@@ -17,17 +17,24 @@ public class Shooter extends SubsystemBase {
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
-    private final double RPM_TOLLERANCE = 100;
+    private final double RPM_TOLLERANCE = 200;
     private double targetRPM = 0;
     private final Vision vision;
 
     public Shooter(Vision vision) {
         this.vision = vision;
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0.12;
+        // Increase P to fight friction at low speeds and pull back overshoots at high speeds
+        config.Slot0.kP = 0.35; 
         config.Slot0.kI = 0.0;
-        config.Slot0.kD = 0.0;
-        config.Slot0.kV = 0.135;
+        config.Slot0.kD = 0.01; // A tiny bit of D can help prevent jitter
+
+        // Lower V slightly if you are consistently overshooting your targets
+        config.Slot0.kV = 0.125;    
+
+        // OPTIONAL: Add kS (Static Feedforward) 
+        // kS overcomes friction. If it takes 0.2V just to get the motor moving, set kS to 0.2.
+        config.Slot0.kS = 0.1;
         //config.CurrentLimits.StatorCurrentLimit = 80;
         //config.CurrentLimits.StatorCurrentLimitEnable = true;
         shooterMotor.getConfigurator().apply(config);
@@ -81,7 +88,7 @@ public class Shooter extends SubsystemBase {
         double currentRPM = shooterMotor.getVelocity().getValueAsDouble() * 60.0;
         
         // Use Math.abs to check if the difference is within the tolerance range
-        if ((Math.abs(currentRPM - targetRPM) <= RPM_TOLLERANCE) && (vision.getRotationErrorShooterToTagFromPose().get().getDegrees()  < ShooterMath.getShotTolerance(vision.getBestHubDistance())) ){
+        if ((Math.abs(currentRPM - targetRPM) <= RPM_TOLLERANCE)) {//&& (vision.getRotationErrorShooterToTagFromPose().get().getDegrees()  < ShooterMath.getShotTolerance(vision.getBestHubDistance())) ){
             return true;
         }
         else return false;

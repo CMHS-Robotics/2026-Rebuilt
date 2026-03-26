@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends SubsystemBase{
     private final TalonFX intakeMotor = new TalonFX(19);
-    private final TalonFX intakeUpDownMotor = new TalonFX(20);
+    private final TalonFX intakeUpDownMotor = new TalonFX(13);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(3500); // Limit to 500 RPM per second
     private final PositionVoltage intakeEngangeRequest = new PositionVoltage(0);
@@ -36,16 +36,16 @@ public class Intake extends SubsystemBase{
         upDownConfig.Slot0.kD = 0.1;
 
         // 1. Limit current so we don't melt the motor when it stalls at the bottom
-        upDownConfig.CurrentLimits.StatorCurrentLimit = 20.0; // 20 Amps is safe for stalling briefly
+        upDownConfig.CurrentLimits.StatorCurrentLimit = 25.0; // 20 Amps is safe for stalling briefly
         upDownConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-         upDownConfig.CurrentLimits.SupplyCurrentLimit = 20;
+         upDownConfig.CurrentLimits.SupplyCurrentLimit = 25;
         upDownConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1; //tune this
+        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 2; //tune this
         upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0; //tune this 
+        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.1630859375; //tune this 
         upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         intakeUpDownMotor.getConfigurator().apply(upDownConfig);

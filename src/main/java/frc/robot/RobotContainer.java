@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -169,8 +171,8 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
        Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
        Manipulator.rightTrigger().whileTrue(new Index(indexer, shooter, kicker));
 
-       Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
-       Manipulator.rightBumper().whileTrue(new Hopp(hopper, shooter, kicker));
+       //Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
+       Manipulator.rightTrigger().whileTrue(new Hopp(hopper, shooter, kicker));
        Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
@@ -180,9 +182,9 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
         Driver.button(2).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
 
-        Manipulator.y().onTrue(new EngageIntake(intake));
+        Manipulator.y().whileTrue(new EngageIntake(intake));
             
-      
+        Manipulator.x().whileTrue(new CompressIntake(intake));
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -246,7 +248,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
             new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
         );
         //freemove Intake Arm Command
-        Manipulator.x().whileTrue( new unjamRobot(hopper, indexer));
+        //Manipulator.x().whileTrue( new unjamRobot(hopper, indexer));
 
         Trigger stickMoved = new Trigger( () -> Math.abs(Manipulator.getLeftY()) > 0.1);
         stickMoved.whileTrue(
@@ -320,4 +322,17 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 public Vision getVision() {
     return vision;
 }
+
+public Pose2d getAutoStartingPose() {
+    Command selectedCommand = autoChooser.getSelected();
+
+    if (selectedCommand instanceof PathPlannerAuto) {
+        // This pulls the pose directly from the loaded auto object
+        return ((PathPlannerAuto) selectedCommand).getStartingPose();
+    }
+    
+    // Fallback if it's a manual command or null
+    return new Pose2d(); 
+}
+
 }

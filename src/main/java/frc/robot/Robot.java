@@ -91,11 +91,24 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
 
   @Override
   public void autonomousInit() {
-   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-   if (m_autonomousCommand != null) {
-     CommandScheduler.getInstance().schedule(m_autonomousCommand);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    m_robotContainer.getVision().setVisionEnabled(false);
+    if (m_autonomousCommand != null) {
+      // 1. Get the starting pose from PathPlanner
+      // Note: This requires you to have a way to know WHICH auto is selected.
+      // If you are using a SendableChooser, you might need to get the name from there.
+      Pose2d startPose = m_robotContainer.getAutoStartingPose(); 
+      
+      // 2. Reset the drivetrain to that pose before running the command
+      if (startPose != null) {
+          m_robotContainer.getDrivetrain().resetPose(startPose);
+      }
+
+      // 3. Schedule the auto command
+      m_autonomousCommand.schedule();
+
+      m_robotContainer.getVision().setVisionEnabled(false);
+
 
     CommandScheduler.getInstance().schedule(
     new WaitCommand(1).andThen(
@@ -105,14 +118,16 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
     )
     );
 
-     m_robotContainer.getVision().getEstimatedPose().ifPresent(pose -> {
+    m_robotContainer.getVision().getEstimatedPose().ifPresent(pose -> {
     m_robotContainer.getDrivetrain().resetPose(pose); 
-});
+    });
+    }
     }
 
    // Pose2d startingPose = m_autonomousCommand.getStartingPose();
    //swerve.resetPose(startingPose);
-  }
+
+
   @Override
   public void autonomousExit() {
     if(m_autonomousCommand != null){
