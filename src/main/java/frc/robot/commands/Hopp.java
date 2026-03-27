@@ -36,7 +36,7 @@ public class Hopp extends Command{
     //double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);
        // Only spin the indexer if shooter and kicker are ready
         if (shooter.atSetPoint() && kicker.atSetPoint()) {
-            hopper.setRPM(2000); 
+            hopper.setRPM(3000); 
         } else {
             hopper.setRPM(0); // Stay still until up to speed
        }

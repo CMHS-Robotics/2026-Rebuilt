@@ -12,7 +12,7 @@ public class Kicker extends SubsystemBase {
     private final TalonFX kickerMoter = new TalonFX(17); // Assuming CAN ID 4 for kicker motor
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 2000 RPM per second
-    private final double RPM_TOLLERANCE = 100;
+    private final double RPM_TOLLERANCE = 300;
     private double targetRPM = 0;
 
     public Kicker() {

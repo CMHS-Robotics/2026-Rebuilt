@@ -26,7 +26,7 @@ public class Index extends Command{
     public void execute() {
         // Only spin the indexer if shooter and kicker are ready
         if (shooter.atSetPoint() && kicker.atSetPoint()) {
-            indexer.setRPM(2000); 
+            indexer.setRPM(-4000); 
         } else {
             indexer.setRPM(0); // Stay still until up to speed
         }

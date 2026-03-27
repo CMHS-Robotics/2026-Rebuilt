@@ -35,17 +35,13 @@ public class ShooterMath {
         static {
             // ----- TUNE THESE VALUES -----
             // distance , RPM
-           rpmMap.put(2.159,  906.75);   // 906.75 * 1.10
-            rpmMap.put(2.413, 930.0);    // 930 * 1.10
-            rpmMap.put(2.54, 975.0);     // 975 * 1.10
-            rpmMap.put(2.667, 980.0);    // 980 * 1.10
-            rpmMap.put(2.794, 985.0);    // 985 * 1.10
-            rpmMap.put(3.048, 1025.0);    // 1025 * 1.10
-            rpmMap.put(3.302, 1050.0);    // 1050 * 1.10
-            rpmMap.put(3.556, 1090.0);    // 1090 * 1.10
-            rpmMap.put(3.81, 1100.0);     // 1100 * 1.10
-            rpmMap.put(3.937, 1125.5);    // 1125 * 1.10
-            rpmMap.put(4.191, 1175.0);    // 1175 * 1.10
+            rpmMap.put(1.3335,1800.0);
+           rpmMap.put(1.8288,  1900.0);  // 906.75 * 1.10
+           rpmMap.put(2.1463,2000.0);
+            rpmMap.put(2.4384, 2100.0);    // 930 * 1.10
+            rpmMap.put(2.7559, 2200.0);  
+            rpmMap.put(3.5433, 985.0);    
+            rpmMap.put(4.09575, 2500.0);    // 980 * 1.10
         }
 
         public static double getShooterRPM(double distance){

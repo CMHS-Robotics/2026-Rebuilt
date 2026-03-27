@@ -9,7 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Hopper extends SubsystemBase {
-     private final TalonFX hopperMoter = new TalonFX(0); 
+     private final TalonFX hopperMoter = new TalonFX(25); 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000); // Limit to 500 RPM per second
 
@@ -44,7 +44,7 @@ public class Hopper extends SubsystemBase {
     }
 
     public void unjam(){
-        double rampedRPM = rpmRamp.calculate(1000);
+        double rampedRPM = rpmRamp.calculate(1500);
         double targetRPS = rampedRPM / 60.0;
         //hopperMoter.
         hopperMoter.setControl(velocityRequest.withVelocity(targetRPS));  

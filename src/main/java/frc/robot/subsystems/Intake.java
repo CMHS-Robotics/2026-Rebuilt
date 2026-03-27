@@ -10,8 +10,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends SubsystemBase{
-    private final TalonFX intakeMotor = new TalonFX(19);
-    private final TalonFX intakeUpDownMotor = new TalonFX(13);
+    private final TalonFX intakeMotor = new TalonFX(10000);
+    private final TalonFX intakeUpDownMotor = new TalonFX(0);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(3500); // Limit to 500 RPM per second
     private final PositionVoltage intakeEngangeRequest = new PositionVoltage(0);
@@ -42,11 +42,11 @@ public class Intake extends SubsystemBase{
         upDownConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 2; //tune this
-        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+       // upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 2; //tune this
+       // upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.1630859375; //tune this 
-        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+     //   upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.1630859375; //tune this 
+       // upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
         intakeUpDownMotor.getConfigurator().apply(upDownConfig);
 

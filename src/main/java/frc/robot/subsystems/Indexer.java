@@ -9,8 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import  edu.wpi.first.wpilibj2.command.Command;
 
 public class Indexer extends SubsystemBase {
-    private final TalonFX indexerBottomMoter = new TalonFX(6000); // Assuming CAN ID 4 for kicker motor
- private final TalonFX indexerTopMoter = new TalonFX(6000000); // Assuming CAN ID 4 for kicker motor
+    private final TalonFX indexerMotor = new TalonFX(13); // Assuming CAN ID 4 for kicker motor
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2500); // Limit to 500 RPM per second
 
@@ -25,8 +24,7 @@ public class Indexer extends SubsystemBase {
          config.CurrentLimits.SupplyCurrentLimit = 50;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-        indexerTopMoter.getConfigurator().apply(config);
-        indexerBottomMoter.getConfigurator().apply(config);
+        indexerMotor.getConfigurator().apply(config);
     }
 
     public void resetRamp() {
@@ -36,14 +34,12 @@ public class Indexer extends SubsystemBase {
     public void setRPM(double rpm) {
         double rampedRPM = rpmRamp.calculate(rpm);
         double targetRPS = rampedRPM / 60.0;
-        indexerTopMoter.setControl(velocityRequest.withVelocity(targetRPS));
-        indexerBottomMoter.setControl(velocityRequest.withVelocity(targetRPS));
+        indexerMotor.setControl(velocityRequest.withVelocity(targetRPS));
         
     }
 
     public void stop() {
-        indexerBottomMoter.set(0);
-        indexerTopMoter.set(0);
+        indexerMotor.set(0);
     }
 
 
@@ -56,14 +52,10 @@ public class Indexer extends SubsystemBase {
     public void periodic() {
     // Correct way to get velocity in Phoenix 6
     // .getValueAsDouble() returns Rotations per Second (RPS)
-    double currentRPS1 = indexerTopMoter.getVelocity().getValueAsDouble();
-    double currentRPM1 = currentRPS1 * 60.0;
+    double currentRPS = indexerMotor.getVelocity().getValueAsDouble();
+    double currentRPM = currentRPS * 60.0;
 
-    double currentRPS2 = indexerBottomMoter.getVelocity().getValueAsDouble();
-    double currentRPM2 = currentRPS2 * 60.0;
-
-    SmartDashboard.putNumber("indexerTopRPM", currentRPM1);
-    SmartDashboard.putNumber("indexerBottomRPM", currentRPM2); // account for gear ratio
+    SmartDashboard.putNumber("indexerRPM", currentRPM);
 }
 }
 

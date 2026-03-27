@@ -44,11 +44,11 @@ public class ShootBall extends Command {
     public void execute() {
       //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
       //double angleRad = Math.toRadians(angleDeg);
-      double rpm = SmartDashboard.getNumber("SetShooterRPM", 0);
+      //double rpm = SmartDashboard.getNumber("SetShooterRPM", 0);
      // double angle = SmartDashboard.getNumber("SetDegrees", 0);
 
 
-    //double  rpm = ShooterMath.getBestShooterRPM(swerve, vision);
+    double  rpm = ShooterMath.getBestShooterRPM(swerve, vision);
     
 
      shooter.setRPM(rpm);

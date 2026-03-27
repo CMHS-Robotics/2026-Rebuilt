@@ -53,9 +53,9 @@ public class Vision extends SubsystemBase {
     
     private Matrix<N3, N1> curStdDevs;
 
-    private final Translation2d shooterOffset = new Translation2d(0.2921, -0.1);
+    private final Translation2d shooterOffset = new Translation2d(0.2921, -0.2286);
 
-    private final Transform3d[] robotToCamTransforms = {kRobotToFrontCam, kRobotToBackCam, kRobotToBackLeftCam, kRobotToBackRightCam};
+    private final Transform3d[] robotToCamTransforms = {kRobotToFrontCam, kRobotToBackCam, kRobotToBackRightCam, kRobotToBackLeftCam};
 
     public Vision(CommandSwerveDrivetrain swerve) {
         this.swerve = swerve;
@@ -64,15 +64,13 @@ public class Vision extends SubsystemBase {
         // Initialize arrays for 2 cameras
         cameras = new PhotonCamera[] {
             new PhotonCamera(frontCam),
-            new PhotonCamera(frontLeftCam),
             new PhotonCamera(backCam),
             new PhotonCamera(backRightCam),
-            new PhotonCamera(backLeftCam)
+            new PhotonCamera(backLeftCam),
         };
 
         estimators = new PhotonPoseEstimator[] {
             new PhotonPoseEstimator(kTagLayout, kRobotToFrontCam),
-            //new PhotonPoseEstimator(kTagLayout, kRobotToFrontLeftCam),
             new PhotonPoseEstimator(kTagLayout, kRobotToBackCam),
             new PhotonPoseEstimator(kTagLayout, kRobotToBackRightCam),
             new PhotonPoseEstimator(kTagLayout, kRobotToBackLeftCam)
@@ -86,8 +84,8 @@ public class Vision extends SubsystemBase {
             visionSim.addAprilTags(kTagLayout);
 
             var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
-            cameraProp.setFPS(45);
+            cameraProp.setCalibration(640, 400, Rotation2d.fromDegrees(90));
+            cameraProp.setFPS(35);
             cameraProp.setAvgLatencyMs(50);
 
             // Create a sim for EACH camera
@@ -102,10 +100,10 @@ public class Vision extends SubsystemBase {
             visionSim.addCamera(cameraSims[1], kRobotToBackCam);
 
             cameraSims[2] = new PhotonCameraSim(cameras[2], cameraProp);
-            visionSim.addCamera(cameraSims[2], kRobotToBackLeftCam);
+            visionSim.addCamera(cameraSims[2], kRobotToBackRightCam);
 
             cameraSims[3] = new PhotonCameraSim(cameras[3], cameraProp);
-            visionSim.addCamera(cameraSims[3], kRobotToBackRightCam);
+            visionSim.addCamera(cameraSims[3], kRobotToBackLeftCam);
         }
     }
 
@@ -124,7 +122,7 @@ public void periodic() {
     boolean sawTagThisFrame = false;
 
     // 1. Iterate through all cameras and unread results
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 2; i++) {
         PhotonCamera cam = cameras[i];
         PhotonPoseEstimator estimator = estimators[i];
 

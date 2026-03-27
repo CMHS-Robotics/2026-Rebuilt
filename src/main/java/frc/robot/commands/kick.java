@@ -26,11 +26,9 @@ public class Kick extends Command{
          //double angleDeg = SmartDashboard.getNumber("Angle of Ejection (deg)", 60.0);
          //double angleRad = Math.toRadians(angleDeg);
     
-         double rpm = SmartDashboard.getNumber("SetKickerRPM", 0);
+       //  double rpm = SmartDashboard.getNumber("SetKickerRPM", 0);
 
-    // double rpm;
-
-   //  rpm = ShooterMath.getBestKickerRPM(swerve, vision);
+        double rpm = ShooterMath.getBestKickerRPM(swerve, vision);
 
 
     //    double distance = SmartDashboard.getNumber("Target Distance (m)", 3.0);

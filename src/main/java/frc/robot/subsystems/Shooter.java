@@ -17,7 +17,7 @@ public class Shooter extends SubsystemBase {
 
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(2000.0);
-    private final double RPM_TOLLERANCE = 200;
+    private final double RPM_TOLLERANCE = 300;
     private double targetRPM = 0;
     private final Vision vision;
 
