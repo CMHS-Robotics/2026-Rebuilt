@@ -101,9 +101,9 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         .alongWith(new Index(indexer, shooter, kicker).withTimeout(20))
         .alongWith(kickCommand)
         .alongWith(hoppCommand)
-        .alongWith(EngageIntake)
+        .alongWith(CompressIntake)
         .withTimeout(20));
-
+    
     
     NamedCommands.registerCommand("compressIntake", CompressIntake);
     NamedCommands.registerCommand("engageIntake", EngageIntake);
