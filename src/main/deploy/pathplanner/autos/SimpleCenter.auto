@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DevMoveToShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DevAlign"
+            "pathName": "CenterShoot"
           }
         },
         {

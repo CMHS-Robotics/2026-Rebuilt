@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "s1ToCenter"
+            "pathName": "ToCenterRight"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CenterSweep"
+                  "pathName": "CenterSweepRight"
                 }
               },
               {
@@ -33,6 +33,24 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterToShootRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "alignToHubCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootBall"
           }
         }
       ]

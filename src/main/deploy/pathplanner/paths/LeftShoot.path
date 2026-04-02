@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9520908313000827,
-        "y": 5.912712841670354
+        "x": 2.7646734234234236,
+        "y": 5.985867117117117
       },
       "isLocked": false,
-      "linkedName": "DevStart"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6,
-        "y": 4.849
+        "x": 2.233547297297298,
+        "y": 4.872545045045046
       },
       "prevControl": {
-        "x": 2.3243197516359553,
-        "y": 5.443853437947695
+        "x": 2.4071846846846854,
+        "y": 5.587522522522522
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DevShoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 0.0
+    "rotation": -20.854458039578343
   },
   "reversed": false,
-  "folder": "Dev",
+  "folder": "Simple Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
