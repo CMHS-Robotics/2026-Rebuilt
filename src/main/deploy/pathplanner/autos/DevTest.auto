@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DevMoveToShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DevAlign"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "alignToHubCommand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootBall"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Dev",
+  "choreoAuto": false
+}
