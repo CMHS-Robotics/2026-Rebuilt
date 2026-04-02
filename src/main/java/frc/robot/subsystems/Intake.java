@@ -4,19 +4,20 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class Intake extends SubsystemBase{
-    private final TalonFX intakeMotor = new TalonFX(10000);
+    private final TalonFX intakeMotor = new TalonFX(18);
     private final TalonFX intakeUpDownMotor = new TalonFX(0);
     private final VelocityVoltage velocityRequest = new VelocityVoltage(0);
     private final SlewRateLimiter rpmRamp = new SlewRateLimiter(3500); // Limit to 500 RPM per second
-    private final PositionVoltage intakeEngangeRequest = new PositionVoltage(0);
+    private final PositionVoltage intakeEngangeRequest = new PositionVoltage(0).withVelocity(2);
 
-    private final PositionVoltage intakeCompressRequest = new PositionVoltage(0).withVelocity(.2);
+    private final PositionVoltage intakeCompressRequest = new PositionVoltage(0).withVelocity(2);
 
     public Intake() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -31,7 +32,7 @@ public class Intake extends SubsystemBase{
         
 
         TalonFXConfiguration upDownConfig = new TalonFXConfiguration();
-        upDownConfig.Slot0.kP = 10.0; // Start small!
+        upDownConfig.Slot0.kP = 2;
         upDownConfig.Slot0.kI = 0.0;
         upDownConfig.Slot0.kD = 0.1;
 
@@ -42,11 +43,12 @@ public class Intake extends SubsystemBase{
         upDownConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         // 2. Set the "Ceiling" (Top limit) so it never goes too far up
-       // upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 2; //tune this
-       // upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = .5; //tune this
+        upDownConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-     //   upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.1630859375; //tune this 
-       // upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -12.36865234375; //tune this 
+        upDownConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        upDownConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         intakeUpDownMotor.getConfigurator().apply(upDownConfig);
 
@@ -61,21 +63,19 @@ public class Intake extends SubsystemBase{
     public void startIntake() {
         double rampedRPM = rpmRamp.calculate(6250);
         double targetRPS = rampedRPM / 60.0;
-        intakeMotor.setControl(velocityRequest.withVelocity(-targetRPS));
+        intakeMotor.setControl(velocityRequest.withVelocity(targetRPS));
     }
 
     public void engage(){
-        double motorRotations = 1;
-        
-        //-0.97705078125
-        intakeUpDownMotor.setControl(intakeEngangeRequest.withPosition(motorRotations));
+        double targetPosition = -12.36865234375;
+    
+        intakeUpDownMotor.setControl(intakeEngangeRequest.withPosition(targetPosition));
     }
 
     public void compress(){
-        double motorRotations = -1;
-        
-        //-0.97705078125
-        intakeUpDownMotor.setControl(intakeCompressRequest.withPosition(motorRotations));
+        double targetPosition = 0;
+    
+        intakeUpDownMotor.setControl(intakeCompressRequest.withPosition(targetPosition));
     }
 
     public void stop() {
@@ -106,4 +106,14 @@ public class Intake extends SubsystemBase{
     SmartDashboard.putNumber("intake compliant speed", currentRPM1 * (16.0/30.0)); // account for gear ratio
     SmartDashboard.putNumber("intake position", getArmPosition());    
 }
+
+public void resetArmEncoder() {
+    // Sets the current physical position of the motor to be "0" rotations
+    intakeUpDownMotor.setPosition(0);
+}
+
+public Command resetEncoderCommand() {
+    return runOnce(this::resetArmEncoder);
+}
+
 }

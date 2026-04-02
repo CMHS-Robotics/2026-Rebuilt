@@ -122,7 +122,7 @@ public void periodic() {
     boolean sawTagThisFrame = false;
 
     // 1. Iterate through all cameras and unread results
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < cameras.length; i++) {
         PhotonCamera cam = cameras[i];
         PhotonPoseEstimator estimator = estimators[i];
 
@@ -161,7 +161,7 @@ public void periodic() {
         latestEstimatedPose = bestEstimate.estimatedPose.toPose2d(); // Update the getter variable
         swerve.addVisionMeasurement(
             bestEstimate.estimatedPose.toPose2d(),
-            edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - 0.04, //bestEstimate.timestampSeconds, // instead of actual currenttime   
+            bestEstimate.timestampSeconds, //bestEstimate.timestampSeconds, // instead of actual currenttime   
             bestStdDevs
         );
         

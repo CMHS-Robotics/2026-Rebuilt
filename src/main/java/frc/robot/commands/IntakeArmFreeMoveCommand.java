@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -8,53 +7,68 @@ import frc.robot.subsystems.Intake;
 
 public class IntakeArmFreeMoveCommand extends Command {
     private final Intake intake;
-    private CommandXboxController Manipulator;
-    private double stickAsDouble;
-    private final Double multiplier;
-    //private final double positionTolerence;
-    public IntakeArmFreeMoveCommand(Intake intake, CommandXboxController Manipulator) {
-        //positionTolerence = 0.5;
+    private CommandXboxController manipulator;
+    
+    private double holdPosition;
+    private boolean isHolding = false;
+
+    // Adjust these constants based on testing
+    private final double UP_MULTIPLIER = 0.4;   // Faster up
+    private final double DOWN_MULTIPLIER = 0.1; // Slower down
+    private final double kG = 0.05;             // Constant percent output to fight gravity
+    private final double STICK_DEADBAND = 0.05;
+
+    public IntakeArmFreeMoveCommand(Intake intake, CommandXboxController manipulator) {
         this.intake = intake;
-        this.Manipulator = Manipulator;
-        multiplier = 0.25;
+        this.manipulator = manipulator;
         addRequirements(intake);
     }
 
-    public double getPosition(){
-        return intake.getArmPosition();
-    }
-    // public boolean atPosition(double target){
-    //     return Math.abs(getPosition() - target) <= positionTolerence;
-    // }
-
     @Override
     public void initialize() {
-        //intake.getArmPosition();
-    }
-    @Override 
-    public void execute() {
-        stickAsDouble = Manipulator.getLeftY();
-        SmartDashboard.putBoolean("DEBUG COMMAND EXECUTES",true);
-        SmartDashboard.putNumber("DEBUG RAW LEFT STICK DOUBLE",stickAsDouble);
-        //Prevents SLIGHT Stick Drift From Affecting 
-        if(stickAsDouble>=0.05 || stickAsDouble <= -0.05){
-            SmartDashboard.putBoolean("DEBUG PASSES STICKDRIFT",true);
-            //applies a multiplier for added precision
-            stickAsDouble*=multiplier;
-            SmartDashboard.putNumber("DEBUG MULTIPLIER APPLIED", stickAsDouble);
-            intake.setArmOutput(stickAsDouble);
-        }else{
-            intake.stopArm();
-        }
+        // Start by holding the current position
+        holdPosition = intake.getArmPosition();
+        isHolding = true;
     }
 
-    @Override
-    public boolean isFinished() {
-        return false;
+    @Override 
+    public void execute() {
+        double stickValue = -manipulator.getLeftY(); // Xbox Y is usually inverted
+        
+        if (Math.abs(stickValue) > STICK_DEADBAND) {
+            // --- MANUAL MOVE MODE ---
+            isHolding = false;
+            
+            double speed;
+            if (stickValue > 0) {
+                speed = stickValue * UP_MULTIPLIER;
+            } else {
+                speed = stickValue * DOWN_MULTIPLIER;
+            }
+
+            // Apply speed + gravity offset
+            intake.setArmOutput(speed + kG);
+            
+        } else {
+            // --- HOLD MODE ---
+            if (!isHolding) {
+                // Just released the stick? Lock in the current position
+                holdPosition = intake.getArmPosition();
+                isHolding = true;
+            }
+            
+            // Simple P-loop to hold position: (Target - Current) * Sensitivity
+            double error = holdPosition - intake.getArmPosition();
+            double feedback = error * 0.1; // Adjust this 'P' gain until it holds firm
+            
+            intake.setArmOutput(feedback + kG);
+        }
+
+        SmartDashboard.putNumber("Arm Hold Target", holdPosition);
     }
+
     @Override
     public void end(boolean interrupted) {
         intake.stopArm();
     }
-
 }

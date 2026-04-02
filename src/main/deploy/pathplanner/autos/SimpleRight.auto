@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "engageArm"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "LeftShoot"
+            "pathName": "RightShoot"
           }
         },
         {

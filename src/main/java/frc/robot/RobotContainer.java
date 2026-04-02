@@ -4,6 +4,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.*;
+
+import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -81,6 +84,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   private final Intake intake = new Intake();
   private final Indexer indexer = new Indexer();
   private final Hopper hopper = new Hopper();
+  private Rotation2d driverAngleOffset = new Rotation2d();
   /* ================= CONTROLLERS ================= */
   //private final CommandXboxController Driver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -97,7 +101,8 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     CompressIntake CompressIntake = new CompressIntake(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-    NamedCommands.registerCommand("shoot", shootBallCommand
+    NamedCommands.registerCommand("shoot", shootBallCommand.
+        withTimeout(20)
         .alongWith(new Index(indexer, shooter, kicker).withTimeout(20))
         .alongWith(kickCommand)
         .withTimeout(20)
@@ -105,14 +110,14 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         .withTimeout(20)
         .alongWith(CompressIntake)
         .withTimeout(20));
-    
+
     
     NamedCommands.registerCommand("compressIntake", CompressIntake);
-    NamedCommands.registerCommand("engageIntake", EngageIntake);
+    NamedCommands.registerCommand("engageIntake", EngageIntake.withTimeout(3));
     NamedCommands.registerCommand("intakeSpin", runIntakeCommand);
     NamedCommands.registerCommand("intakeSpinUp", runIntakeCommand);
     NamedCommands.registerCommand("armFeedAngle", armFeedPose);
-    NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand);
+    NamedCommands.registerCommand("alignToHubCommand", alignToHubCommand.withTimeout(                                                                                                                     1.5));
 
 
   
@@ -122,6 +127,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     autoChooser.setDefaultOption("Default",new InstantCommand());
     SmartDashboard.updateValues();
     SmartDashboard.putData("Auto Chooser",autoChooser);
+    SmartDashboard.putBoolean("resetPose?", false);
     // --- SmartDashboard tuning values ---
     SmartDashboard.putNumber("Target Distance (m)", 3.0);
     SmartDashboard.putNumber("Angle of Ejection (deg)", 68);
@@ -166,6 +172,22 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
 
     private void configureBindings() {
+
+   new Trigger(() -> SmartDashboard.getBoolean("resetPose?", false))
+    .onTrue(new InstantCommand(() -> {
+        // Use ifPresent to only run the reset if vision actually has a pose
+        vision.getEstimatedPose().ifPresent(pose -> {
+            drivetrain.resetPose(pose);
+            System.out.println("Robot Pose Reset to: " + pose);
+        });
+
+        // Always reset the toggle so the button doesn't stay 'true'
+        SmartDashboard.putBoolean("resetPose?", false);
+    }));
+
+
+      new Trigger(DriverStation::isTeleopEnabled)
+        .onTrue(intake.resetEncoderCommand());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
        Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain, fuelSim));
@@ -175,7 +197,12 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
        //Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
        Manipulator.rightTrigger().whileTrue(new Hopp(hopper, shooter, kicker));
-       Driver.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+
+       Driver.a().onTrue(new InstantCommand(() -> {
+        // Capture current heading so we can subtract it from driver inputs later
+       driverAngleOffset = drivetrain.getState().Pose.getRotation();
+        }));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
@@ -189,13 +216,18 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         Manipulator.x().whileTrue(new CompressIntake(intake));
 
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-Driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-Driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-Driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
+        drivetrain.applyRequest(() -> {
+        // Rotate the driver's intended direction by our saved offset
+        Translation2d driveVector = new Translation2d(
+            -Driver.getLeftY() * MaxSpeed, 
+            -Driver.getLeftX() * MaxSpeed
+        ).rotateBy(driverAngleOffset.unaryMinus()); // Subtract the offset
+
+        return drive.withVelocityX(driveVector.getX())
+                    .withVelocityY(driveVector.getY())
+                    .withRotationalRate(-Driver.getRightX() * MaxAngularRate);
+    })
+);
 
         Driver.x().whileTrue(
           new LockOnHub(
@@ -230,9 +262,6 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         Driver.back().and(Driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         Driver.start().and(Driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         Driver.start().and(Driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-        // Reset the field-centric heading on left bumper press.
-        Driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         //implement commands
 

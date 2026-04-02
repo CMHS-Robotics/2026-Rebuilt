@@ -90,39 +90,28 @@ CommandSwerveDrivetrain m_drive = m_robotContainer.getDrivetrain();
   }
 
   @Override
-  public void autonomousInit() {
+public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
-      // 1. Get the starting pose from PathPlanner
-      // Note: This requires you to have a way to know WHICH auto is selected.
-      // If you are using a SendableChooser, you might need to get the name from there.
-      Pose2d startPose = m_robotContainer.getAutoStartingPose(); 
-      
-      // 2. Reset the drivetrain to that pose before running the command
-      if (startPose != null) {
-          m_robotContainer.getDrivetrain().resetPose(startPose);
-      }
+        // 1. Trust PathPlanner for the starting spot
+        Pose2d startPose = m_robotContainer.getAutoStartingPose(); 
+        if (startPose != null) {
+            m_robotContainer.getDrivetrain().resetPose(startPose);
+        }
 
-      // 3. Schedule the auto command
-      m_autonomousCommand.schedule();
+        // 2. Disable fusion briefly to prevent "jumps" during the first move
+        m_robotContainer.getVision().setVisionEnabled(false);
+        
+        m_autonomousCommand.schedule();
 
-      m_robotContainer.getVision().setVisionEnabled(false);
-
-
-    CommandScheduler.getInstance().schedule(
-    new WaitCommand(1).andThen(
-        new InstantCommand(() ->
-            m_robotContainer.getVision().setVisionEnabled(true) 
-        )
-    )
-    );
-
-    m_robotContainer.getVision().getEstimatedPose().ifPresent(pose -> {
-    m_robotContainer.getDrivetrain().resetPose(pose); 
-    });
+        // 3. Re-enable fusion after 1 second once the robot is moving/settled
+        new WaitCommand(.75)
+            .andThen(() -> m_robotContainer.getVision().setVisionEnabled(true))
+            .ignoringDisable(true)
+            .schedule();
     }
-    }
+}
 
    // Pose2d startingPose = m_autonomousCommand.getStartingPose();
    //swerve.resetPose(startingPose);

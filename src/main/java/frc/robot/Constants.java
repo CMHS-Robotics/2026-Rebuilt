@@ -37,7 +37,7 @@ public final class Constants {
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         public static final Transform3d kRobotToFrontCam = new Transform3d(
-        0.3556,  -0.06985, 0.4699, new Rotation3d(0, Math.toRadians(0), Math.toRadians(0))
+        0.3429,  -0.066675, 0.4699, new Rotation3d(0, Math.toRadians(15), Math.toRadians(0))
         );
 
         public static final Transform3d kRobotToBackCam = new Transform3d(
@@ -61,8 +61,8 @@ public final class Constants {
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
 
         // Lower values = MORE trust in the camera
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.05, 0.05, 0.2); // before was 0.1, 0.1, 0.2
-        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.025, 0.025, 0.1); // before was 0.05, 0.05, 0.1
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.1, 0.1, 999); // before was 0.1, 0.1, 0.2
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.025, 0.025, 999); // before was 0.05, 0.05, 0.1
     //    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(.5, .5, 9999999);
     //    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 9999999;
     }
