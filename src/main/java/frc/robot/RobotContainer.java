@@ -102,10 +102,22 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     CompressIntake CompressIntake = new CompressIntake(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-   NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20));
-   NamedCommands.registerCommand("Index",  new Index(indexer, shooter, kicker).withTimeout(20));
-     NamedCommands.registerCommand("kick",   kickCommand.withTimeout(20));
-     NamedCommands.registerCommand("hopp",   hoppCommand.withTimeout(20));
+  //  NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20));
+  //  NamedCommands.registerCommand("Index",  new Index(indexer, shooter, kicker).withTimeout(20));
+  //    NamedCommands.registerCommand("kick",   kickCommand.withTimeout(20));
+  //    NamedCommands.registerCommand("hopp",   hoppCommand.withTimeout(20));
+
+
+     NamedCommands.registerCommand("shoot",
+    new ShootSequence(
+        shooter,
+        indexer,
+        kicker,
+        hopper,
+        vision,
+        drivetrain
+    ).withTimeout(20)
+);
 
 
 
