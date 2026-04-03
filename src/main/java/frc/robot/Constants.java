@@ -29,7 +29,6 @@ public final class Constants {
   }
     public static class Vision {
         public static final String frontCam = "frontCam";
-        public static final String frontLeftCam = "frontLeftCam";
         public static final String backCam = "backCam";
         public static final String backRightCam = "backRightCam";
         public static final String backLeftCam = "backLeftCam";
@@ -61,7 +60,7 @@ public final class Constants {
         // (Fake values. Experiment and determine estimation noise on an actual robot.)
 
         // Lower values = MORE trust in the camera
-        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.1, 0.1, 999); // before was 0.1, 0.1, 0.2
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.075, 0.075, 999); // before was 0.1, 0.1, 0.2 changed tto not trust theta at all only from gyro
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.025, 0.025, 999); // before was 0.05, 0.05, 0.1
     //    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(.5, .5, 9999999);
     //    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 9999999;

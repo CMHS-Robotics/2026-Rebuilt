@@ -96,10 +96,16 @@ public void autonomousInit() {
     if (m_autonomousCommand != null) {
         // 1. Trust PathPlanner for the starting spot
         Pose2d startPose = m_robotContainer.getAutoStartingPose(); 
+        
         if (startPose != null) {
-            m_robotContainer.getDrivetrain().resetPose(startPose);
-        }
-
+    // Get the current rotation from the gyro so we don't 'snap' the heading
+    Rotation2d currentRotation = m_robotContainer.getDrivetrain().getState().Pose.getRotation();
+    
+    // Create a new pose: PathPlanner's X/Y, but the Gyro's current Angle
+    Pose2d poseWithGyroHeading = new Pose2d(startPose.getTranslation(), currentRotation);
+    
+    m_robotContainer.getDrivetrain().resetPose(poseWithGyroHeading);
+}
         // 2. Disable fusion briefly to prevent "jumps" during the first move
         m_robotContainer.getVision().setVisionEnabled(false);
         

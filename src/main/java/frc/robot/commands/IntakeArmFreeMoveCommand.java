@@ -13,9 +13,9 @@ public class IntakeArmFreeMoveCommand extends Command {
     private boolean isHolding = false;
 
     // Adjust these constants based on testing
-    private final double UP_MULTIPLIER = 0.4;   // Faster up
-    private final double DOWN_MULTIPLIER = 0.1; // Slower down
-    private final double kG = 0.05;             // Constant percent output to fight gravity
+    private final double UP_MULTIPLIER = 0.10;   // Faster up
+    private final double DOWN_MULTIPLIER = 0.2; // Slower down
+    private final double kG = 0.1;             // Constant percent output to fight gravity
     private final double STICK_DEADBAND = 0.05;
 
     public IntakeArmFreeMoveCommand(Intake intake, CommandXboxController manipulator) {
@@ -59,7 +59,7 @@ public class IntakeArmFreeMoveCommand extends Command {
             
             // Simple P-loop to hold position: (Target - Current) * Sensitivity
             double error = holdPosition - intake.getArmPosition();
-            double feedback = error * 0.1; // Adjust this 'P' gain until it holds firm
+            double feedback = error * 0.2; // Adjust this 'P' gain until it holds firm
             
             intake.setArmOutput(feedback + kG);
         }

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -101,15 +102,12 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     CompressIntake CompressIntake = new CompressIntake(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-    NamedCommands.registerCommand("shoot", shootBallCommand.
-        withTimeout(20)
-        .alongWith(new Index(indexer, shooter, kicker).withTimeout(20))
-        .alongWith(kickCommand)
-        .withTimeout(20)
-        .alongWith(hoppCommand)
-        .withTimeout(20)
-        .alongWith(CompressIntake)
-        .withTimeout(20));
+   NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20));
+   NamedCommands.registerCommand("Index",  new Index(indexer, shooter, kicker).withTimeout(20));
+     NamedCommands.registerCommand("kick",   kickCommand.withTimeout(20));
+     NamedCommands.registerCommand("hopp",   hoppCommand.withTimeout(20));
+
+
 
     
     NamedCommands.registerCommand("compressIntake", CompressIntake);
@@ -199,10 +197,14 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
        Manipulator.rightTrigger().whileTrue(new Hopp(hopper, shooter, kicker));
 
 
-       Driver.a().onTrue(new InstantCommand(() -> {
-        // Capture current heading so we can subtract it from driver inputs later
-       driverAngleOffset = drivetrain.getState().Pose.getRotation();
-        }));
+       // 1. In your POV Up binding:
+Driver.povUp().onTrue(new InstantCommand(() -> {
+    // Save the current rotation. We will use this as the "New Zero"
+    driverAngleOffset = drivetrain.getState().Pose.getRotation();
+    System.out.println("Driver North set to: " + driverAngleOffset.getDegrees());
+}));
+
+Driver.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
         Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
@@ -215,19 +217,32 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
             
         Manipulator.x().whileTrue(new CompressIntake(intake));
 
-        drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(() -> {
-        // Rotate the driver's intended direction by our saved offset
-        Translation2d driveVector = new Translation2d(
-            -Driver.getLeftY() * MaxSpeed, 
-            -Driver.getLeftX() * MaxSpeed
-        ).rotateBy(driverAngleOffset.unaryMinus()); // Subtract the offset
+//         drivetrain.setDefaultCommand(
+//     drivetrain.applyRequest(() -> {
+//         // Get the desired drive vector from sticks
+//         Translation2d driveVector = new Translation2d(
+//             -Driver.getLeftY() * MaxSpeed, 
+//             -Driver.getLeftX() * MaxSpeed
+//         );
 
-        return drive.withVelocityX(driveVector.getX())
-                    .withVelocityY(driveVector.getY())
-                    .withRotationalRate(-Driver.getRightX() * MaxAngularRate);
-    })
-);
+//         // Instead of rotateBy(offset.unaryMinus()), use this:
+//         // This rotates the driver's stick inputs relative to the saved "Zero"
+//         driveVector = driveVector.rotateBy(driverAngleOffset.unaryMinus());
+
+//         return drive.withVelocityX(driveVector.getX())
+//                     .withVelocityY(driveVector.getY())
+//                     .withRotationalRate(-Driver.getRightX() * MaxAngularRate);
+//     })
+// );
+
+    drivetrain.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(-Driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-Driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-Driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            )
+        );
 
         Driver.x().whileTrue(
           new LockOnHub(
