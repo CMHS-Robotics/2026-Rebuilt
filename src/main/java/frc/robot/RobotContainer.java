@@ -34,6 +34,7 @@ import frc.robot.commands.*;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import frc.robot.generated.TunerConstants;
+import frc.robot.commands.LightsControl.FLAG;
 
 public class RobotContainer {
   
@@ -76,7 +77,6 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
 
-
   /* ================= SUBSYSTEMS ================= */
   private final Vision vision = new Vision(drivetrain);
   private final Climber climber = new Climber();
@@ -102,10 +102,10 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     CompressIntake CompressIntake = new CompressIntake(intake);
     ArmFeedPose armFeedPose = new ArmFeedPose( intake);
 
-  //  NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20));
-  //  NamedCommands.registerCommand("Index",  new Index(indexer, shooter, kicker).withTimeout(20));
-  //    NamedCommands.registerCommand("kick",   kickCommand.withTimeout(20));
-  //    NamedCommands.registerCommand("hopp",   hoppCommand.withTimeout(20));
+    NamedCommands.registerCommand("shootBall", shootBallCommand.withTimeout(20));
+    NamedCommands.registerCommand("Index",  new Index(indexer, shooter, kicker).withTimeout(20));
+      NamedCommands.registerCommand("kick",   kickCommand.withTimeout(20));
+      NamedCommands.registerCommand("hopp",   hoppCommand.withTimeout(20));
 
 
      NamedCommands.registerCommand("shoot",
@@ -157,7 +157,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     SmartDashboard.putNumber("DEBUG NEGATIVE SQRT VALUE", 0.0);
     SmartDashboard.putNumber("DEBUG POSITIVE SQRT VALUE", 0.0);
 
-    
+
     
    // SmartDashboard.putNumber("Feild", fieldVisualizer);
 
@@ -178,10 +178,30 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   /* ================= BUTTON BINDINGS ================= */
 
 
-          
+    
 
 
     private void configureBindings() {
+
+
+      // //LED LIGHTS
+      // Manipulator.povLeft().whileTrue(
+      //   new LightsControl(FLAG.ColorTypeP)
+      // );
+      // Manipulator.povRight().whileTrue(
+      //   new LightsControl(FLAG.ColorTypeN)
+      // );
+      // Manipulator.rightTrigger().whileTrue(
+      //   new LightsControl(FLAG.ColorValueI)
+      // );
+      // Manipulator.leftTrigger().whileTrue(
+      //   new LightsControl(FLAG.ColorValueD)
+      // );
+
+    
+
+
+
 
    new Trigger(() -> SmartDashboard.getBoolean("resetPose?", false))
     .onTrue(new InstantCommand(() -> {
@@ -200,13 +220,18 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
         .onTrue(intake.resetEncoderCommand());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left( according to WPILib convention.
-       Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain, fuelSim));
-       Driver.button(1).whileTrue( new ShootBall(shooter, vision, drivetrain, fuelSim)); //bind to spacebar for sim
-       Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
-       Manipulator.rightTrigger().whileTrue(new Index(indexer, shooter, kicker));
+       //Manipulator.rightTrigger().whileTrue(new ShootBall(shooter, vision, drivetrain, fuelSim));
+      // Driver.button(1).whileTrue( new ShootBall(shooter, vision, drivetrain, fuelSim)); //bind to spacebar for sim
+      // Manipulator.rightTrigger().whileTrue(new Kick(kicker, vision, drivetrain));
+      // Manipulator.rightTrigger().whileTrue(new Index(indexer, shooter, kicker));
 
        //Manipulator.rightBumper().whileTrue(new Index(indexer, shooter, kicker));
-       Manipulator.rightTrigger().whileTrue(new Hopp(hopper, shooter, kicker));
+     //  Manipulator.rightTrigger().whileTrue(new Hopp(hopper, shooter, kicker));
+
+            // Manipulator.rightTrigger().whileTrue(new ShootSequence( shooter,  indexer,  kicker,
+            //               hopper,  vision,
+            //               drivetrain));
+
 
 
        // 1. In your POV Up binding:
@@ -218,16 +243,16 @@ Driver.povUp().onTrue(new InstantCommand(() -> {
 
 Driver.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
        
-        Manipulator.leftTrigger().whileTrue(new runIntake(intake));
+        // Manipulator.leftTrigger().whileTrue(new runIntake(intake));
 
         Driver.y().whileTrue(new PointAndRotate(drivetrain, vision));
 
 
         Driver.button(2).whileTrue(new PointAndRotate(drivetrain, vision)); //bind to spacebar for sim
 
-        Manipulator.y().whileTrue(new EngageIntake(intake));
+        // Manipulator.y().whileTrue(new EngageIntake(intake));
             
-        Manipulator.x().whileTrue(new CompressIntake(intake));
+        // Manipulator.x().whileTrue(new CompressIntake(intake));
 
 //         drivetrain.setDefaultCommand(
 //     drivetrain.applyRequest(() -> {
@@ -246,7 +271,7 @@ Driver.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()))
 //                     .withRotationalRate(-Driver.getRightX() * MaxAngularRate);
 //     })
 // );
-
+  
     drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -293,25 +318,25 @@ Driver.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()))
         //implement commands
 
         //Climber Commands:
-        Manipulator.povUp().onTrue(
-            new MoveClimber(climber,climber.stages[1])//Ground To Bar
-        );
-        Manipulator.povRight().onTrue(
-            new MoveClimber(climber,climber.stages[2])//Bar To Bar
-        );
-        Manipulator.povDown().onTrue(
-            new MoveClimber(climber,climber.stages[0])//Move To Bottom
-        );
-        Manipulator.povLeft().whileTrue(
-            new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
-        );
+        // Manipulator.povUp().onTrue(
+        //     new MoveClimber(climber,climber.stages[1])//Ground To Bar
+        // );
+        // Manipulator.povRight().onTrue(
+        //     new MoveClimber(climber,climber.stages[2])//Bar To Bar
+        // );
+        // Manipulator.povDown().onTrue(
+        //     new MoveClimber(climber,climber.stages[0])//Move To Bottom
+        // );
+        // Manipulator.povLeft().whileTrue(
+        //     new FreeMoveClimber(climber,Manipulator.rightBumper(),Manipulator.leftBumper())
+        // );
         //freemove Intake Arm Command
         //Manipulator.x().whileTrue( new unjamRobot(hopper, indexer));
 
-        Trigger stickMoved = new Trigger( () -> Math.abs(Manipulator.getLeftY()) > 0.1);
-        stickMoved.whileTrue(
-          new IntakeArmFreeMoveCommand(intake, Manipulator)
-        );
+        // Trigger stickMoved = new Trigger( () -> Math.abs(Manipulator.getLeftY()) > 0.1);
+        // stickMoved.whileTrue(
+        //   new IntakeArmFreeMoveCommand(intake, Manipulator)
+        // );
         drivetrain.registerTelemetry(logger::telemeterize);
 
       //  Manipulator.leftBumper().whileTrue();

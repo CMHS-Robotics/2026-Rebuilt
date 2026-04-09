@@ -122,7 +122,7 @@ public void periodic() {
     boolean sawTagThisFrame = false;
 
     // 1. Iterate through all cameras and unread results
-    for (int i = 0; i < cameras.length; i++) {
+    for (int i = 0; i < 3; i++) {
         PhotonCamera cam = cameras[i];
         PhotonPoseEstimator estimator = estimators[i];
 

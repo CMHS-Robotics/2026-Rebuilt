@@ -8,7 +8,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,19 +34,26 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.units.*;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.Lights;
 
 public class Robot extends LoggedRobot {
 
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private FuelSim m_fuelSim;
+  private Lights lights = new Lights();
 
   @Override
   public void robotInit() {
+    lights.reset();
+    lights.setDefaultCommand(lights.rainbowLeds());
+    lights.rainbowLeds();
+    
+
     Logger.recordMetadata("ProjectName", "Robot");
 
 if (isReal()) {
-    Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+    Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
     Logger.addDataReceiver(new NT4Publisher());
 } else {
     Logger.addDataReceiver(new NT4Publisher());

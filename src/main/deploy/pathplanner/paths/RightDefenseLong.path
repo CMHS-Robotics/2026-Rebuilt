@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.565562913907285,
+        "y": 0.5574917218543056
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.438061366963961,
+        "y": 0.7160448142635124
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.861572847682119,
+        "y": 1.0584271523178814
+      },
+      "prevControl": {
+        "x": 6.207056148009142,
+        "y": 0.51756586145607
+      },
+      "nextControl": {
+        "x": 7.895951063420255,
+        "y": 1.9131878288338393
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.776324503311258,
+        "y": 7.483468543046358
+      },
+      "prevControl": {
+        "x": 7.738129139072847,
+        "y": 6.6254966887417215
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.2,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Defense Da Long Way",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}
