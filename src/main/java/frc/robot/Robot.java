@@ -41,14 +41,9 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private FuelSim m_fuelSim;
-  private Lights lights = new Lights();
 
   @Override
   public void robotInit() {
-    lights.reset();
-    lights.setDefaultCommand(lights.rainbowLeds());
-    lights.rainbowLeds();
-    
 
     Logger.recordMetadata("ProjectName", "Robot");
 

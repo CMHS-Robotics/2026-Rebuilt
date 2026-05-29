@@ -16,6 +16,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase; // Use this instead of "Robot"
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +29,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import frc.robot.Constants;
@@ -42,11 +44,15 @@ public class Vision extends SubsystemBase {
 
     private final Translation2d hubOffset = new Translation2d(.6,0);
 
+    private static final double kEstimateStalenessSeconds = 0.5;
+
     private boolean allowVisionFusion = false;
     private final CommandSwerveDrivetrain swerve;
     private final PhotonCamera[] cameras;
     private final PhotonPoseEstimator[] estimators;
-    private Pose2d latestEstimatedPose = new Pose2d();
+    private PhotonPipelineResult[] latestResults;
+    private Pose2d latestEstimatedPose = null;
+    private double lastEstimateTimestampSeconds = 0.0;
 
     private VisionSystemSim visionSim;
     private PhotonCameraSim[] cameraSims;
@@ -75,6 +81,8 @@ public class Vision extends SubsystemBase {
             new PhotonPoseEstimator(kTagLayout, kRobotToBackRightCam),
             new PhotonPoseEstimator(kTagLayout, kRobotToBackLeftCam)
         };
+
+        latestResults = new PhotonPipelineResult[cameras.length];
 
 
        // SmartDashboard.putData("Vision Field", fieldVisualizer);
@@ -122,11 +130,18 @@ public void periodic() {
     boolean sawTagThisFrame = false;
 
     // 1. Iterate through all cameras and unread results
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < cameras.length; i++) {
         PhotonCamera cam = cameras[i];
         PhotonPoseEstimator estimator = estimators[i];
 
-        for (var result : cam.getAllUnreadResults()) {
+        var results = cam.getAllUnreadResults();
+        // Cache the newest result so the aiming helpers can reuse it instead
+        // of calling getLatestResult() on a queue this drain just emptied.
+        if (!results.isEmpty()) {
+            latestResults[i] = results.get(results.size() - 1);
+        }
+
+        for (var result : results) {
             if (!result.hasTargets()) continue;
 
             // Try Multi-tag first, fall back to lowest ambiguity single tag
@@ -156,15 +171,21 @@ public void periodic() {
     }
 
     
-    // 2. Fusion: Only add the absolute best estimate found across all cameras
+    // 2. Fusion: Only add the absolute best estimate found across all cameras.
+    // Always track the latest estimate for getEstimatedPose(), but only feed it
+    // into the pose estimator when fusion is enabled (see setVisionEnabled).
     if (bestEstimate != null) {
         latestEstimatedPose = bestEstimate.estimatedPose.toPose2d(); // Update the getter variable
-        swerve.addVisionMeasurement(
-            bestEstimate.estimatedPose.toPose2d(),
-            bestEstimate.timestampSeconds, //bestEstimate.timestampSeconds, // instead of actual currenttime   
-            bestStdDevs
-        );
-        
+        lastEstimateTimestampSeconds = bestEstimate.timestampSeconds;
+
+        if (allowVisionFusion) {
+            swerve.addVisionMeasurement(
+                bestEstimate.estimatedPose.toPose2d(),
+                bestEstimate.timestampSeconds,
+                bestStdDevs
+            );
+        }
+
         Logger.recordOutput("Pose/VisionEstimate", bestEstimate.estimatedPose.toPose2d());
     }
 
@@ -178,7 +199,8 @@ public void periodic() {
     Logger.recordOutput("Pose/Robot", swerve.getState().Pose);
     Logger.recordOutput("Vision/FusionEnabled", allowVisionFusion);
     Logger.recordOutput("Vision/SawTag", sawTagThisFrame);
-    Logger.recordOutput("vision rot error robot center to hub", getRotationErrorRobotToTagFromPose(10).get().getDegrees());
+    getRotationErrorRobotToTagFromPose(getHubTagId()).ifPresent(rot ->
+        Logger.recordOutput("vision rot error robot center to hub", rot.getDegrees()));
 }
 
     private void updateEstimationStdDevs(
@@ -324,8 +346,8 @@ public void periodic() {
     Pose3d hubFieldPose = hubPoseOpt.get();
 
     for (int i = 0; i < cameras.length; i++) {
-        var result = cameras[i].getLatestResult();
-        if (!result.hasTargets()) continue;
+        var result = latestResults[i];
+        if (result == null || !result.hasTargets()) continue;
 
         // 2. Pick the best target currently seen by this camera
         PhotonTrackedTarget seenTarget = result.getBestTarget();
@@ -365,8 +387,8 @@ public void periodic() {
     Pose3d hubFieldPose = hubPoseOpt.get();
 
     for (int i = 0; i < cameras.length; i++) {
-        var result = cameras[i].getLatestResult();
-        if (!result.hasTargets()) continue;
+        var result = latestResults[i];
+        if (result == null || !result.hasTargets()) continue;
 
         // 2. Use the best visible tag as a reference point
         PhotonTrackedTarget seenTarget = result.getBestTarget();
@@ -446,10 +468,16 @@ public void periodic() {
 
 /**
  * Returns the latest estimated pose from the vision system.
- * Returns an empty optional if no tags have been seen yet.
+ * Returns an empty optional if no tag has been seen yet, or if the most recent
+ * estimate is older than kEstimateStalenessSeconds (so callers like teleopInit
+ * never reset onto a stale or never-set (0,0,0) pose).
  */
 public Optional<Pose2d> getEstimatedPose() {
-    return Optional.ofNullable(latestEstimatedPose);
+    if (latestEstimatedPose == null) return Optional.empty();
+    if (Timer.getFPGATimestamp() - lastEstimateTimestampSeconds > kEstimateStalenessSeconds) {
+        return Optional.empty();
+    }
+    return Optional.of(latestEstimatedPose);
 }
 
 

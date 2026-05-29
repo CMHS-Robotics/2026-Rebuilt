@@ -85,6 +85,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
   private final Intake intake = new Intake();
   private final Indexer indexer = new Indexer();
   private final Hopper hopper = new Hopper();
+  private final Lights lights = new Lights();
   private Rotation2d driverAngleOffset = new Rotation2d();
   /* ================= CONTROLLERS ================= */
   //private final CommandXboxController Driver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -171,6 +172,8 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
     //SmartDashboard.putData("Field View", vision.getFieldVisualizer()); 
     //add field view to dashboard once have vision subsystem
 
+    lights.setDefaultCommand(lights.rainbowLeds());
+
     configureBindings();
   }
 
@@ -183,7 +186,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
     private void configureBindings() {
 
-      Manipulator.x().onTrue(runOnce(() -> lights.red(), lights));
+      Manipulator.x().onTrue(lights.redAuto());
       // //LED LIGHTS
       // Manipulator.povLeft().whileTrue(
       //   new LightsControl(FLAG.ColorTypeP)
@@ -404,6 +407,10 @@ Driver.povDown().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()))
 
 public Vision getVision() {
     return vision;
+}
+
+public Lights getLights() {
+    return lights;
 }
 
 public Pose2d getAutoStartingPose() {
