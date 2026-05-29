@@ -183,7 +183,7 @@ private final SwerveRequest.FieldCentric slowDriveRequest = new SwerveRequest.Fi
 
     private void configureBindings() {
 
-
+      Manipulator.x().onTrue(runOnce(() -> lights.red(), lights));
       // //LED LIGHTS
       // Manipulator.povLeft().whileTrue(
       //   new LightsControl(FLAG.ColorTypeP)

@@ -102,6 +102,7 @@ public class Lights extends SubsystemBase {
                 break;
         }
     }
+    
     public void selectPrevColor(){
         switch (m_Color) {
             case Red:
